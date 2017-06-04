@@ -7,6 +7,8 @@ class Tower:
 
 
 class Arrow(Tower):
+    name = "Arrow"
+
     def __init__(self):
         super(Arrow, self).__init__()
         self.health = 20
@@ -15,6 +17,8 @@ class Arrow(Tower):
 
 
 class Mage:
+    name = "Mage"
+
     def __init__(self):
         super(Mage, self).__init__()
         self.health = 15
@@ -23,6 +27,8 @@ class Mage:
 
 
 class Artillery:
+    name = "Artillery"
+
     def __init__(self):
         super(Artillery, self).__init__()
         self.health = 50
@@ -34,4 +40,4 @@ tower_types = [Arrow, Mage, Artillery]
 
 if __name__ == "__main__":
     test_arrow = Arrow()
-    print(test_arrow.health)
+    print(Arrow.name)
