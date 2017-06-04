@@ -47,6 +47,7 @@ Temporary Items
 .apdisk
 
 # Compiled Python Binaries
+__pycache__/
 .pyc
 
 # Pycharm Documentation
