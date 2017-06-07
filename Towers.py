@@ -1,51 +1,55 @@
+from pygame.math import Vector2 as V2
+
 
 class Tower:
-    def __init__(self):
-        self.health_level = 1
-        self.damage_level = 1
-        self.speed_level = 1
-        self.damage_types = []
+    health_level = 1
+    damage_level = 1
+    speed_level = 1
+    damage_types = []
 
 
-class Arrow(Tower):
+class Archer(Tower):
     name = "Arrow"
+    health = 20
+    damage = 100
+    speed = 5
+    damage_types = ['single']
 
-    def __init__(self):
-        super(Arrow, self).__init__()
-        self.health = 20
-        self.damage = 100
-        self.speed = 5
-        self.damage_types = ['single']
+    def __init__(self, pos):
+        self.pos = V2(pos)
 
 
-class Mage:
+
+class Mage(Tower):
     name = "Mage"
+    health = 15
+    damage = 150
+    speed = 4
+    damage_types = ['splash']
 
-    def __init__(self):
-        super(Mage, self).__init__()
-        self.health = 15
-        self.damage = 150
-        self.speed = 4
-        self.damage_types = ['splash']
+    def __init__(self, pos):
+        self.pos = V2(pos)
 
 
 class EarthMage(Mage):
-    def __init__(self):
-        super(EarthMage, self).__init__()
+    def __init__(self, pos):
+        super().__init__(pos)
 
 
 class Artillery(Tower):
     name = "Artillery"
+    health = 50
+    damage = 200
+    speed = 2
 
-    def __init__(self):
-        super(Artillery, self).__init__()
-        self.health = 50
-        self.damage = 200
-        self.speed = 2
+    def __init__(self, pos):
+        self.pos = V2(pos)
 
 
-tower_types = [Arrow, Mage, Artillery]
+tower_types = [Archer, Mage, Artillery]
+
 
 if __name__ == "__main__":
-    test_arrow = Arrow()
-    print(Arrow.name)
+    test_arrow = Archer((4, 7))
+    test_arrow.health_level += 5
+    print(test_arrow.health_level)
