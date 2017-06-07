@@ -1,5 +1,7 @@
 from pygame.math import Vector2 as V2
 
+from Images import *
+
 
 class Tower:
     health_level = 1
@@ -10,6 +12,8 @@ class Tower:
 
 class Archer(Tower):
     name = "Arrow"
+    image = archer_image
+
     health = 20
     damage = 100
     speed = 5

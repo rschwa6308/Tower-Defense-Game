@@ -3,6 +3,7 @@ import tkinter as tk
 import os
 
 from Towers import *
+from Colors import *
 
 
 
@@ -45,7 +46,7 @@ class GameTop():
             b.grid(row=i)
 
         # Instantiate game variables
-        self.towers = []
+        self.towers = [Archer((100, 300))]
 
         # Modify pygame's video output (embeds all new pg windows inside a Tk.Frame object)
         os.environ['SDL_WINDOWID'] = str(game_frame.winfo_id())
@@ -53,7 +54,8 @@ class GameTop():
 
         # Instantiate pygame screen
         self.screen = pg.display.set_mode((1400, 900))
-        self.screen.fill(pg.Color(0, 0, 150))
+        self.update_screen()
+
 
 
 
@@ -65,8 +67,15 @@ class GameTop():
         self.alive = False
         self.root.destroy()
 
+    def update_screen(self):
+        self.screen.fill(bg_color)
+        for t in self.towers:
+            self.screen.blit(t.image, t.pos)
+
+        pg.display.update()
+
+    # Called when ► is pressed; Runs the next wave
     def play_wave(self):
-        print("call to play_wave")
         self.wave_button["text"] = "wave {0}\n...".format(self.wave)
         self.wave_button["state"] = "disabled"
         wave_active = True
