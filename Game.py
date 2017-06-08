@@ -1,10 +1,9 @@
 import pygame as pg
 import tkinter as tk
-import os
+from copy import deepcopy
 
 from Towers import *
 from Colors import *
-
 
 
 class GameTop():
@@ -32,7 +31,7 @@ class GameTop():
         # Wave count and play button
         self.wave = 1
         self.wave_button = tk.Button(info_frame, text="wave 1\n►", font=("Candara", 15), width=6, height=2,
-                      command=self.play_wave)
+                                     command=self.play_wave)
         self.wave_button.grid(row=2, column=0)
 
         # Set up tower-buttons
@@ -40,9 +39,9 @@ class GameTop():
         button_frame.place(anchor="n", relx=0.5, rely=0.2)
 
         for i in range(len(tower_types)):
-            type = tower_types[i]
-            b = tk.Button(button_frame, text=type.name, font=("Candara", 20), width=10, height=2)
-            # b.place(relx=0.5, rely=0.2 + 0.1 * i, anchor="n")
+            tower_type = tower_types[i]
+            b = tk.Button(button_frame, text=tower_type.name, font=("Candara", 20), width=10, height=2,
+                          command=lambda: self.place_tower(tower_type.name))
             b.grid(row=i)
 
         # Instantiate game variables
@@ -55,7 +54,6 @@ class GameTop():
         # Instantiate pygame screen
         self.screen = pg.display.set_mode((1400, 900))
         self.update_screen()
-
 
 
 
@@ -72,7 +70,23 @@ class GameTop():
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
 
-        pg.display.update()
+    def place_tower(self, tower_name):
+        print(tower_name)
+        clock = pg.time.Clock()
+        placed = False
+        while not placed:
+            clock.tick(60)
+
+            for event in pg.event.get():
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        pos = pg.mouse.get_pos()
+                        self.towers.append(TowerType(pos))
+                        self.update_screen()
+                        placed = True
+
+            self.root.update()
+            pg.display.update()
 
     # Called when ► is pressed; Runs the next wave
     def play_wave(self):
@@ -96,14 +110,9 @@ class GameTop():
 
 
 
-
 def main():
-
     game = GameTop()
     game.mainloop()
-
-
-
 
 
 if __name__ == "__main__":
