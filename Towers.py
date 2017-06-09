@@ -11,7 +11,7 @@ class Tower:
 
 
 class Archer(Tower):
-    name = "Arrow"
+    name = "Archer"
     image = archer_image
 
     health = 20

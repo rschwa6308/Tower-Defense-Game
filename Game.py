@@ -38,11 +38,17 @@ class GameTop():
         button_frame = tk.Frame(menu_frame)
         button_frame.place(anchor="n", relx=0.5, rely=0.2)
 
-        for i in range(len(tower_types)):
-            tower_type = tower_types[i]
-            b = tk.Button(button_frame, text=tower_type.name, font=("Candara", 20), width=10, height=2,
-                          command=lambda: self.place_tower(tower_type.name))
-            b.grid(row=i)
+        # for i in range(len(tower_types)):
+        #     tower_type = tower_types[i]
+        #     b = tk.Button(button_frame, text=tower_type.name, font=("Candara", 20), width=10, height=2,
+        #                   command=lambda: self.place_tower(tower_type.name))
+        #     b.grid(row=i)
+        tk.Button(button_frame, text=Archer.name, font=("Candara", 20), width=10, height=2,
+                  command=lambda: self.place_tower(Archer)).grid(row=0)
+        tk.Button(button_frame, text=Mage.name, font=("Candara", 20), width=10, height=2,
+                  command=lambda: self.place_tower(Mage)).grid(row=1)
+        tk.Button(button_frame, text=Artillery.name, font=("Candara", 20), width=10, height=2,
+                  command=lambda: self.place_tower(Artillery)).grid(row=2)
 
         # Instantiate game variables
         self.towers = [Archer((100, 300))]
@@ -70,8 +76,7 @@ class GameTop():
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
 
-    def place_tower(self, tower_name):
-        print(tower_name)
+    def place_tower(self, TowerType):
         clock = pg.time.Clock()
         placed = False
         while not placed:
