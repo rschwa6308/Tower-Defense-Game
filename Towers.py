@@ -7,6 +7,7 @@ class Tower:
     health_level = 1
     damage_level = 1
     speed_level = 1
+    range_level = 1
     damage_types = []
 
 
@@ -17,6 +18,7 @@ class Archer(Tower):
     health = 20
     damage = 100
     speed = 5
+    range = 150
     damage_types = ['single']
 
     def __init__(self, pos):
@@ -29,6 +31,7 @@ class Mage(Tower):
     health = 15
     damage = 150
     speed = 4
+    range = 150
     damage_types = ['splash']
 
     def __init__(self, pos):
@@ -45,6 +48,8 @@ class Artillery(Tower):
     health = 50
     damage = 200
     speed = 2
+    range = 150
+    damage_types = ['splash']
 
     def __init__(self, pos):
         self.pos = V2(pos)

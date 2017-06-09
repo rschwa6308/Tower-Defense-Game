@@ -52,6 +52,7 @@ class GameTop():
 
         # Instantiate game variables
         self.towers = [Archer((100, 300))]
+        self.enemies = []
 
         # Modify pygame's video output (embeds all new pg windows inside a Tk.Frame object)
         os.environ['SDL_WINDOWID'] = str(game_frame.winfo_id())
@@ -105,6 +106,11 @@ class GameTop():
             for event in pg.event.get():
                 if event.type == pg.KEYDOWN:
                     wave_active = False
+
+            for t in self.towers:
+                for e in self.enemies:
+                    if t.pos.distance_to(e.pos) < t.range:
+                        print("{0} in range of {1}".format(e, t))
 
             self.root.update()
             pg.display.update()
