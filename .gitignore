@@ -48,7 +48,7 @@ Temporary Items
 
 # Compiled Python Binaries
 __pycache__/
-*.pyc
+*$py.class
 
 # Pycharm Documentation
 .idea
