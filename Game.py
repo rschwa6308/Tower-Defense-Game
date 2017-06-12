@@ -4,6 +4,7 @@ from copy import deepcopy
 
 from Towers import *
 from Colors import *
+from Waves import *
 
 
 class GameTop():
@@ -79,6 +80,8 @@ class GameTop():
         self.screen.fill(bg_color)
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
+        for e in self.enemies:
+            self.screen.blit(e.image, e.pos)
 
     def place_tower(self, tower_index):
         for b in self.tower_buttons:
@@ -88,6 +91,7 @@ class GameTop():
         preview = TowerType.image.copy()
         preview.fill((255, 255, 255, 180), None, pg.BLEND_RGBA_MULT)
         preview.set_alpha(10)
+        pg.mouse.set_pos(self.screen.get_width() - 10, self.screen.get_height() / 2)
         clock = pg.time.Clock()
         placed = False
         while not placed:
@@ -110,6 +114,8 @@ class GameTop():
             self.root.update()
             pg.display.update()
 
+        self.update_screen()
+        pg.display.update()
         for b in self.tower_buttons:
             b["state"] = "normal"
         self.tower_buttons[tower_index]["relief"] = "raised"
@@ -118,6 +124,9 @@ class GameTop():
     def play_wave(self):
         self.wave_button["text"] = "wave {0}\n...".format(self.wave)
         self.wave_button["state"] = "disabled"
+
+        self.enemies = test_wave            # testing code
+        self.update_screen()
         wave_active = True
         clock = pg.time.Clock()
         while wave_active:
@@ -134,6 +143,10 @@ class GameTop():
 
             self.root.update()
             pg.display.update()
+
+        self.enemies = []
+        self.update_screen()
+        pg.display.update()
 
         self.wave += 1
         self.wave_button["text"] = "wave {0}\n►".format(self.wave)

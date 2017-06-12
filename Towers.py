@@ -8,7 +8,6 @@ class Tower:
     damage_level = 1
     speed_level = 1
     range_level = 1
-    damage_types = []
 
 
 class Archer(Tower):
@@ -28,6 +27,8 @@ class Archer(Tower):
 
 class Mage(Tower):
     name = "Mage"
+    image = mage_image
+
     health = 15
     damage = 150
     speed = 4
@@ -45,6 +46,8 @@ class EarthMage(Mage):
 
 class Artillery(Tower):
     name = "Artillery"
+    image = None
+
     health = 50
     damage = 200
     speed = 2
