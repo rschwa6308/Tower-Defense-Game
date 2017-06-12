@@ -43,15 +43,19 @@ class GameTop():
         #     b = tk.Button(button_frame, text=tower_type.name, font=("Candara", 20), width=10, height=2,
         #                   command=lambda: self.place_tower(tower_type.name))
         #     b.grid(row=i)
-        tk.Button(button_frame, text=Archer.name, font=("Candara", 20), width=10, height=2,
-                  command=lambda: self.place_tower(Archer)).grid(row=0)
-        tk.Button(button_frame, text=Mage.name, font=("Candara", 20), width=10, height=2,
-                  command=lambda: self.place_tower(Mage)).grid(row=1)
-        tk.Button(button_frame, text=Artillery.name, font=("Candara", 20), width=10, height=2,
-                  command=lambda: self.place_tower(Artillery)).grid(row=2)
+        self.tower_buttons = [
+            tk.Button(button_frame, text=Archer.name, font=("Candara", 20), width=10, height=2,
+                      command=lambda: self.place_tower(0)),
+            tk.Button(button_frame, text=Mage.name, font=("Candara", 20), width=10, height=2,
+                      command=lambda: self.place_tower(1)),
+            tk.Button(button_frame, text=Artillery.name, font=("Candara", 20), width=10, height=2,
+                      command=lambda: self.place_tower(2))
+        ]
+        for i in range(len(self.tower_buttons)):
+            self.tower_buttons[i].grid(row=i)
 
         # Instantiate game variables
-        self.towers = [Archer((100, 300))]
+        self.towers = []
         self.enemies = []
 
         # Modify pygame's video output (embeds all new pg windows inside a Tk.Frame object)
@@ -61,7 +65,6 @@ class GameTop():
         # Instantiate pygame screen
         self.screen = pg.display.set_mode((1400, 900))
         self.update_screen()
-
 
 
     def mainloop(self):
@@ -77,7 +80,14 @@ class GameTop():
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
 
-    def place_tower(self, TowerType):
+    def place_tower(self, tower_index):
+        for b in self.tower_buttons:
+            b["state"] = "disabled"
+        self.tower_buttons[tower_index]["relief"] = "ridge"
+        TowerType = tower_types[tower_index]
+        preview = TowerType.image.copy()
+        preview.fill((255, 255, 255, 180), None, pg.BLEND_RGBA_MULT)
+        preview.set_alpha(10)
         clock = pg.time.Clock()
         placed = False
         while not placed:
@@ -90,9 +100,19 @@ class GameTop():
                         self.towers.append(TowerType(pos))
                         self.update_screen()
                         placed = True
+                    if event.button == 3:
+                        placed = True
+
+            self.update_screen()
+            pos = pg.mouse.get_pos()
+            self.screen.blit(preview, pos)
 
             self.root.update()
             pg.display.update()
+
+        for b in self.tower_buttons:
+            b["state"] = "normal"
+        self.tower_buttons[tower_index]["relief"] = "raised"
 
     # Called when ► is pressed; Runs the next wave
     def play_wave(self):
@@ -118,7 +138,6 @@ class GameTop():
         self.wave += 1
         self.wave_button["text"] = "wave {0}\n►".format(self.wave)
         self.wave_button["state"] = "normal"
-
 
 
 def main():
