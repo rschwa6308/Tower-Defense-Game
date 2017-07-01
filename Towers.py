@@ -1,4 +1,5 @@
 from pygame.math import Vector2 as V2
+import pygame as pg
 
 from Images import *
 
@@ -9,19 +10,27 @@ class Tower:
     speed_level = 1
     range_level = 1
 
+    last_attack_time = 0
+
+
 
 class Archer(Tower):
     name = "Archer"
     image = archer_image
+    base_center_pos = (35, 104)
 
     health = 20
     damage = 100
-    speed = 5
+    cooldown = 1
     range = 150
     damage_types = ['single']
 
     def __init__(self, pos):
         self.pos = V2(pos)
+        self.base_center = self.pos + self.base_center_pos
+        self.rect = pg.Rect(self.pos.x, self.pos.y, 70, 120)
+
+
 
 
 
@@ -31,7 +40,7 @@ class Mage(Tower):
 
     health = 15
     damage = 150
-    speed = 4
+    cooldown = 4
     range = 150
     damage_types = ['splash']
 
@@ -50,7 +59,7 @@ class Artillery(Tower):
 
     health = 50
     damage = 200
-    speed = 2
+    cooldown = 2
     range = 150
     damage_types = ['splash']
 

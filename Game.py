@@ -1,6 +1,5 @@
-import pygame as pg
 import tkinter as tk
-from copy import deepcopy
+import time
 
 from Towers import *
 from Colors import *
@@ -67,10 +66,22 @@ class GameTop():
         self.screen = pg.display.set_mode((1400, 900))
         self.update_screen()
 
-
     def mainloop(self):
+        clock = pg.time.Clock()
         while self.alive:
+            clock.tick(60)
+
+            # Listen for cursor hover over Tower
+            mouse_pos = pg.mouse.get_pos()
+            for t in self.towers:
+                if t.rect.collidepoint(mouse_pos):
+                    pg.draw.circle(self.screen, red, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
+                else:
+                    self.update_screen()
+
+            pg.display.update()
             self.root.update()
+
 
     def delete(self):
         self.alive = False
@@ -82,6 +93,8 @@ class GameTop():
             self.screen.blit(t.image, t.pos)
         for e in self.enemies:
             self.screen.blit(e.image, e.pos)
+            pg.draw.rect(self.screen, red, pg.Rect(e.pos.x + 2, e.pos.y - 15, int(48 * (float(e.health) / e.max_health)), 10), 0)
+            pg.draw.rect(self.screen, black, pg.Rect(e.pos.x, e.pos.y - 15, 50, 10), 2)
 
     def place_tower(self, tower_index):
         for b in self.tower_buttons:
@@ -101,7 +114,7 @@ class GameTop():
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         pos = pg.mouse.get_pos()
-                        self.towers.append(TowerType(pos))
+                        self.towers.append(TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1])))
                         self.update_screen()
                         placed = True
                     if event.button == 3:
@@ -109,7 +122,8 @@ class GameTop():
 
             self.update_screen()
             pos = pg.mouse.get_pos()
-            self.screen.blit(preview, pos)
+            self.screen.blit(preview, (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
+            pg.draw.circle(self.screen, red, pos, TowerType.range, 2)
 
             self.root.update()
             pg.display.update()
@@ -132,17 +146,47 @@ class GameTop():
         while wave_active:
             clock.tick(60)
 
+            # Listen for user input
             for event in pg.event.get():
                 if event.type == pg.KEYDOWN:
                     wave_active = False
 
+            # Tower - Enemy interaction
             for t in self.towers:
                 for e in self.enemies:
-                    if t.pos.distance_to(e.pos) < t.range:
-                        print("{0} in range of {1}".format(e, t))
+                    distance = t.base_center.distance_to(e.get_center())
+
+                    # Tower on Enemy
+                    if distance < t.range:
+                        # print("enemy {0} in range of tower {1}".format(e.name, t.name))
+                        if time.time() - t.last_attack_time > t.cooldown:
+                            print("! {0} attacks {1} !".format(t.name, e.name))
+                            t.last_attack_time = time.time()
+                            e.health -= t.damage
+                            if e.health <= 0:
+                                self.enemies.remove(e)
+
+                    # Enemy on Tower
+                    if distance < e.range:
+                        # print("tower {0} in range of enemy {1}".format(t.name, e.name))
+                        if time.time() - e.last_attack_time > e.cooldown:
+                            print("! {0} attacks {1} !".format(e.name, t.name))
+                            e.last_attack_time = time.time()
+
+            # Enemy movement
+            for e in self.enemies:
+                e.pos += e.vel
 
             self.root.update()
+            self.update_screen()
             pg.display.update()
+
+            # Listen for cursor hover over Tower
+            mouse_pos = pg.mouse.get_pos()
+            for t in self.towers:
+                if t.rect.collidepoint(mouse_pos):
+                    pg.draw.circle(self.screen, red, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
+                    pg.display.update()
 
         self.enemies = []
         self.update_screen()
