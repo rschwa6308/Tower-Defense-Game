@@ -57,6 +57,7 @@ class GameTop():
         # Instantiate game variables
         self.towers = []
         self.enemies = []
+        self.projectiles = []
 
         # Modify pygame's video output (embeds all new pg windows inside a Tk.Frame object)
         os.environ['SDL_WINDOWID'] = str(game_frame.winfo_id())
@@ -72,16 +73,17 @@ class GameTop():
             clock.tick(60)
 
             # Listen for cursor hover over Tower
+            pg.event.get()
             mouse_pos = pg.mouse.get_pos()
             for t in self.towers:
                 if t.rect.collidepoint(mouse_pos):
-                    pg.draw.circle(self.screen, red, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
+                    t.hover = True
                 else:
-                    self.update_screen()
+                    t.hover = False
 
+            self.update_screen()
             pg.display.update()
             self.root.update()
-
 
     def delete(self):
         self.alive = False
@@ -91,10 +93,14 @@ class GameTop():
         self.screen.fill(bg_color)
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
+            if t.hover:
+                pg.draw.circle(self.screen, red, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
         for e in self.enemies:
             self.screen.blit(e.image, e.pos)
             pg.draw.rect(self.screen, red, pg.Rect(e.pos.x + 2, e.pos.y - 15, int(48 * (float(e.health) / e.max_health)), 10), 0)
             pg.draw.rect(self.screen, black, pg.Rect(e.pos.x, e.pos.y - 15, 50, 10), 2)
+        for p in self.projectiles:
+            self.screen.blit(p.image, p.pos)
 
     def place_tower(self, tower_index):
         for b in self.tower_buttons:
@@ -114,6 +120,7 @@ class GameTop():
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         pos = pg.mouse.get_pos()
+
                         self.towers.append(TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1])))
                         self.update_screen()
                         placed = True
@@ -151,44 +158,66 @@ class GameTop():
                 if event.type == pg.KEYDOWN:
                     wave_active = False
 
+            # Listen for cursor hover over Tower
+            mouse_pos = pg.mouse.get_pos()
+            for t in self.towers:
+                if t.rect.collidepoint(mouse_pos):
+                    t.hover = True
+                else:
+                    t.hover = False
+
             # Tower - Enemy interaction
             for t in self.towers:
+                in_range = []
                 for e in self.enemies:
                     distance = t.base_center.distance_to(e.get_center())
-
-                    # Tower on Enemy
                     if distance < t.range:
-                        # print("enemy {0} in range of tower {1}".format(e.name, t.name))
-                        if time.time() - t.last_attack_time > t.cooldown:
-                            print("! {0} attacks {1} !".format(t.name, e.name))
-                            t.last_attack_time = time.time()
-                            e.health -= t.damage
-                            if e.health <= 0:
-                                self.enemies.remove(e)
+                        in_range.append((e, distance))
 
-                    # Enemy on Tower
-                    if distance < e.range:
-                        # print("tower {0} in range of enemy {1}".format(t.name, e.name))
-                        if time.time() - e.last_attack_time > e.cooldown:
-                            print("! {0} attacks {1} !".format(e.name, t.name))
-                            e.last_attack_time = time.time()
+                if len(in_range) != 0:
+                    target = sorted(in_range, key=lambda x: x[1])[0][0]         # pick closest enemy
+                    # print("enemy {0} in range of tower {1}".format(e.name, t.name))
+                    if time.time() - t.last_attack_time > t.cooldown:
+                        # print("! {0} attacks {1} !".format(t.name, target.name))
+                        t.last_attack_time = time.time()
+                        # Aim Projectile at Enemy
+                        displacement = target.get_center() - t.base_center
+                        vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
+                        self.projectiles.append(t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage))
+
+            # Projectile - Enemy collision
+            for p in self.projectiles:
+                for e in self.enemies:
+                    if p.get_rect().colliderect(e.get_rect()):
+                        self.projectiles.remove(p)
+                        e.health -= p.damage
+                        if e.health <= 0:
+                            self.enemies.remove(e)
+                        break
 
             # Enemy movement
             for e in self.enemies:
                 e.pos += e.vel
 
-            self.root.update()
+            # Projectile movement
+            for p in self.projectiles:
+                p.pos += p.vel
+                if max(p.pos) > 2000 or min(p.pos) < -100:
+                    self.projectiles.remove(p)
+
+            # Check for enemy depletion
+            if len(self.enemies) == 0:
+                wave_active = False
+
+            try:
+                self.root.update()
+            except:
+                return
             self.update_screen()
             pg.display.update()
 
-            # Listen for cursor hover over Tower
-            mouse_pos = pg.mouse.get_pos()
-            for t in self.towers:
-                if t.rect.collidepoint(mouse_pos):
-                    pg.draw.circle(self.screen, red, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
-                    pg.display.update()
-
         self.enemies = []
+        self.projectiles = []
         self.update_screen()
         pg.display.update()
 

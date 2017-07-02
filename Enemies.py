@@ -18,9 +18,12 @@ class Orc(Enemy):
     cooldown = 1
     range = 50
 
-    def __init__(self, pos):
+    def __init__(self, pos, vel):
         self.pos = V2(pos)
-        self.vel = V2((1, 1))
+        self.vel = V2(vel)
 
     def get_center(self):
         return self.pos + self.center_pos
+
+    def get_rect(self):
+        return pg.Rect(self.pos.x, self.pos.y, 50, 50)

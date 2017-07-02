@@ -2,7 +2,13 @@ import pygame.image as pgi
 import os
 
 
-archer_image = pgi.load(os.path.join("Assets", "archer_tower.png"))
-mage_image = pgi.load(os.path.join("Assets", "fire_mage_tower.png"))
+def load(name):
+    return pgi.load(os.path.join("Assets", name + ".png"))
 
-orc_image = pgi.load(os.path.join("Assets", "orc.png"))
+archer_image = load("archer_tower")
+mage_image = load("fire_mage_tower")
+
+orc_image = load("orc")
+
+arrow_image = load("arrow")
+beam_image = load("beam")

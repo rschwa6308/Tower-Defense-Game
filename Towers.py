@@ -2,6 +2,7 @@ from pygame.math import Vector2 as V2
 import pygame as pg
 
 from Images import *
+from Projectiles import *
 
 
 class Tower:
@@ -11,6 +12,8 @@ class Tower:
     range_level = 1
 
     last_attack_time = 0
+
+    hover = False
 
 
 
@@ -22,8 +25,9 @@ class Archer(Tower):
     health = 20
     damage = 100
     cooldown = 1
-    range = 150
+    range = 250
     damage_types = ['single']
+    projectile = Arrow
 
     def __init__(self, pos):
         self.pos = V2(pos)
@@ -37,15 +41,19 @@ class Archer(Tower):
 class Mage(Tower):
     name = "Mage"
     image = mage_image
+    base_center_pos = (35, 100)
 
     health = 15
-    damage = 150
-    cooldown = 4
+    damage = 200
+    cooldown = 1
     range = 150
     damage_types = ['splash']
+    projectile = Beam
 
     def __init__(self, pos):
         self.pos = V2(pos)
+        self.base_center = self.pos + self.base_center_pos
+        self.rect = pg.Rect(self.pos.x, self.pos.y, 70, 120)
 
 
 class EarthMage(Mage):
