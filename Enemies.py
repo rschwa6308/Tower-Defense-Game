@@ -3,6 +3,7 @@ from pygame.math import Vector2 as V2
 
 from Images import *
 
+
 class Enemy:
     last_attack_time = 0
 
@@ -17,6 +18,8 @@ class Orc(Enemy):
     damage = 2
     cooldown = 1
     range = 50
+
+    value = 30
 
     def __init__(self, pos, vel):
         self.pos = V2(pos)

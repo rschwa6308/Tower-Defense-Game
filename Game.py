@@ -24,9 +24,15 @@ class GameTop():
         info_frame = tk.Frame(menu_frame)
         info_frame.place(anchor="n", relx=0.5, rely=0)
 
+        # Money and Health variables
+        self.money = 300
+        self.health = 100
+
         # Money and Health labels
-        tk.Label(info_frame, text="$: 12345", font=("Candara", 20)).grid(row=0)
-        tk.Label(info_frame, text="♡: 100", font=("Candara", 20)).grid(row=1)
+        self.money_label = tk.Label(info_frame, text="$: " + str(self.money), font=("Candara", 20))
+        self.health_label = tk.Label(info_frame, text="♡: " + str(self.health), font=("Candara", 20))
+        self.money_label.grid(row=0)
+        self.health_label.grid(row=1)
 
         # Wave count and play button
         self.wave = 1
@@ -44,11 +50,11 @@ class GameTop():
         #                   command=lambda: self.place_tower(tower_type.name))
         #     b.grid(row=i)
         self.tower_buttons = [
-            tk.Button(button_frame, text=Archer.name, font=("Candara", 20), width=10, height=2,
+            tk.Button(button_frame, text=Archer.name + "\n$" + str(Archer.cost), font=("Candara", 20), width=10, height=2,
                       command=lambda: self.place_tower(0)),
-            tk.Button(button_frame, text=Mage.name, font=("Candara", 20), width=10, height=2,
+            tk.Button(button_frame, text=Mage.name + "\n$" + str(Mage.cost), font=("Candara", 20), width=10, height=2,
                       command=lambda: self.place_tower(1)),
-            tk.Button(button_frame, text=Artillery.name, font=("Candara", 20), width=10, height=2,
+            tk.Button(button_frame, text=Artillery.name + "\n$" + str(Artillery.cost), font=("Candara", 20), width=10, height=2,
                       command=lambda: self.place_tower(2))
         ]
         for i in range(len(self.tower_buttons)):
@@ -89,6 +95,17 @@ class GameTop():
         self.alive = False
         self.root.destroy()
 
+    def update_labels(self):
+        self.money_label["text"] = "$: " + str(self.money)
+        self.health_label["text"] = "♡: " + str(self.health)
+        for i in range(len(tower_types)):
+            if self.money < tower_types[i].cost:
+                print(i)
+                self.tower_buttons[i]["state"] = "disabled"
+            else:
+                self.tower_buttons[i]["state"] = "normal"
+        self.root.update()
+
     def update_screen(self):
         self.screen.fill(bg_color)
         for t in self.towers:
@@ -120,10 +137,10 @@ class GameTop():
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         pos = pg.mouse.get_pos()
-
                         self.towers.append(TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1])))
                         self.update_screen()
                         placed = True
+                        self.money -= TowerType.cost        # Pay for tower
                     if event.button == 3:
                         placed = True
 
@@ -137,8 +154,7 @@ class GameTop():
 
         self.update_screen()
         pg.display.update()
-        for b in self.tower_buttons:
-            b["state"] = "normal"
+        self.update_labels()
         self.tower_buttons[tower_index]["relief"] = "raised"
 
     # Called when ► is pressed; Runs the next wave
@@ -193,15 +209,21 @@ class GameTop():
                         e.health -= p.damage
                         if e.health <= 0:
                             self.enemies.remove(e)
+                            self.money += e.value       # Collect value of enemy
+                            self.update_labels()
                         break
 
             # Enemy movement
             for e in self.enemies:
                 e.pos += e.vel
+                if e.pos.x < 0 or e.pos.x > 1400 - e.get_rect().width: e.vel.x *= -1        # TEMPORARY wall collision
+                if e.pos.y < 0 or e.pos.y > 900 - e.get_rect().height: e.vel.y *= -1        # TEMPORARY wall collision
 
             # Projectile movement
             for p in self.projectiles:
                 p.pos += p.vel
+                if p.pos.x < 0 or p.pos.x > 1400 - p.get_rect().width: p.vel.x *= -1        # TEMPORARY wall collision
+                if p.pos.y < 0 or p.pos.y > 900 - p.get_rect().height: p.vel.y *= -1        # TEMPORARY wall collision
                 if max(p.pos) > 2000 or min(p.pos) < -100:
                     self.projectiles.remove(p)
 

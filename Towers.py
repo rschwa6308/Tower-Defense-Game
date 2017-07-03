@@ -29,6 +29,8 @@ class Archer(Tower):
     damage_types = ['single']
     projectile = Arrow
 
+    cost = 20
+
     def __init__(self, pos):
         self.pos = V2(pos)
         self.base_center = self.pos + self.base_center_pos
@@ -50,6 +52,8 @@ class Mage(Tower):
     damage_types = ['splash']
     projectile = Beam
 
+    cost = 40
+
     def __init__(self, pos):
         self.pos = V2(pos)
         self.base_center = self.pos + self.base_center_pos
@@ -70,6 +74,8 @@ class Artillery(Tower):
     cooldown = 2
     range = 150
     damage_types = ['splash']
+
+    cost = 100
 
     def __init__(self, pos):
         self.pos = V2(pos)
