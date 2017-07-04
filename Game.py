@@ -124,7 +124,13 @@ class GameTop():
             b["state"] = "disabled"
         self.tower_buttons[tower_index]["relief"] = "ridge"
         TowerType = tower_types[tower_index]
-        preview = TowerType.image.copy()
+        try:
+            preview = TowerType.image.copy()
+        except:
+            print("no image available")
+            self.update_labels()
+            self.tower_buttons[tower_index]["relief"] = "raised"
+            return
         preview.fill((255, 255, 255, 180), None, pg.BLEND_RGBA_MULT)
         preview.set_alpha(10)
         pg.mouse.set_pos(self.screen.get_width() - 10, self.screen.get_height() / 2)
