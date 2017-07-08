@@ -15,14 +15,36 @@ class GameTop():
         self.root.geometry("%dx%d%+d%+d" % (1600, 900, 100, 50))
         self.root.protocol('WM_DELETE_WINDOW', self.delete)
 
-        game_frame = tk.Frame(self.root, width=1400, height=900)  # creates embed frame for pg window
-        game_frame.pack(side=tk.LEFT)
+        self.game_frame = tk.Frame(self.root, width=1400, height=900)  # creates embed frame for pg window
+        self.game_frame.pack(side=tk.LEFT)
 
-        menu_frame = tk.Frame(self.root, width=200, height=900)
-        menu_frame.pack(side=tk.RIGHT)
+        self.menu_frame = tk.Frame(self.root, width=200, height=900)
+        self.menu_frame.pack(side=tk.RIGHT)
 
-        info_frame = tk.Frame(menu_frame)
+        info_frame = tk.Frame(self.menu_frame)
         info_frame.place(anchor="n", relx=0.5, rely=0)
+
+
+        # For later reference
+        self.upgrade_frame = tk.LabelFrame(self.menu_frame, text="", font=("Candara", 20))
+        self.upgrade_labels = [
+            tk.Label(self.upgrade_frame, text="Health:", font=("Candara", 15)),
+            tk.Label(self.upgrade_frame, text="Damage:", font=("Candara", 15)),
+            tk.Label(self.upgrade_frame, text="Speed:", font=("Candara", 15)),
+            tk.Label(self.upgrade_frame, text="Range:", font=("Candara", 15))
+        ]
+        self.upgrade_amounts = [
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 15)),
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 15)),
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 15)),
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 15))
+        ]
+        self.upgrade_buttons = [
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 15), command=lambda: self.upgrade_selected("health")),
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 15), command=lambda: self.upgrade_selected("damage")),
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 15), command=lambda: self.upgrade_selected("speed")),
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 15), command=lambda: self.upgrade_selected("range"))
+        ]
 
         # Money and Health variables
         self.money = 300
@@ -41,7 +63,7 @@ class GameTop():
         self.wave_button.grid(row=2, column=0)
 
         # Set up tower-buttons
-        button_frame = tk.Frame(menu_frame)
+        button_frame = tk.Frame(self.menu_frame)
         button_frame.place(anchor="n", relx=0.5, rely=0.2)
 
         # for i in range(len(tower_types)):
@@ -55,7 +77,9 @@ class GameTop():
             tk.Button(button_frame, text=Mage.name + "\n$" + str(Mage.cost), font=("Candara", 20), width=10, height=2,
                       command=lambda: self.place_tower(1)),
             tk.Button(button_frame, text=Artillery.name + "\n$" + str(Artillery.cost), font=("Candara", 20), width=10, height=2,
-                      command=lambda: self.place_tower(2))
+                      command=lambda: self.place_tower(2)),
+            tk.Button(button_frame, text=Sniper.name + "\n$" + str(Sniper.cost), font=("Candara", 20), width=10,height=2,
+                      command=lambda: self.place_tower(3))
         ]
         for i in range(len(self.tower_buttons)):
             self.tower_buttons[i].grid(row=i)
@@ -66,7 +90,7 @@ class GameTop():
         self.projectiles = []
 
         # Modify pygame's video output (embeds all new pg windows inside a Tk.Frame object)
-        os.environ['SDL_WINDOWID'] = str(game_frame.winfo_id())
+        os.environ['SDL_WINDOWID'] = str(self.game_frame.winfo_id())
         os.environ['SDL_VIDEODRIVER'] = 'windib'
 
         # Instantiate pygame screen
@@ -79,13 +103,27 @@ class GameTop():
             clock.tick(60)
 
             # Listen for cursor hover over Tower
-            pg.event.get()
             mouse_pos = pg.mouse.get_pos()
             for t in self.towers:
                 if t.rect.collidepoint(mouse_pos):
                     t.hover = True
                 else:
                     t.hover = False
+
+            for event in pg.event.get():
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        for t in self.towers:
+                            if t.hover:
+                                for t_ in self.towers:
+                                    t_.selected = False
+                                t.selected = True
+                                self.select_tower(t)
+                                break
+                            else:
+                                t.selected = False
+                                self.upgrade_frame.place_forget()
+                                self.root.update()
 
             self.update_screen()
             pg.display.update()
@@ -95,22 +133,43 @@ class GameTop():
         self.alive = False
         self.root.destroy()
 
+    def get_selected(self):
+        for t in self.towers:
+            if t.selected:
+                return t
+        return None
+
     def update_labels(self):
         self.money_label["text"] = "$: " + str(self.money)
         self.health_label["text"] = "♡: " + str(self.health)
         for i in range(len(tower_types)):
             if self.money < tower_types[i].cost:
-                print(i)
                 self.tower_buttons[i]["state"] = "disabled"
             else:
                 self.tower_buttons[i]["state"] = "normal"
+        tower = self.get_selected()
+        if tower is not None:
+            self.upgrade_amounts[0]["text"] = str(tower.health_level)
+            self.upgrade_amounts[1]["text"] = str(tower.damage_level)
+            self.upgrade_amounts[2]["text"] = str(tower.speed_level)
+            self.upgrade_amounts[3]["text"] = str(tower.range_level)
+            self.upgrade_buttons[0]["text"] = str(tower.get_upgrade_cost("health"))
+            self.upgrade_buttons[1]["text"] = str(tower.get_upgrade_cost("damage"))
+            self.upgrade_buttons[2]["text"] = str(tower.get_upgrade_cost("speed"))
+            self.upgrade_buttons[3]["text"] = str(tower.get_upgrade_cost("range"))
+            for i in range(len(self.upgrade_buttons)):
+                if self.money < tower.get_upgrade_cost(["health", "damage", "speed", "range"][i]):
+                    self.upgrade_buttons[i]["state"] = "disabled"
+                else:
+                    self.upgrade_buttons[i]["state"] = "normal"
         self.root.update()
 
     def update_screen(self):
-        self.screen.fill(bg_color)
+        # self.screen.fill(bg_color)
+        self.screen.blit(background_image, (0, 0))
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
-            if t.hover:
+            if t.hover or t.selected:
                 pg.draw.circle(self.screen, red, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
         for e in self.enemies:
             self.screen.blit(e.image, e.pos)
@@ -132,7 +191,7 @@ class GameTop():
             self.tower_buttons[tower_index]["relief"] = "raised"
             return
         preview.fill((255, 255, 255, 180), None, pg.BLEND_RGBA_MULT)
-        preview.set_alpha(10)
+        # preview.set_alpha(10)
         pg.mouse.set_pos(self.screen.get_width() - 10, self.screen.get_height() / 2)
         clock = pg.time.Clock()
         placed = False
@@ -163,6 +222,28 @@ class GameTop():
         self.update_labels()
         self.tower_buttons[tower_index]["relief"] = "raised"
 
+    def upgrade_selected(self, attribute):
+        tower = self.get_selected()
+
+        if tower is not None:
+            self.money -= tower.get_upgrade_cost(attribute)
+            tower.upgrade(attribute)
+            self.update_labels()
+
+    def select_tower(self, tower):
+        self.upgrade_frame["text"] = tower.name
+        self.upgrade_frame.place(anchor="n", relx=0.5, rely=0.7)
+        self.update_labels()
+        for y in range(len(self.upgrade_labels)):
+            self.upgrade_labels[y].grid(row=y, column=0)
+
+        for y in range(len(self.upgrade_amounts)):
+            self.upgrade_amounts[y].grid(row=y, column=1)
+
+        for y in range(len(self.upgrade_buttons)):
+            self.upgrade_buttons[y].grid(row=y, column=2)
+        self.root.update()
+
     # Called when ► is pressed; Runs the next wave
     def play_wave(self):
         self.wave_button["text"] = "wave {0}\n...".format(self.wave)
@@ -179,6 +260,19 @@ class GameTop():
             for event in pg.event.get():
                 if event.type == pg.KEYDOWN:
                     wave_active = False
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        for t in self.towers:
+                            if t.hover:
+                                for t_ in self.towers:
+                                    t_.selected = False
+                                t.selected = True
+                                self.select_tower(t)
+                                break
+                            else:
+                                t.selected = False
+                                self.upgrade_frame.place_forget()
+                                self.root.update()
 
             # Listen for cursor hover over Tower
             mouse_pos = pg.mouse.get_pos()

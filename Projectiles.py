@@ -5,7 +5,10 @@ from Images import *
 
 
 class Projectile:
-    pass
+    def __init__(self, pos, vel, damage):
+        self.pos = V2(pos)
+        self.vel = V2(vel)
+        self.damage = damage
 
 
 class Arrow(Projectile):
@@ -13,11 +16,6 @@ class Arrow(Projectile):
     center_pos = (10, 10)
 
     speed = 8
-
-    def __init__(self, pos, vel, damage):
-        self.pos = V2(pos)
-        self.vel = V2(vel)
-        self.damage = damage
 
     def get_rect(self):
         return pg.Rect(self.pos.x, self.pos.y, 20, 20)
@@ -29,10 +27,15 @@ class Beam(Projectile):
 
     speed = 8
 
-    def __init__(self, pos, vel, damage):
-        self.pos = V2(pos)
-        self.vel = V2(vel)
-        self.damage = damage
+    def get_rect(self):
+        return pg.Rect(self.pos.x, self.pos.y, 20, 20)
+
+
+class Bullet(Projectile):
+    image = bullet_image
+    center_pos = (10, 10)
+
+    speed = 25
 
     def get_rect(self):
         return pg.Rect(self.pos.x, self.pos.y, 20, 20)
