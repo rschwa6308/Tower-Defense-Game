@@ -1,5 +1,7 @@
 import pygame as pg
 from pygame.math import Vector2 as V2
+import math
+from random import uniform
 
 from Images import *
 
@@ -13,6 +15,8 @@ class Orc(Enemy):
     image = orc_image
     center_pos = (25, 25)
 
+    speed = 1
+
     max_health = 600
     health = 600
     damage = 2
@@ -21,9 +25,14 @@ class Orc(Enemy):
 
     value = 30
 
-    def __init__(self, pos, vel):
+    def __init__(self, pos, vel=None):
         self.pos = V2(pos)
-        self.vel = V2(vel)
+        if vel is not None:
+            self.vel = V2(vel)
+        else:
+            angle = uniform(0, 2 * math.pi)
+            a = V2((math.cos(angle), math.sin(angle)))
+            self.vel = a / a.length() * self.speed          # Scale unit vector
 
     def get_center(self):
         return self.pos + self.center_pos

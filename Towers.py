@@ -18,14 +18,13 @@ class Tower:
 
     def get_upgrade_cost(self, attribute):
         if attribute == "health":
-            return self.health_level * 10
+            return int(round(10 * self.health_level + 1.3 ** (self.health_level - 1), -1)) # 10x + 1.3^(x - 1)
         elif attribute == "damage":
-            return self.damage_level * 10
+            return int(round(10 * self.damage_level + 1.3 ** (self.damage_level - 1), -1))  # 10x + 1.3^(x - 1)
         elif attribute == "speed":
-            return self.speed_level * 10
+            return int(round(10 * self.speed_level + 1.3 ** (self.speed_level - 1), -1))  # 10x + 1.3^(x - 1)
         elif attribute == "range":
-            return self.range_level * 10
-
+            return int(round(10 * self.range_level + 1.3 ** (self.range_level - 1), -1))  # 10x + 1.3^(x - 1)
 
 
 class Archer(Tower):
@@ -93,9 +92,10 @@ class Mage(Tower):
             self.damage *= 1.1
         elif attribute == "speed":
             self.speed_level += 1
+            self.cooldown *= 0.9
         elif attribute == "range":
             self.range_level += 1
-
+            self.range = int(self.range * 1.1)
 
 class EarthMage(Mage):
     def __init__(self, pos):
@@ -126,8 +126,10 @@ class Artillery(Tower):
             self.damage *= 1.1
         elif attribute == "speed":
             self.speed_level += 1
+            self.cooldown *= 0.9
         elif attribute == "range":
             self.range_level += 1
+            self.range = int(self.range * 1.1)
 
 
 class Sniper(Tower):
@@ -137,7 +139,7 @@ class Sniper(Tower):
 
     health = 10
     damage = 200
-    cooldown = .02
+    cooldown = 2
     range = 1000
     damage_types = ['single']
     projectile = Bullet
@@ -158,8 +160,10 @@ class Sniper(Tower):
             self.damage *= 1.1
         elif attribute == "speed":
             self.speed_level += 1
+            self.cooldown *= 0.9
         elif attribute == "range":
             self.range_level += 1
+            self.range = int(self.range * 1.1)
 
 
 tower_types = [Archer, Mage, Artillery, Sniper]

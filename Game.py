@@ -26,7 +26,7 @@ class GameTop():
 
 
         # For later reference
-        self.upgrade_frame = tk.LabelFrame(self.menu_frame, text="", font=("Candara", 20))
+        self.upgrade_frame = tk.LabelFrame(self.menu_frame, text="", font=("Candara", 15))
         self.upgrade_labels = [
             tk.Label(self.upgrade_frame, text="Health:", font=("Candara", 15)),
             tk.Label(self.upgrade_frame, text="Damage:", font=("Candara", 15)),
@@ -149,14 +149,15 @@ class GameTop():
                 self.tower_buttons[i]["state"] = "normal"
         tower = self.get_selected()
         if tower is not None:
+            self.upgrade_frame["text"] = tower.name + " Upgrades"
             self.upgrade_amounts[0]["text"] = str(tower.health_level)
             self.upgrade_amounts[1]["text"] = str(tower.damage_level)
             self.upgrade_amounts[2]["text"] = str(tower.speed_level)
             self.upgrade_amounts[3]["text"] = str(tower.range_level)
-            self.upgrade_buttons[0]["text"] = str(tower.get_upgrade_cost("health"))
-            self.upgrade_buttons[1]["text"] = str(tower.get_upgrade_cost("damage"))
-            self.upgrade_buttons[2]["text"] = str(tower.get_upgrade_cost("speed"))
-            self.upgrade_buttons[3]["text"] = str(tower.get_upgrade_cost("range"))
+            self.upgrade_buttons[0]["text"] = "$" + str(tower.get_upgrade_cost("health"))
+            self.upgrade_buttons[1]["text"] = "$" + str(tower.get_upgrade_cost("damage"))
+            self.upgrade_buttons[2]["text"] = "$" + str(tower.get_upgrade_cost("speed"))
+            self.upgrade_buttons[3]["text"] = "$" + str(tower.get_upgrade_cost("range"))
             for i in range(len(self.upgrade_buttons)):
                 if self.money < tower.get_upgrade_cost(["health", "damage", "speed", "range"][i]):
                     self.upgrade_buttons[i]["state"] = "disabled"
@@ -231,7 +232,6 @@ class GameTop():
             self.update_labels()
 
     def select_tower(self, tower):
-        self.upgrade_frame["text"] = tower.name
         self.upgrade_frame.place(anchor="n", relx=0.5, rely=0.7)
         self.update_labels()
         for y in range(len(self.upgrade_labels)):
@@ -249,7 +249,10 @@ class GameTop():
         self.wave_button["text"] = "wave {0}\n...".format(self.wave)
         self.wave_button["state"] = "disabled"
 
-        self.enemies = test_wave            # testing code
+        if len(waves) >= self.wave:                 # Generate waves automatically after predefined waves are exhausted
+            self.enemies = waves[self.wave - 1]
+        else:
+            self.enemies = [Orc((randint(0, 1400), 0)) for _ in range(10 * self.wave)]
         self.update_screen()
         wave_active = True
         clock = pg.time.Clock()
