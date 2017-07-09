@@ -30,6 +30,7 @@ class Tower:
 class Archer(Tower):
     name = "Archer"
     image = archer_image
+    dims = (70, 120)
     base_center_pos = (35, 104)
 
     health = 20
@@ -44,7 +45,7 @@ class Archer(Tower):
     def __init__(self, pos):
         self.pos = V2(pos)
         self.base_center = self.pos + self.base_center_pos
-        self.rect = pg.Rect(self.pos.x, self.pos.y, 70, 120)
+        self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])
 
     def upgrade(self, attribute):
         if attribute == "health":
@@ -61,12 +62,10 @@ class Archer(Tower):
             self.range = int(self.range * 1.1)
 
 
-
-
-
 class Mage(Tower):
     name = "Mage"
     image = mage_image
+    dims = (70, 120)
     base_center_pos = (35, 100)
 
     health = 15
@@ -81,7 +80,7 @@ class Mage(Tower):
     def __init__(self, pos):
         self.pos = V2(pos)
         self.base_center = self.pos + self.base_center_pos
-        self.rect = pg.Rect(self.pos.x, self.pos.y, 70, 120)
+        self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])
 
     def upgrade(self, attribute):
         if attribute == "health":
@@ -96,10 +95,6 @@ class Mage(Tower):
         elif attribute == "range":
             self.range_level += 1
             self.range = int(self.range * 1.1)
-
-class EarthMage(Mage):
-    def __init__(self, pos):
-        super().__init__(pos)
 
 
 class Artillery(Tower):
@@ -135,7 +130,8 @@ class Artillery(Tower):
 class Sniper(Tower):
     name = "Sniper"
     image = sniper_image
-    base_center_pos = (35, 104)
+    dims = [180, 96]
+    base_center_pos = (0, 15)
 
     health = 10
     damage = 200
@@ -149,7 +145,7 @@ class Sniper(Tower):
     def __init__(self, pos):
         self.pos = V2(pos)
         self.base_center = self.pos + self.base_center_pos
-        self.rect = pg.Rect(self.pos.x, self.pos.y, 70, 120)
+        self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])
 
     def upgrade(self, attribute):
         if attribute == "health":
@@ -167,9 +163,3 @@ class Sniper(Tower):
 
 
 tower_types = [Archer, Mage, Artillery, Sniper]
-
-
-if __name__ == "__main__":
-    test_arrow = Archer((4, 7))
-    test_arrow.health_level += 5
-    print(test_arrow.health_level)

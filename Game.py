@@ -171,7 +171,7 @@ class GameTop():
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
             if t.hover or t.selected:
-                pg.draw.circle(self.screen, red, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
+                pg.draw.circle(self.screen, range_color, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
         for e in self.enemies:
             self.screen.blit(e.image, e.pos)
             pg.draw.rect(self.screen, red, pg.Rect(e.pos.x + 2, e.pos.y - 15, int(48 * (float(e.health) / e.max_health)), 10), 0)
@@ -183,6 +183,7 @@ class GameTop():
         for b in self.tower_buttons:
             b["state"] = "disabled"
         self.tower_buttons[tower_index]["relief"] = "ridge"
+
         TowerType = tower_types[tower_index]
         try:
             preview = TowerType.image.copy()
@@ -192,28 +193,43 @@ class GameTop():
             self.tower_buttons[tower_index]["relief"] = "raised"
             return
         preview.fill((255, 255, 255, 180), None, pg.BLEND_RGBA_MULT)
-        # preview.set_alpha(10)
-        pg.mouse.set_pos(self.screen.get_width() - 10, self.screen.get_height() / 2)
+
+        pg.mouse.set_pos(self.screen.get_width() - 10, self.screen.get_height() / 2)        # Initialize mouse at edge
         clock = pg.time.Clock()
         placed = False
+        valid_location = True
         while not placed:
             clock.tick(60)
 
             for event in pg.event.get():
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        pos = pg.mouse.get_pos()
-                        self.towers.append(TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1])))
-                        self.update_screen()
-                        placed = True
-                        self.money -= TowerType.cost        # Pay for tower
+                        if valid_location:
+                            pos = pg.mouse.get_pos()
+                            self.towers.append(TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1])))
+                            self.update_screen()
+                            placed = True
+                            self.money -= TowerType.cost        # Pay for tower
                     if event.button == 3:
                         placed = True
 
             self.update_screen()
             pos = pg.mouse.get_pos()
+
+            # Determine if potential tower location is colliding with existing towers
+            valid_location = True
+            test_rec = pg.Rect(pos[0] - TowerType.base_center_pos[0],
+                               pos[1] - TowerType.base_center_pos[1],
+                               TowerType.dims[0], TowerType.dims[1])
+            for t in self.towers:
+                if test_rec.colliderect(t.rect):
+                    valid_location = False
+
             self.screen.blit(preview, (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
-            pg.draw.circle(self.screen, red, pos, TowerType.range, 2)
+            if valid_location:
+                pg.draw.circle(self.screen, green, pos, TowerType.range, 2)
+            else:
+                pg.draw.circle(self.screen, red, pos, TowerType.range, 2)
 
             self.root.update()
             pg.display.update()
