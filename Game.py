@@ -24,7 +24,6 @@ class GameTop():
         info_frame = tk.Frame(self.menu_frame)
         info_frame.place(anchor="n", relx=0.5, rely=0)
 
-
         # For later reference
         self.upgrade_frame = tk.LabelFrame(self.menu_frame, text="", font=("Candara", 15))
         self.upgrade_labels = [
@@ -45,6 +44,11 @@ class GameTop():
             tk.Button(self.upgrade_frame, text="$10", font=("Candara", 15), command=lambda: self.upgrade_selected("speed")),
             tk.Button(self.upgrade_frame, text="$10", font=("Candara", 15), command=lambda: self.upgrade_selected("range"))
         ]
+        modes = ["closest", "fastest", "strongest", "weakest"]
+        self.aim_mode = tk.StringVar()
+        self.aim_mode_buttons = [tk.Radiobutton(self.upgrade_frame, text=mode, variable=self.aim_mode, value=mode,
+                                 command=self.update_mode_selected, font=("Candara", 10)) for mode in modes]
+
 
         # Money and Health variables
         self.money = 300
@@ -142,27 +146,39 @@ class GameTop():
     def update_labels(self):
         self.money_label["text"] = "$: " + str(self.money)
         self.health_label["text"] = "♡: " + str(self.health)
+
         for i in range(len(tower_types)):
             if self.money < tower_types[i].cost:
                 self.tower_buttons[i]["state"] = "disabled"
             else:
                 self.tower_buttons[i]["state"] = "normal"
+
         tower = self.get_selected()
+
         if tower is not None:
             self.upgrade_frame["text"] = tower.name + " Upgrades"
             self.upgrade_amounts[0]["text"] = str(tower.health_level)
             self.upgrade_amounts[1]["text"] = str(tower.damage_level)
             self.upgrade_amounts[2]["text"] = str(tower.speed_level)
             self.upgrade_amounts[3]["text"] = str(tower.range_level)
+
             self.upgrade_buttons[0]["text"] = "$" + str(tower.get_upgrade_cost("health"))
             self.upgrade_buttons[1]["text"] = "$" + str(tower.get_upgrade_cost("damage"))
             self.upgrade_buttons[2]["text"] = "$" + str(tower.get_upgrade_cost("speed"))
             self.upgrade_buttons[3]["text"] = "$" + str(tower.get_upgrade_cost("range"))
+
             for i in range(len(self.upgrade_buttons)):
                 if self.money < tower.get_upgrade_cost(["health", "damage", "speed", "range"][i]):
                     self.upgrade_buttons[i]["state"] = "disabled"
                 else:
                     self.upgrade_buttons[i]["state"] = "normal"
+
+            for button in self.aim_mode_buttons:
+                if button["text"] == tower.aim_mode:
+                    button.select()
+                else:
+                    button.deselect()
+
         self.root.update()
 
     def update_screen(self):
@@ -216,7 +232,7 @@ class GameTop():
             self.update_screen()
             pos = pg.mouse.get_pos()
 
-            # Determine if potential tower location is colliding with existing towers
+            # Determine if potential tower location is colliding with existing towers or with walls
             valid_location = True
             test_rec = pg.Rect(pos[0] - TowerType.base_center_pos[0],
                                pos[1] - TowerType.base_center_pos[1],
@@ -224,6 +240,8 @@ class GameTop():
             for t in self.towers:
                 if test_rec.colliderect(t.rect):
                     valid_location = False
+            if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:
+                valid_location = False
 
             self.screen.blit(preview, (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
             if valid_location:
@@ -247,6 +265,11 @@ class GameTop():
             tower.upgrade(attribute)
             self.update_labels()
 
+    def update_mode_selected(self):
+        tower = self.get_selected()
+        if tower is not None:
+            tower.aim_mode = self.aim_mode.get()
+
     def select_tower(self, tower):
         self.upgrade_frame.place(anchor="n", relx=0.5, rely=0.7)
         self.update_labels()
@@ -259,6 +282,9 @@ class GameTop():
         for y in range(len(self.upgrade_buttons)):
             self.upgrade_buttons[y].grid(row=y, column=2)
         self.root.update()
+
+        for i in range(len(self.aim_mode_buttons)):
+            self.aim_mode_buttons[i].grid(row=int(4+i/2), column=int(i%2))
 
     # Called when ► is pressed; Runs the next wave
     def play_wave(self):
@@ -310,10 +336,15 @@ class GameTop():
                         in_range.append((e, distance))
 
                 if len(in_range) != 0:
-                    target = sorted(in_range, key=lambda x: x[1])[0][0]         # pick closest enemy
-                    # print("enemy {0} in range of tower {1}".format(e.name, t.name))
+                    if t.aim_mode == "closest":
+                        target = sorted(in_range, key=lambda x: x[1])[0][0]         # pick closest enemy
+                    elif t.aim_mode == "fastest":
+                        target = sorted(in_range, key=lambda x: x[0].speed)[0][0]
+                    elif t.aim_mode == "strongest":
+                        target = sorted(in_range, key=lambda x: x[0].health)[-1][0]
+                    elif t.aim_mode == "weakest":
+                        target = sorted(in_range, key=lambda x: x[0].health)[0][0]
                     if time.time() - t.last_attack_time > t.cooldown:
-                        # print("! {0} attacks {1} !".format(t.name, target.name))
                         t.last_attack_time = time.time()
                         # Aim Projectile at Enemy
                         displacement = target.get_center() - t.base_center
@@ -341,8 +372,8 @@ class GameTop():
             # Projectile movement
             for p in self.projectiles:
                 p.pos += p.vel
-                if p.pos.x < 0 or p.pos.x > 1400 - p.get_rect().width: p.vel.x *= -1        # TEMPORARY wall collision
-                if p.pos.y < 0 or p.pos.y > 900 - p.get_rect().height: p.vel.y *= -1        # TEMPORARY wall collision
+                # if p.pos.x < 0 or p.pos.x > 1400 - p.get_rect().width: p.vel.x *= -1        # TEMPORARY wall collision
+                # if p.pos.y < 0 or p.pos.y > 900 - p.get_rect().height: p.vel.y *= -1        # TEMPORARY wall collision
                 if max(p.pos) > 2000 or min(p.pos) < -100:
                     self.projectiles.remove(p)
 

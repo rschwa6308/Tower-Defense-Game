@@ -16,6 +16,8 @@ class Tower:
     hover = False
     selected = False
 
+    aim_mode = "closest"
+
     def get_upgrade_cost(self, attribute):
         if attribute == "health":
             return int(round(10 * self.health_level + 1.3 ** (self.health_level - 1), -1)) # 10x + 1.3^(x - 1)
