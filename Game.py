@@ -221,11 +221,20 @@ class GameTop():
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if valid_location:
+                            old = self.get_selected()
+                            if old is not None:
+                                old.selected = False
                             pos = pg.mouse.get_pos()
-                            self.towers.append(TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1])))
+                            new = TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
+                            self.towers.append(new)
+                            new.selected = True
+                            self.select_tower(new)
+
                             self.update_screen()
                             placed = True
                             self.money -= TowerType.cost        # Pay for tower
+
+
                     if event.button == 3:
                         placed = True
 
@@ -284,7 +293,7 @@ class GameTop():
         self.root.update()
 
         for i in range(len(self.aim_mode_buttons)):
-            self.aim_mode_buttons[i].grid(row=int(4+i/2), column=int(i%2))
+            self.aim_mode_buttons[i].grid(row=int(4+i/2), column=2*int(i%2))
 
     # Called when ► is pressed; Runs the next wave
     def play_wave(self):
