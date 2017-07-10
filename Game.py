@@ -27,27 +27,28 @@ class GameTop():
         # For later reference
         self.upgrade_frame = tk.LabelFrame(self.menu_frame, text="", font=("Candara", 15))
         self.upgrade_labels = [
-            tk.Label(self.upgrade_frame, text="Health:", font=("Candara", 15)),
-            tk.Label(self.upgrade_frame, text="Damage:", font=("Candara", 15)),
-            tk.Label(self.upgrade_frame, text="Speed:", font=("Candara", 15)),
-            tk.Label(self.upgrade_frame, text="Range:", font=("Candara", 15))
+            tk.Label(self.upgrade_frame, text="Health:", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="Damage:", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="Speed:", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="Range:", font=("Candara", 13))
         ]
         self.upgrade_amounts = [
-            tk.Label(self.upgrade_frame, text="", font=("Candara", 15)),
-            tk.Label(self.upgrade_frame, text="", font=("Candara", 15)),
-            tk.Label(self.upgrade_frame, text="", font=("Candara", 15)),
-            tk.Label(self.upgrade_frame, text="", font=("Candara", 15))
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 13))
         ]
         self.upgrade_buttons = [
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 15), command=lambda: self.upgrade_selected("health")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 15), command=lambda: self.upgrade_selected("damage")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 15), command=lambda: self.upgrade_selected("speed")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 15), command=lambda: self.upgrade_selected("range"))
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("health")),
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("damage")),
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("speed")),
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("range"))
         ]
         modes = ["closest", "fastest", "strongest", "weakest"]
         self.aim_mode = tk.StringVar()
         self.aim_mode_buttons = [tk.Radiobutton(self.upgrade_frame, text=mode, variable=self.aim_mode, value=mode,
                                  command=self.update_mode_selected, font=("Candara", 10)) for mode in modes]
+        self.kills_label = tk.Label(self.upgrade_frame, text="", font=("Candara", 10))
 
 
         # Money and Health variables
@@ -179,6 +180,8 @@ class GameTop():
                 else:
                     button.deselect()
 
+            self.kills_label["text"] = "kills: " + str(tower.kills)
+
         self.root.update()
 
     def update_screen(self):
@@ -233,7 +236,6 @@ class GameTop():
                             self.update_screen()
                             placed = True
                             self.money -= TowerType.cost        # Pay for tower
-
 
                     if event.button == 3:
                         placed = True
@@ -295,6 +297,8 @@ class GameTop():
         for i in range(len(self.aim_mode_buttons)):
             self.aim_mode_buttons[i].grid(row=int(4+i/2), column=2*int(i%2))
 
+        self.kills_label.grid(row=6, column=1)
+
     # Called when ► is pressed; Runs the next wave
     def play_wave(self):
         self.wave_button["text"] = "wave {0}\n...".format(self.wave)
@@ -353,12 +357,15 @@ class GameTop():
                         target = sorted(in_range, key=lambda x: x[0].health)[-1][0]
                     elif t.aim_mode == "weakest":
                         target = sorted(in_range, key=lambda x: x[0].health)[0][0]
+
                     if time.time() - t.last_attack_time > t.cooldown:
                         t.last_attack_time = time.time()
                         # Aim Projectile at Enemy
                         displacement = target.get_center() - t.base_center
-                        vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
-                        self.projectiles.append(t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage))
+                        vel = (displacement / displacement.length()) * t.projectile.speed           # scale unit vector
+                        proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
+                        proj.associate(t)
+                        self.projectiles.append(proj)
 
             # Projectile - Enemy collision
             for p in self.projectiles:
@@ -369,6 +376,7 @@ class GameTop():
                         if e.health <= 0:
                             self.enemies.remove(e)
                             self.money += e.value       # Collect value of enemy
+                            p.tower.kills += 1          # Iterate tower kill counter
                             self.update_labels()
                         break
 

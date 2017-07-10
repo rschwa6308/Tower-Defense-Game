@@ -10,6 +10,9 @@ class Projectile:
         self.vel = V2(vel)
         self.damage = damage
 
+    def associate(self, tower):
+        self.tower = tower
+
 
 class Arrow(Projectile):
     image = arrow_image

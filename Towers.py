@@ -12,6 +12,7 @@ class Tower:
     range_level = 1
 
     last_attack_time = 0
+    kills = 0
 
     hover = False
     selected = False
