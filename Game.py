@@ -57,13 +57,13 @@ class GameTop():
 
         # Money and Health labels
         self.money_label = tk.Label(info_frame, text="$: " + str(self.money), font=("Candara", 20))
-        self.health_label = tk.Label(info_frame, text="♡: " + str(self.health), font=("Candara", 20))
+        self.health_label = tk.Label(info_frame, text="<3: " + str(self.health), font=("Candara", 20))
         self.money_label.grid(row=0)
         self.health_label.grid(row=1)
 
         # Wave count and play button
         self.wave = 1
-        self.wave_button = tk.Button(info_frame, text="wave 1\n►", font=("Candara", 15), width=6, height=2,
+        self.wave_button = tk.Button(info_frame, text="wave 1\nstart", font=("Candara", 15), width=6, height=2,
                                      command=self.play_wave)
         self.wave_button.grid(row=2, column=0)
 
@@ -146,7 +146,7 @@ class GameTop():
 
     def update_labels(self):
         self.money_label["text"] = "$: " + str(self.money)
-        self.health_label["text"] = "♡: " + str(self.health)
+        self.health_label["text"] = "<3: " + str(self.health)
 
         for i in range(len(tower_types)):
             if self.money < tower_types[i].cost:
@@ -299,7 +299,7 @@ class GameTop():
 
         self.kills_label.grid(row=6, column=1)
 
-    # Called when ► is pressed; Runs the next wave
+    # Called when 'play' is pressed; Runs the next wave
     def play_wave(self):
         self.wave_button["text"] = "wave {0}\n...".format(self.wave)
         self.wave_button["state"] = "disabled"
@@ -411,7 +411,7 @@ class GameTop():
         pg.display.update()
 
         self.wave += 1
-        self.wave_button["text"] = "wave {0}\n►".format(self.wave)
+        self.wave_button["text"] = "wave {0}\nstart".format(self.wave)
         self.wave_button["state"] = "normal"
 
 
