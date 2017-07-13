@@ -36,6 +36,7 @@ class Archer(Tower):
     dims = (70, 120)
     base_center_pos = (35, 104)
 
+    max_health = 20
     health = 20
     damage = 100
     cooldown = 1
@@ -71,6 +72,7 @@ class Mage(Tower):
     dims = (70, 120)
     base_center_pos = (35, 100)
 
+    max_health = 15
     health = 15
     damage = 200
     cooldown = 1
@@ -104,6 +106,7 @@ class Artillery(Tower):
     name = "Artillery"
     image = None
 
+    max_health = 50
     health = 50
     damage = 200
     cooldown = 2
@@ -136,6 +139,7 @@ class Sniper(Tower):
     dims = [180, 96]
     base_center_pos = (0, 15)
 
+    max_health = 10
     health = 10
     damage = 200
     cooldown = 2

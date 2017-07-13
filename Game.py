@@ -50,7 +50,6 @@ class GameTop():
                                  command=self.update_mode_selected, font=("Candara", 10)) for mode in modes]
         self.kills_label = tk.Label(self.upgrade_frame, text="", font=("Candara", 10))
 
-
         # Money and Health variables
         self.money = 300
         self.health = 100
@@ -187,14 +186,19 @@ class GameTop():
     def update_screen(self):
         # self.screen.fill(bg_color)
         self.screen.blit(background_image, (0, 0))
+
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
+            pg.draw.rect(self.screen, red, pg.Rect(t.pos.x + 4, t.pos.y - 15, int((t.dims[0] - 6) * (float(t.health) / t.max_health)), 10), 0)
+            pg.draw.rect(self.screen, black, pg.Rect(t.pos.x + 2, t.pos.y - 15, t.dims[0] - 4, 10), 2)
             if t.hover or t.selected:
                 pg.draw.circle(self.screen, range_color, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
+
         for e in self.enemies:
             self.screen.blit(e.image, e.pos)
             pg.draw.rect(self.screen, red, pg.Rect(e.pos.x + 2, e.pos.y - 15, int(48 * (float(e.health) / e.max_health)), 10), 0)
             pg.draw.rect(self.screen, black, pg.Rect(e.pos.x, e.pos.y - 15, 50, 10), 2)
+
         for p in self.projectiles:
             self.screen.blit(p.image, p.pos)
 
@@ -230,6 +234,7 @@ class GameTop():
                             pos = pg.mouse.get_pos()
                             new = TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
                             self.towers.append(new)
+                            self.towers.sort(key=lambda t: t.pos.y)    # Sort towers based on y position (for rendering)
                             new.selected = True
                             self.select_tower(new)
 
