@@ -1,4 +1,3 @@
-import pygame as pg
 from pygame.math import Vector2 as V2
 import math
 from random import uniform
@@ -25,14 +24,24 @@ class Orc(Enemy):
 
     value = 30
 
-    def __init__(self, pos, vel=None):
-        self.pos = V2(pos)
-        if vel is not None:
-            self.vel = V2(vel)
+    def __init__(self, pos, vel):
+        if pos == "edge":
+            angle = uniform(0, 2 * math.pi)
+            self.pos = V2(700 + 1200 * math.cos(angle), 450 + 1000 * math.sin(angle))
+            self.pos += V2(uniform(-200, 200), uniform(-200, 200))
         else:
+            self.pos = V2(pos)
+
+        if vel == "random":
             angle = uniform(0, 2 * math.pi)
             a = V2((math.cos(angle), math.sin(angle)))
-            self.vel = a / a.length() * self.speed          # Scale unit vector
+            self.vel = a / a.length() * self.speed  # Scale unit vector
+        elif vel == "center":
+            rel_pos = V2(self.pos.x - 700, self.pos.y - 450)
+            rel_pos += V2(uniform(-150, 150), uniform(-150, 150))           # Introduce slight random variance
+            self.vel = rel_pos / rel_pos.length() * self.speed * -1
+        else:
+            self.vel = V2(vel)
 
     def get_center(self):
         return self.pos + self.center_pos

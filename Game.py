@@ -312,8 +312,8 @@ class GameTop():
         if len(waves) >= self.wave:                 # Generate waves automatically after predefined waves are exhausted
             self.enemies = waves[self.wave - 1]
         else:
-            self.enemies = [Orc((randint(0, 1400), 0)) for _ in range(10 * self.wave)]
-        self.update_screen()
+            self.enemies = [Orc(pos="edge", vel="center") for _ in range(10 * self.wave)]
+
         wave_active = True
         clock = pg.time.Clock()
         while wave_active:
@@ -349,9 +349,10 @@ class GameTop():
             for t in self.towers:
                 in_range = []
                 for e in self.enemies:
-                    distance = t.base_center.distance_to(e.get_center())
-                    if distance < t.range:
-                        in_range.append((e, distance))
+                    if not (min(e.pos) < 0 or e.pos.x > 1400 or e.pos.y > 900):         # Check if enemy is in room
+                        distance = t.base_center.distance_to(e.get_center())
+                        if distance < t.range:
+                            in_range.append((e, distance))
 
                 if len(in_range) != 0:
                     if t.aim_mode == "closest":
@@ -388,8 +389,13 @@ class GameTop():
             # Enemy movement
             for e in self.enemies:
                 e.pos += e.vel
-                if e.pos.x < 0 or e.pos.x > 1400 - e.get_rect().width: e.vel.x *= -1        # TEMPORARY wall collision
-                if e.pos.y < 0 or e.pos.y > 900 - e.get_rect().height: e.vel.y *= -1        # TEMPORARY wall collision
+                # TEMPORARY wall collision
+                if (e.vel.x > 0) == (e.pos.x - 700 > 0):                                    # Allow enemies to enter
+                    if e.pos.x < 0 or e.pos.x > 1400 - e.get_rect().width: e.vel.x *= -1
+                if (e.vel.y > 0) == (e.pos.y - 450 > 0):                                    # Allow enemies to enter
+                    if e.pos.y < 0 or e.pos.y > 900 - e.get_rect().height: e.vel.y *= -1
+
+            self.enemies.sort(key=lambda e: e.pos.y)        # Sort enemies for proper rendering order
 
             # Projectile movement
             for p in self.projectiles:

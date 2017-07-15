@@ -3,10 +3,11 @@ from random import *
 from Enemies import *
 
 
-test_wave = [Orc((randint(1, 1350), 0)) for _ in range(10)]
+test_wave = [Orc(pos="edge", vel="center") for _ in range(50)]
+
 
 waves = [
-    [Orc((randint(0, 1400), 0)) for _ in range(3)],
-    [Orc((randint(0, 1400), 0)) for _ in range(10)],
-    [Orc((randint(0, 1400), 0)) for _ in range(30)]
+    [Orc(pos="edge", vel="center") for _ in range(3)],
+    [Orc(pos="edge", vel="center") for _ in range(10)],
+    [Orc(pos="edge", vel="center") for _ in range(30)]
 ]

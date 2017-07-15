@@ -55,6 +55,7 @@ class Archer(Tower):
         if attribute == "health":
             self.health_level += 1
             self.health *= 1.1
+            self.max_health *= 1.1
         elif attribute == "damage":
             self.damage_level += 1
             self.damage *= 1.1
@@ -91,6 +92,7 @@ class Mage(Tower):
         if attribute == "health":
             self.health_level += 1
             self.health *= 1.1
+            self.max_health *= 1.1
         elif attribute == "damage":
             self.damage_level += 1
             self.damage *= 1.1
@@ -122,6 +124,7 @@ class Artillery(Tower):
         if attribute == "health":
             self.health_level += 1
             self.health *= 1.1
+            self.max_health *= 1.1
         elif attribute == "damage":
             self.damage_level += 1
             self.damage *= 1.1
@@ -158,6 +161,7 @@ class Sniper(Tower):
         if attribute == "health":
             self.health_level += 1
             self.health *= 1.1
+            self.max_health *= 1.1
         elif attribute == "damage":
             self.damage_level += 1
             self.damage *= 1.1
