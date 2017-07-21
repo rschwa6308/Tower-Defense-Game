@@ -101,6 +101,9 @@ class GameTop():
         self.screen = pg.display.set_mode((1400, 900))
         self.update_screen()
 
+        # Update the labels
+        self.update_labels()
+
     def mainloop(self):
         clock = pg.time.Clock()
         while self.alive:
@@ -312,7 +315,7 @@ class GameTop():
         if len(waves) >= self.wave:                 # Generate waves automatically after predefined waves are exhausted
             self.enemies = waves[self.wave - 1]
         else:
-            self.enemies = [Orc(pos="edge", vel="center") for _ in range(10 * self.wave)]
+            self.enemies = get_wave(self.wave)
 
         wave_active = True
         clock = pg.time.Clock()
@@ -321,8 +324,6 @@ class GameTop():
 
             # Listen for user input
             for event in pg.event.get():
-                if event.type == pg.KEYDOWN:
-                    wave_active = False
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         for t in self.towers:
@@ -394,6 +395,9 @@ class GameTop():
                     if e.pos.x < 0 or e.pos.x > 1400 - e.get_rect().width: e.vel.x *= -1
                 if (e.vel.y > 0) == (e.pos.y - 450 > 0):                                    # Allow enemies to enter
                     if e.pos.y < 0 or e.pos.y > 900 - e.get_rect().height: e.vel.y *= -1
+
+                # TODO: Add Enemy - Tower collision here
+
 
             self.enemies.sort(key=lambda e: e.pos.y)        # Sort enemies for proper rendering order
 

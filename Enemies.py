@@ -8,22 +8,6 @@ from Images import *
 class Enemy:
     last_attack_time = 0
 
-
-class Orc(Enemy):
-    name = "Orc"
-    image = orc_image
-    center_pos = (25, 25)
-
-    speed = 1
-
-    max_health = 600
-    health = 600
-    damage = 2
-    cooldown = 1
-    range = 50
-
-    value = 30
-
     def __init__(self, pos, vel):
         if pos == "edge":
             angle = uniform(0, 2 * math.pi)
@@ -48,3 +32,35 @@ class Orc(Enemy):
 
     def get_rect(self):
         return pg.Rect(self.pos.x, self.pos.y, 50, 50)
+
+
+class Orc(Enemy):
+    name = "Orc"
+    image = orc_image
+    center_pos = (25, 25)
+
+    speed = 1
+
+    max_health = 600
+    health = 600
+    damage = 2
+    cooldown = 1
+    range = 50
+
+    value = 10
+
+
+class Tank(Enemy):
+    name = "Tank"
+    image = tank_image
+    center_pos = (25, 25)
+
+    speed = 1
+
+    max_health = 1000
+    health = 1000
+    damage = 5
+    cooldown = 5
+    range = 50
+
+    value = 30

@@ -44,7 +44,7 @@ class Archer(Tower):
     damage_types = ['single']
     projectile = Arrow
 
-    cost = 20
+    cost = 40
 
     def __init__(self, pos):
         self.pos = V2(pos)
@@ -81,7 +81,7 @@ class Mage(Tower):
     damage_types = ['splash']
     projectile = Beam
 
-    cost = 40
+    cost = 60
 
     def __init__(self, pos):
         self.pos = V2(pos)
@@ -150,7 +150,7 @@ class Sniper(Tower):
     damage_types = ['single']
     projectile = Bullet
 
-    cost = 100
+    cost = 500
 
     def __init__(self, pos):
         self.pos = V2(pos)

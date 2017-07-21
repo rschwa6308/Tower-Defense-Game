@@ -25,6 +25,7 @@ mage_image = load("fire_mage_tower")
 sniper_image = load("sniper_tower")
 
 orc_image = load("orc")
+tank_image = load("tank")
 
 arrow_image = load("arrow")
 beam_image = load("beam")

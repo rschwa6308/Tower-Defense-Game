@@ -9,5 +9,9 @@ test_wave = [Orc(pos="edge", vel="center") for _ in range(50)]
 waves = [
     [Orc(pos="edge", vel="center") for _ in range(3)],
     [Orc(pos="edge", vel="center") for _ in range(10)],
-    [Orc(pos="edge", vel="center") for _ in range(30)]
+    [Orc(pos="edge", vel="center") for _ in range(30)] + [Tank(pos="edge", vel="center")]
 ]
+
+def get_wave(number):
+    return [Orc(pos="edge", vel="center") for _ in range(10 * number)] + \
+           [Tank(pos="edge", vel="center") for _ in range(2 * number)]
