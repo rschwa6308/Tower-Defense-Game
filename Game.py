@@ -251,13 +251,16 @@ class GameTop():
             self.update_screen()
             pos = pg.mouse.get_pos()
 
-            # Determine if potential tower location is colliding with existing towers or with walls
+            # Determine if potential tower location is colliding with existing towers or with walls or with enemies
             valid_location = True
             test_rec = pg.Rect(pos[0] - TowerType.base_center_pos[0],
                                pos[1] - TowerType.base_center_pos[1],
                                TowerType.dims[0], TowerType.dims[1])
             for t in self.towers:
                 if test_rec.colliderect(t.rect):
+                    valid_location = False
+            for e in self.enemies:
+                if test_rec.colliderect(e.get_rect()):
                     valid_location = False
             if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:
                 valid_location = False
@@ -324,6 +327,9 @@ class GameTop():
 
             # Listen for user input
             for event in pg.event.get():
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        wave_active = False
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         for t in self.towers:
@@ -354,6 +360,7 @@ class GameTop():
                         distance = t.base_center.distance_to(e.get_center())
                         if distance < t.range:
                             in_range.append((e, distance))
+                target = None
 
                 if len(in_range) != 0:
                     if t.aim_mode == "closest":
@@ -396,8 +403,22 @@ class GameTop():
                 if (e.vel.y > 0) == (e.pos.y - 450 > 0):                                    # Allow enemies to enter
                     if e.pos.y < 0 or e.pos.y > 900 - e.get_rect().height: e.vel.y *= -1
 
-                # TODO: Add Enemy - Tower collision here
-
+                # TODO: Optimize plz
+                # Enemy - Tower collision
+                e_rect = e.get_rect()
+                for t in self.towers:
+                    if e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y, 1, t.dims[1])):                     # Left
+                        e.vel.x *= -1
+                        e.pos.x -= 1
+                    elif e_rect.colliderect(pg.Rect(t.pos.x + t.dims[0], t.pos.y, 1, t.dims[1])):       # Right
+                        e.vel.x *= -1
+                        e.pos.x += 1
+                    if e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y, t.dims[0], 1)):                   # Top
+                        e.vel.y *= -1
+                        e.pos.y -= 1
+                    elif e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y + t.dims[1], t.dims[0], 1)):       # Bottom
+                        e.vel.y *= -1
+                        e.pos.y += 1
 
             self.enemies.sort(key=lambda e: e.pos.y)        # Sort enemies for proper rendering order
 
