@@ -21,13 +21,13 @@ class Tower:
 
     def get_upgrade_cost(self, attribute):
         if attribute == "health":
-            return int(round(10 * self.health_level + 1.3 ** (self.health_level - 1), -1)) # 10x + 1.3^(x - 1)
+            return int(round(30 * self.health_level + 1.3 ** (self.health_level - 1), -1)) # 30x + 1.3^(x - 1)
         elif attribute == "damage":
-            return int(round(10 * self.damage_level + 1.3 ** (self.damage_level - 1), -1))  # 10x + 1.3^(x - 1)
+            return int(round(30 * self.damage_level + 1.3 ** (self.damage_level - 1), -1))  # 30x + 1.3^(x - 1)
         elif attribute == "speed":
-            return int(round(10 * self.speed_level + 1.3 ** (self.speed_level - 1), -1))  # 10x + 1.3^(x - 1)
+            return int(round(30 * self.speed_level + 1.3 ** (self.speed_level - 1), -1))  # 30x + 1.3^(x - 1)
         elif attribute == "range":
-            return int(round(10 * self.range_level + 1.3 ** (self.range_level - 1), -1))  # 10x + 1.3^(x - 1)
+            return int(round(30 * self.range_level + 1.3 ** (self.range_level - 1), -1))  # 30x + 1.3^(x - 1)
 
 
 class Archer(Tower):

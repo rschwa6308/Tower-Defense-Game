@@ -1,6 +1,7 @@
 import tkinter as tk
 import time
 
+from Base import *
 from Towers import *
 from Colors import *
 from Waves import *
@@ -89,6 +90,7 @@ class GameTop():
             self.tower_buttons[i].grid(row=i)
 
         # Instantiate game variables
+        self.base = Base((1400/2, 900/2))
         self.towers = []
         self.enemies = []
         self.projectiles = []
@@ -205,6 +207,10 @@ class GameTop():
         for p in self.projectiles:
             self.screen.blit(p.image, p.pos)
 
+        self.screen.blit(self.base.image, self.base.pos)
+        pg.draw.rect(self.screen, red, pg.Rect(self.base.pos.x + 4, self.base.pos.y - 15, int((self.base.dims[0] - 6) * (float(self.base.health) / self.base.max_health)), 10), 0)
+        pg.draw.rect(self.screen, black, pg.Rect(self.base.pos.x + 2, self.base.pos.y - 15, self.base.dims[0] - 4, 10), 2)
+
     def place_tower(self, tower_index):
         for b in self.tower_buttons:
             b["state"] = "disabled"
@@ -267,7 +273,7 @@ class GameTop():
 
             self.screen.blit(preview, (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
             if valid_location:
-                pg.draw.circle(self.screen, green, pos, TowerType.range, 2)
+                pg.draw.circle(self.screen, black, pos, TowerType.range, 2)
             else:
                 pg.draw.circle(self.screen, red, pos, TowerType.range, 2)
 
@@ -420,6 +426,15 @@ class GameTop():
                         e.vel.y *= -1
                         e.pos.y += 1
 
+                # Enemy - Base interaction
+                if e_rect.colliderect(self.base.rect):
+                    e.vel = V2((0, 0))
+                    if time.time() - e.last_attack_time > e.cooldown:
+                        self.base.health -= e.damage
+                        if self.base.health <= 0:
+                            wave_active = False
+                            # TODO: Add death screen
+
             self.enemies.sort(key=lambda e: e.pos.y)        # Sort enemies for proper rendering order
 
             # Projectile movement
@@ -441,6 +456,9 @@ class GameTop():
             self.update_screen()
             pg.display.update()
 
+        for t in self.towers:
+            t.health = t.max_health
+        self.base.health = self.base.max_health
         self.enemies = []
         self.projectiles = []
         self.update_screen()

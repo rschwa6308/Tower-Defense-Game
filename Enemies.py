@@ -44,7 +44,7 @@ class Orc(Enemy):
     max_health = 600
     health = 600
     damage = 2
-    cooldown = 1
+    cooldown = 2
     range = 50
 
     value = 10

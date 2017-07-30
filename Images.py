@@ -19,6 +19,7 @@ for y in range(900):
 def load(name):
     return pg.image.load(os.path.join("Assets", name + ".png"))
 
+base_image = load("base")
 
 archer_image = load("archer_tower")
 mage_image = load("fire_mage_tower")
