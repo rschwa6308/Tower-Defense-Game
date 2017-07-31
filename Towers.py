@@ -10,6 +10,7 @@ class Tower:
     damage_level = 1
     speed_level = 1
     range_level = 1
+    regen_level = 1
 
     last_attack_time = 0
     kills = 0
@@ -28,6 +29,8 @@ class Tower:
             return int(round(30 * self.speed_level + 1.3 ** (self.speed_level - 1), -1))  # 30x + 1.3^(x - 1)
         elif attribute == "range":
             return int(round(30 * self.range_level + 1.3 ** (self.range_level - 1), -1))  # 30x + 1.3^(x - 1)
+        elif attribute == "regen":
+            return int(round(100 * self.regen_level + 1.3 ** (self.regen_level - 1), -1))  # 100x + 1.3^(x - 1)
 
 
 class Archer(Tower):
@@ -41,6 +44,7 @@ class Archer(Tower):
     damage = 100
     cooldown = 1
     range = 250
+    regen = 0
     damage_types = ['single']
     projectile = Arrow
 
@@ -65,6 +69,9 @@ class Archer(Tower):
         elif attribute == "range":
             self.range_level += 1
             self.range = int(self.range * 1.1)
+        elif attribute == "regen":
+            self.regen_level += 1
+            self.regen += 1
 
 
 class Mage(Tower):
@@ -78,6 +85,7 @@ class Mage(Tower):
     damage = 200
     cooldown = 1
     range = 150
+    regen = 0
     damage_types = ['splash']
     projectile = Beam
 
@@ -102,6 +110,9 @@ class Mage(Tower):
         elif attribute == "range":
             self.range_level += 1
             self.range = int(self.range * 1.1)
+        elif attribute == "regen":
+            self.regen_level += 1
+            self.regen += 1
 
 
 class Artillery(Tower):
@@ -113,6 +124,7 @@ class Artillery(Tower):
     damage = 200
     cooldown = 2
     range = 150
+    regen = 0
     damage_types = ['splash']
 
     cost = 100
@@ -134,6 +146,9 @@ class Artillery(Tower):
         elif attribute == "range":
             self.range_level += 1
             self.range = int(self.range * 1.1)
+        elif attribute == "regen":
+            self.regen_level += 1
+            self.regen += 1
 
 
 class Sniper(Tower):
@@ -147,6 +162,7 @@ class Sniper(Tower):
     damage = 200
     cooldown = 2
     range = 1000
+    regen = 0
     damage_types = ['single']
     projectile = Bullet
 
@@ -171,6 +187,9 @@ class Sniper(Tower):
         elif attribute == "range":
             self.range_level += 1
             self.range = int(self.range * 1.1)
+        elif attribute == "regen":
+            self.regen_level += 1
+            self.regen += 1
 
 
 tower_types = [Archer, Mage, Artillery, Sniper]

@@ -31,9 +31,11 @@ class GameTop():
             tk.Label(self.upgrade_frame, text="Health:", font=("Candara", 13)),
             tk.Label(self.upgrade_frame, text="Damage:", font=("Candara", 13)),
             tk.Label(self.upgrade_frame, text="Speed:", font=("Candara", 13)),
-            tk.Label(self.upgrade_frame, text="Range:", font=("Candara", 13))
+            tk.Label(self.upgrade_frame, text="Range:", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="Regen:", font=("Candara", 13))
         ]
         self.upgrade_amounts = [
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
             tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
             tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
             tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
@@ -43,7 +45,8 @@ class GameTop():
             tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("health")),
             tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("damage")),
             tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("speed")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("range"))
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("range")),
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("regen"))
         ]
         modes = ["closest", "fastest", "strongest", "weakest"]
         self.aim_mode = tk.StringVar()
@@ -166,14 +169,16 @@ class GameTop():
             self.upgrade_amounts[1]["text"] = str(tower.damage_level)
             self.upgrade_amounts[2]["text"] = str(tower.speed_level)
             self.upgrade_amounts[3]["text"] = str(tower.range_level)
+            self.upgrade_amounts[4]["text"] = str(tower.regen_level)
 
             self.upgrade_buttons[0]["text"] = "$" + str(tower.get_upgrade_cost("health"))
             self.upgrade_buttons[1]["text"] = "$" + str(tower.get_upgrade_cost("damage"))
             self.upgrade_buttons[2]["text"] = "$" + str(tower.get_upgrade_cost("speed"))
             self.upgrade_buttons[3]["text"] = "$" + str(tower.get_upgrade_cost("range"))
+            self.upgrade_buttons[4]["text"] = "$" + str(tower.get_upgrade_cost("regen"))
 
             for i in range(len(self.upgrade_buttons)):
-                if self.money < tower.get_upgrade_cost(["health", "damage", "speed", "range"][i]):
+                if self.money < tower.get_upgrade_cost(["health", "damage", "speed", "range", "regen"][i]):
                     self.upgrade_buttons[i]["state"] = "disabled"
                 else:
                     self.upgrade_buttons[i]["state"] = "normal"
@@ -299,7 +304,7 @@ class GameTop():
             tower.aim_mode = self.aim_mode.get()
 
     def select_tower(self, tower):
-        self.upgrade_frame.place(anchor="n", relx=0.5, rely=0.7)
+        self.upgrade_frame.place(anchor="n", relx=0.5, rely=0.65)
         self.update_labels()
         for y in range(len(self.upgrade_labels)):
             self.upgrade_labels[y].grid(row=y, column=0)
@@ -312,9 +317,9 @@ class GameTop():
         self.root.update()
 
         for i in range(len(self.aim_mode_buttons)):
-            self.aim_mode_buttons[i].grid(row=int(4+i/2), column=2*int(i%2))
+            self.aim_mode_buttons[i].grid(row=int(5+i/2), column=2*int(i%2))
 
-        self.kills_label.grid(row=6, column=1)
+        self.kills_label.grid(row=7, column=1)
 
     # Called when 'play' is pressed; Runs the next wave
     def play_wave(self):
@@ -358,27 +363,31 @@ class GameTop():
                 else:
                     t.hover = False
 
+            # Tower Regen
+            for t in self.towers:
+                t.health = min(t.health + t.regen / 100.0, t.max_health)
+
             # Tower - Enemy interaction
             for t in self.towers:
-                in_range = []
-                for e in self.enemies:
-                    if not (min(e.pos) < 0 or e.pos.x > 1400 or e.pos.y > 900):         # Check if enemy is in room
-                        distance = t.base_center.distance_to(e.get_center())
-                        if distance < t.range:
-                            in_range.append((e, distance))
-                target = None
+                if time.time() - t.last_attack_time > t.cooldown:
+                    in_range = []
+                    for e in self.enemies:
+                        if not (min(e.pos) < 0 or e.pos.x > 1400 or e.pos.y > 900):         # Check if enemy is in room
+                            distance = t.base_center.distance_to(e.get_center())
+                            if distance < t.range:
+                                in_range.append((e, distance))
+                    target = None
 
-                if len(in_range) != 0:
-                    if t.aim_mode == "closest":
-                        target = sorted(in_range, key=lambda x: x[1])[0][0]         # pick closest enemy
-                    elif t.aim_mode == "fastest":
-                        target = sorted(in_range, key=lambda x: x[0].speed)[0][0]
-                    elif t.aim_mode == "strongest":
-                        target = sorted(in_range, key=lambda x: x[0].health)[-1][0]
-                    elif t.aim_mode == "weakest":
-                        target = sorted(in_range, key=lambda x: x[0].health)[0][0]
+                    if len(in_range) != 0:
+                        if t.aim_mode == "closest":
+                            target = sorted(in_range, key=lambda x: x[1])[0][0]         # pick closest enemy
+                        elif t.aim_mode == "fastest":
+                            target = sorted(in_range, key=lambda x: x[0].speed)[0][0]
+                        elif t.aim_mode == "strongest":
+                            target = sorted(in_range, key=lambda x: x[0].health)[-1][0]
+                        elif t.aim_mode == "weakest":
+                            target = sorted(in_range, key=lambda x: x[0].health)[0][0]
 
-                    if time.time() - t.last_attack_time > t.cooldown:
                         t.last_attack_time = time.time()
                         # Aim Projectile at Enemy
                         displacement = target.get_center() - t.base_center
@@ -409,22 +418,31 @@ class GameTop():
                 if (e.vel.y > 0) == (e.pos.y - 450 > 0):                                    # Allow enemies to enter
                     if e.pos.y < 0 or e.pos.y > 900 - e.get_rect().height: e.vel.y *= -1
 
-                # TODO: Optimize plz
                 # Enemy - Tower collision
                 e_rect = e.get_rect()
                 for t in self.towers:
-                    if e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y, 1, t.dims[1])):                     # Left
-                        e.vel.x *= -1
-                        e.pos.x -= 1
-                    elif e_rect.colliderect(pg.Rect(t.pos.x + t.dims[0], t.pos.y, 1, t.dims[1])):       # Right
-                        e.vel.x *= -1
-                        e.pos.x += 1
-                    if e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y, t.dims[0], 1)):                   # Top
-                        e.vel.y *= -1
-                        e.pos.y -= 1
-                    elif e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y + t.dims[1], t.dims[0], 1)):       # Bottom
-                        e.vel.y *= -1
-                        e.pos.y += 1
+                    # if e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y, 1, t.dims[1])):                     # Left
+                    #     e.vel.x *= -1
+                    #     e.pos.x -= 1
+                    # elif e_rect.colliderect(pg.Rect(t.pos.x + t.dims[0], t.pos.y, 1, t.dims[1])):       # Right
+                    #     e.vel.x *= -1
+                    #     e.pos.x += 1
+                    # if e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y, t.dims[0], 1)):                   # Top
+                    #     e.vel.y *= -1
+                    #     e.pos.y -= 1
+                    # elif e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y + t.dims[1], t.dims[0], 1)):       # Bottom
+                    #     e.vel.y *= -1
+                    #     e.pos.y += 1
+                    if e_rect.colliderect(t.rect):
+                        e.vel = V2((0, 0))
+                        if time.time() - e.last_attack_time > e.cooldown:
+                            e.last_attack_time = time.time()
+                            t.health -= e.damage
+                            if t.health <= 0:
+                                self.towers.remove(t)
+                                for e_ in self.enemies:
+                                    if e_.get_rect().colliderect(t.rect):
+                                        e_.vel = e.starting_vel
 
                 # Enemy - Base interaction
                 if e_rect.colliderect(self.base.rect):

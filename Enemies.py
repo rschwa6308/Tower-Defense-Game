@@ -26,6 +26,7 @@ class Enemy:
             self.vel = rel_pos / rel_pos.length() * self.speed * -1
         else:
             self.vel = V2(vel)
+        self.starting_vel = V2(self.vel)
 
     def get_center(self):
         return self.pos + self.center_pos

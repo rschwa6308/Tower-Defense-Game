@@ -9,8 +9,8 @@ class Base:
     image = base_image
     dims = (150, 100)
 
-    max_health = 10000
-    health = 10000
+    max_health = 100000
+    health = 100000
 
     def __init__(self, center_pos):
         self.pos = V2(center_pos[0] - self.dims[0] / 2, center_pos[1] - self.dims[1] / 2)
