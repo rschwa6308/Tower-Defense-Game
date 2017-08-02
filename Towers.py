@@ -73,6 +73,11 @@ class Archer(Tower):
             self.regen_level += 1
             self.regen += 1
 
+    def get_loot_value(self):
+        return self.cost + \
+               10 * (self.health_level + self.damage_level + self.speed_level + self.range_level - 4) + \
+               100 * (self.regen_level - 1)
+
 
 class Mage(Tower):
     name = "Mage"
@@ -114,6 +119,11 @@ class Mage(Tower):
             self.regen_level += 1
             self.regen += 1
 
+    def get_loot_value(self):
+        return self.cost + \
+               10 * (self.health_level + self.damage_level + self.speed_level + self.range_level - 4) + \
+               100 * (self.regen_level - 1)
+
 
 class Artillery(Tower):
     name = "Artillery"
@@ -150,6 +160,11 @@ class Artillery(Tower):
             self.regen_level += 1
             self.regen += 1
 
+    def get_loot_value(self):
+        return self.cost + \
+               10 * (self.health_level + self.damage_level + self.speed_level + self.range_level - 4) + \
+               100 * (self.regen_level - 1)
+
 
 class Sniper(Tower):
     name = "Sniper"
@@ -158,7 +173,7 @@ class Sniper(Tower):
     base_center_pos = (0, 15)
 
     max_health = 10
-    health = 10
+    health = 50
     damage = 200
     cooldown = 2
     range = 1000
@@ -190,6 +205,11 @@ class Sniper(Tower):
         elif attribute == "regen":
             self.regen_level += 1
             self.regen += 1
+
+    def get_loot_value(self):
+        return self.cost + \
+               10 * (self.health_level + self.damage_level + self.speed_level + self.range_level - 4) + \
+               100 * (self.regen_level - 1)
 
 
 tower_types = [Archer, Mage, Artillery, Sniper]

@@ -40,10 +40,10 @@ class Orc(Enemy):
     image = orc_image
     center_pos = (25, 25)
 
-    speed = 1
+    speed = 2
 
-    max_health = 600
-    health = 600
+    max_health = 200
+    health = 200
     damage = 2
     cooldown = 2
     range = 50
@@ -58,8 +58,8 @@ class Tank(Enemy):
 
     speed = 1
 
-    max_health = 1000
-    health = 1000
+    max_health = 600
+    health = 600
     damage = 5
     cooldown = 5
     range = 50

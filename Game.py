@@ -163,7 +163,9 @@ class GameTop():
 
         tower = self.get_selected()
 
-        if tower is not None:
+        if tower is None:
+            self.upgrade_frame.place_forget()
+        else:
             self.upgrade_frame["text"] = tower.name + " Upgrades"
             self.upgrade_amounts[0]["text"] = str(tower.health_level)
             self.upgrade_amounts[1]["text"] = str(tower.damage_level)
@@ -440,6 +442,8 @@ class GameTop():
                             t.health -= e.damage
                             if t.health <= 0:
                                 self.towers.remove(t)
+                                self.money += t.get_loot_value()
+                                self.update_labels()
                                 for e_ in self.enemies:
                                     if e_.get_rect().colliderect(t.rect):
                                         e_.vel = e.starting_vel
