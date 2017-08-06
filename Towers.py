@@ -172,7 +172,7 @@ class Sniper(Tower):
     dims = [180, 96]
     base_center_pos = (0, 15)
 
-    max_health = 10
+    max_health = 50
     health = 50
     damage = 200
     cooldown = 2
@@ -211,5 +211,32 @@ class Sniper(Tower):
                10 * (self.health_level + self.damage_level + self.speed_level + self.range_level - 4) + \
                100 * (self.regen_level - 1)
 
+# TODO: make Walls a seperate abstract class
+class Wall(Tower):
+    name = "Wall"
+    image = wall_image
+    dims = [20, 20]
+    base_center_pos = (10, 10)
 
-tower_types = [Archer, Mage, Artillery, Sniper]
+    max_health = 20
+    health = 20
+    damage = 0
+    cooldown = 10000000000000000000
+    range = 17
+    regen = 0
+    damage_types = ['single']
+    projectile = None
+
+    cost = 2
+
+    def __init__(self, pos):
+        self.pos = V2(pos)
+        self.base_center = self.pos + self.base_center_pos
+        self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])
+
+    def get_loot_value(self):
+        return 2
+
+
+
+tower_types = [Archer, Mage, Artillery, Sniper, Wall]

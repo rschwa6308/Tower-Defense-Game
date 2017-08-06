@@ -1,10 +1,12 @@
 import tkinter as tk
 import time
+import math
 
 from Base import *
 from Towers import *
 from Colors import *
 from Waves import *
+from Maps import *
 
 
 class GameTop():
@@ -17,42 +19,13 @@ class GameTop():
         self.root.protocol('WM_DELETE_WINDOW', self.delete)
 
         self.game_frame = tk.Frame(self.root, width=1400, height=900)  # creates embed frame for pg window
-        self.game_frame.pack(side=tk.LEFT)
+        self.game_frame.grid(row=0, column=0, rowspan=3)
 
         self.menu_frame = tk.Frame(self.root, width=200, height=900)
-        self.menu_frame.pack(side=tk.RIGHT)
+        self.menu_frame.grid(row=0, column=1)
 
         info_frame = tk.Frame(self.menu_frame)
         info_frame.place(anchor="n", relx=0.5, rely=0)
-
-        # For later reference
-        self.upgrade_frame = tk.LabelFrame(self.menu_frame, text="", font=("Candara", 15))
-        self.upgrade_labels = [
-            tk.Label(self.upgrade_frame, text="Health:", font=("Candara", 13)),
-            tk.Label(self.upgrade_frame, text="Damage:", font=("Candara", 13)),
-            tk.Label(self.upgrade_frame, text="Speed:", font=("Candara", 13)),
-            tk.Label(self.upgrade_frame, text="Range:", font=("Candara", 13)),
-            tk.Label(self.upgrade_frame, text="Regen:", font=("Candara", 13))
-        ]
-        self.upgrade_amounts = [
-            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
-            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
-            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
-            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
-            tk.Label(self.upgrade_frame, text="", font=("Candara", 13))
-        ]
-        self.upgrade_buttons = [
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("health")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("damage")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("speed")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("range")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13), command=lambda: self.upgrade_selected("regen"))
-        ]
-        modes = ["closest", "fastest", "strongest", "weakest"]
-        self.aim_mode = tk.StringVar()
-        self.aim_mode_buttons = [tk.Radiobutton(self.upgrade_frame, text=mode, variable=self.aim_mode, value=mode,
-                                 command=self.update_mode_selected, font=("Candara", 10)) for mode in modes]
-        self.kills_label = tk.Label(self.upgrade_frame, text="", font=("Candara", 10))
 
         # Money and Health variables
         self.money = 300
@@ -70,29 +43,77 @@ class GameTop():
                                      command=self.play_wave)
         self.wave_button.grid(row=2, column=0)
 
-        # Set up tower-buttons
+        # Tower Buttons
         button_frame = tk.Frame(self.menu_frame)
         button_frame.place(anchor="n", relx=0.5, rely=0.2)
 
-        # for i in range(len(tower_types)):
-        #     tower_type = tower_types[i]
-        #     b = tk.Button(button_frame, text=tower_type.name, font=("Candara", 20), width=10, height=2,
-        #                   command=lambda: self.place_tower(tower_type.name))
-        #     b.grid(row=i)
+        # Tower buttons scroll bar and canvas
+        vscrollbar = tk.Scrollbar(button_frame)
+        vscrollbar.grid(row=0, column=1, sticky="ns")
+
+        button_canvas = tk.Canvas(button_frame, yscrollcommand=vscrollbar.set, width=160, height=360)
+        button_canvas.grid(row=0, column=0)
+
+        vscrollbar.config(command=button_canvas.yview)
+
+        # Actual tower buttons
+        inner_button_frame = tk.Frame(button_canvas)
+
         self.tower_buttons = [
-            tk.Button(button_frame, text=Archer.name + "\n$" + str(Archer.cost), font=("Candara", 20), width=10, height=2,
-                      command=lambda: self.place_tower(0)),
-            tk.Button(button_frame, text=Mage.name + "\n$" + str(Mage.cost), font=("Candara", 20), width=10, height=2,
-                      command=lambda: self.place_tower(1)),
-            tk.Button(button_frame, text=Artillery.name + "\n$" + str(Artillery.cost), font=("Candara", 20), width=10, height=2,
-                      command=lambda: self.place_tower(2)),
-            tk.Button(button_frame, text=Sniper.name + "\n$" + str(Sniper.cost), font=("Candara", 20), width=10,height=2,
-                      command=lambda: self.place_tower(3))
+            tk.Button(inner_button_frame, text=Archer.name + "\n$" + str(Archer.cost), font=("Candara", 20),
+                      width=10, height=2, command=lambda: self.place_tower(0)),
+            tk.Button(inner_button_frame, text=Mage.name + "\n$" + str(Mage.cost), font=("Candara", 20),
+                      width=10, height=2, command=lambda: self.place_tower(1)),
+            tk.Button(inner_button_frame, text=Artillery.name + "\n$" + str(Artillery.cost), font=("Candara", 20),
+                      width=10, height=2, command=lambda: self.place_tower(2)),
+            tk.Button(inner_button_frame, text=Sniper.name + "\n$" + str(Sniper.cost), font=("Candara", 20),
+                      width=10, height=2, command=lambda: self.place_tower(3)),
+            tk.Button(inner_button_frame, text=Wall.name + "\n$" + str(Wall.cost), font=("Candara", 20),
+                      width=10, height=2, command=lambda: self.place_tower(4))
         ]
         for i in range(len(self.tower_buttons)):
-            self.tower_buttons[i].grid(row=i)
+            self.tower_buttons[i].grid(row=i, column=0)
+
+        button_canvas.create_window(0, 0, anchor="nw", window=inner_button_frame)
+        inner_button_frame.update_idletasks()
+        button_canvas.config(scrollregion=button_canvas.bbox("all"))
+
+        # Instantiate Upgrade Frame
+        self.upgrade_frame = tk.LabelFrame(self.menu_frame, text="", font=("Candara", 15))
+        self.upgrade_labels = [
+            tk.Label(self.upgrade_frame, text="Health:", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="Damage:", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="Speed:", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="Range:", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="Regen:", font=("Candara", 13))
+        ]
+        self.upgrade_amounts = [
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 13)),
+            tk.Label(self.upgrade_frame, text="", font=("Candara", 13))
+        ]
+        self.upgrade_buttons = [
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13),
+                      command=lambda: self.upgrade_selected("health")),
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13),
+                      command=lambda: self.upgrade_selected("damage")),
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13),
+                      command=lambda: self.upgrade_selected("speed")),
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13),
+                      command=lambda: self.upgrade_selected("range")),
+            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13),
+                      command=lambda: self.upgrade_selected("regen"))
+        ]
+        modes = ["closest", "fastest", "strongest", "weakest"]
+        self.aim_mode = tk.StringVar()
+        self.aim_mode_buttons = [tk.Radiobutton(self.upgrade_frame, text=mode, variable=self.aim_mode, value=mode,
+                                 command=self.update_mode_selected, font=("Candara", 10)) for mode in modes]
+        self.kills_label = tk.Label(self.upgrade_frame, text="", font=("Candara", 10))
 
         # Instantiate game variables
+        self.map = test_map
         self.base = Base((1400/2, 900/2))
         self.towers = []
         self.enemies = []
@@ -198,6 +219,15 @@ class GameTop():
     def update_screen(self):
         # self.screen.fill(bg_color)
         self.screen.blit(background_image, (0, 0))
+
+        # EXPERIMENTAL STUFF
+        # TODO: decide on core game mechanic, lol
+        # Draw map
+        for i in range(len(self.map) - 1):
+            start, end = self.map[i], self.map[i + 1]
+            pg.draw.line(self.screen, path_color, start, end, 60)
+            if i < len(self.map) - 1:
+                pg.draw.circle(self.screen, path_color, (end[0] + 1, end[1] + 1), 30, 0)
 
         for t in self.towers:
             self.screen.blit(t.image, t.pos)

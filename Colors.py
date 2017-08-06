@@ -12,3 +12,4 @@ yellow = Color(255, 255, 0)
 
 bg_color = Color(0, 0, 150)
 range_color = Color(50, 50, 50)
+path_color = Color(87, 59, 12)

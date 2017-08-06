@@ -42,8 +42,8 @@ class Orc(Enemy):
 
     speed = 2
 
-    max_health = 200
-    health = 200
+    max_health = 120
+    health = 120
     damage = 2
     cooldown = 2
     range = 50
@@ -58,8 +58,8 @@ class Tank(Enemy):
 
     speed = 1
 
-    max_health = 600
-    health = 600
+    max_health = 500
+    health = 500
     damage = 5
     cooldown = 5
     range = 50
