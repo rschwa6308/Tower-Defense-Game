@@ -119,6 +119,15 @@ class GameTop():
         self.enemies = []
         self.projectiles = []
 
+        # EXPERIMENTAL STUFF
+        # TODO: decide on core game mechanic, lol
+        # Draw map
+        for i in range(len(self.map) - 1):
+            start, end = self.map[i], self.map[i + 1]
+            pg.draw.line(background_image, path_color, start, end, 60)
+            if i < len(self.map) - 1:
+                pg.draw.circle(background_image, path_color, (end[0] + 1, end[1] + 1), 30, 0)
+
         # Modify pygame's video output (embeds all new pg windows inside a Tk.Frame object)
         os.environ['SDL_WINDOWID'] = str(self.game_frame.winfo_id())
         os.environ['SDL_VIDEODRIVER'] = 'windib'
@@ -219,15 +228,6 @@ class GameTop():
     def update_screen(self):
         # self.screen.fill(bg_color)
         self.screen.blit(background_image, (0, 0))
-
-        # EXPERIMENTAL STUFF
-        # TODO: decide on core game mechanic, lol
-        # Draw map
-        for i in range(len(self.map) - 1):
-            start, end = self.map[i], self.map[i + 1]
-            pg.draw.line(self.screen, path_color, start, end, 60)
-            if i < len(self.map) - 1:
-                pg.draw.circle(self.screen, path_color, (end[0] + 1, end[1] + 1), 30, 0)
 
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
