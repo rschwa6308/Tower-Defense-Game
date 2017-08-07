@@ -28,7 +28,7 @@ class GameTop():
         info_frame.place(anchor="n", relx=0.5, rely=0)
 
         # Money and Health variables
-        self.money = 300
+        self.money = 30000000
         self.health = 100
 
         # Money and Health labels

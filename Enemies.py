@@ -58,10 +58,10 @@ class Tank(Enemy):
 
     speed = 1
 
-    max_health = 500
-    health = 500
+    max_health = 50000
+    health = 50000
     damage = 5
-    cooldown = 5
+    cooldown = 3
     range = 50
 
     value = 30

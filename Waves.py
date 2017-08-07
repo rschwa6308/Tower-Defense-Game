@@ -13,5 +13,5 @@ waves = [
 ]
 
 def get_wave(number):
-    return [Orc(pos="edge", vel="center") for _ in range(10 * number)] + \
-           [Tank(pos="edge", vel="center") for _ in range(2 * number)]
+    return [Orc(pos="edge", vel="center") for _ in range(6 * number)] + \
+           [Tank(pos="edge", vel="center") for _ in range(1 * number)]
