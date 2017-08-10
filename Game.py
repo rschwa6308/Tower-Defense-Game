@@ -28,7 +28,7 @@ class GameTop():
         info_frame.place(anchor="n", relx=0.5, rely=0)
 
         # Money and Health variables
-        self.money = 30000000
+        self.money = 300
         self.health = 100
 
         # Money and Health labels
@@ -122,11 +122,11 @@ class GameTop():
         # EXPERIMENTAL STUFF
         # TODO: decide on core game mechanic, lol
         # Draw map
-        for i in range(len(self.map) - 1):
-            start, end = self.map[i], self.map[i + 1]
-            pg.draw.line(background_image, path_color, start, end, 60)
-            if i < len(self.map) - 1:
-                pg.draw.circle(background_image, path_color, (end[0] + 1, end[1] + 1), 30, 0)
+        # for i in range(len(self.map) - 1):
+        #     start, end = self.map[i], self.map[i + 1]
+        #     pg.draw.line(background_image, path_color, start, end, 60)
+        #     if i < len(self.map) - 1:
+        #         pg.draw.circle(background_image, path_color, (end[0] + 1, end[1] + 1), 30, 0)
 
         # Modify pygame's video output (embeds all new pg windows inside a Tk.Frame object)
         os.environ['SDL_WINDOWID'] = str(self.game_frame.winfo_id())

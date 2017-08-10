@@ -175,7 +175,7 @@ class Sniper(Tower):
     max_health = 50
     health = 50
     damage = 200
-    cooldown = .02
+    cooldown = 2
     range = 1000
     regen = 0
     damage_types = ['single']
