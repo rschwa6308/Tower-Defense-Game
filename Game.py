@@ -119,14 +119,14 @@ class GameTop():
         self.enemies = []
         self.projectiles = []
 
-        # EXPERIMENTAL STUFF
-        # TODO: decide on core game mechanic, lol
         # Draw map
         for i in range(len(self.map) - 1):
             start, end = self.map[i], self.map[i + 1]
             pg.draw.line(background_image, path_color, start, end, 60)
             if i < len(self.map) - 1:
                 pg.draw.circle(background_image, path_color, (end[0] + 1, end[1] + 1), 30, 0)
+
+        self.map_mask = pg.mask.from_threshold(background_image, path_color, (1, 1, 1, 255))
 
         # Modify pygame's video output (embeds all new pg windows inside a Tk.Frame object)
         os.environ['SDL_WINDOWID'] = str(self.game_frame.winfo_id())
@@ -294,18 +294,23 @@ class GameTop():
             self.update_screen()
             pos = pg.mouse.get_pos()
 
-            # Determine if potential tower location is colliding with existing towers or with walls or with enemies
+            # Determine if potential tower location is colliding with existing towers, walls, or path
             valid_location = True
             test_rec = pg.Rect(pos[0] - TowerType.base_center_pos[0],
                                pos[1] - TowerType.base_center_pos[1],
                                TowerType.dims[0], TowerType.dims[1])
+            test_mask = pg.mask.from_surface(TowerType.image)
             for t in self.towers:
                 if test_rec.colliderect(t.rect):
                     valid_location = False
-            for e in self.enemies:
-                if test_rec.colliderect(e.get_rect()):
-                    valid_location = False
-            if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:
+            if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:           # TODO: fix this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                valid_location = False
+            map_rect_left = min(self.map, key=lambda x: x[0])[0]
+            map_rect_top = min(self.map, key=lambda x: x[1])[1]
+            # print(map_rect_left, map_rect_top)
+            offset = (test_rec.left - map_rect_left, test_rec.top - map_rect_top)
+            print(offset)
+            if self.map_mask.overlap(test_mask, offset) is not None:
                 valid_location = False
 
             self.screen.blit(preview, (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
@@ -440,6 +445,7 @@ class GameTop():
                         t.last_attack_time = time.time()
                         # Aim Projectile at Enemy
                         displacement = target.get_center() - t.base_center
+                        displacement += displacement.length() / t.projectile.speed * target.vel     # account for target motion
                         vel = (displacement / displacement.length()) * t.projectile.speed           # scale unit vector
                         proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
                         proj.associate(t)
