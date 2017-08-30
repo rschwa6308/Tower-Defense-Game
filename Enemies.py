@@ -6,7 +6,8 @@ from Images import *
 
 
 class Enemy:
-    last_attack_time = 0
+    last_attack_time = 0.0
+    distance_traveled = 0.0
 
     def __init__(self, pos, vel):
         if pos == "edge":

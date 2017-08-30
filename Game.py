@@ -106,7 +106,7 @@ class GameTop():
             tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13),
                       command=lambda: self.upgrade_selected("regen"))
         ]
-        modes = ["closest", "fastest", "strongest", "weakest"]
+        modes = ["first", "last", "closest", "strongest"]
         self.aim_mode = tk.StringVar()
         self.aim_mode_buttons = [tk.Radiobutton(self.upgrade_frame, text=mode, variable=self.aim_mode, value=mode,
                                  command=self.update_mode_selected, font=("Candara", 10)) for mode in modes]
@@ -122,11 +122,11 @@ class GameTop():
         # EXPERIMENTAL STUFF
         # TODO: decide on core game mechanic, lol
         # Draw map
-        # for i in range(len(self.map) - 1):
-        #     start, end = self.map[i], self.map[i + 1]
-        #     pg.draw.line(background_image, path_color, start, end, 60)
-        #     if i < len(self.map) - 1:
-        #         pg.draw.circle(background_image, path_color, (end[0] + 1, end[1] + 1), 30, 0)
+        for i in range(len(self.map) - 1):
+            start, end = self.map[i], self.map[i + 1]
+            pg.draw.line(background_image, path_color, start, end, 60)
+            if i < len(self.map) - 1:
+                pg.draw.circle(background_image, path_color, (end[0] + 1, end[1] + 1), 30, 0)
 
         # Modify pygame's video output (embeds all new pg windows inside a Tk.Frame object)
         os.environ['SDL_WINDOWID'] = str(self.game_frame.winfo_id())
@@ -358,10 +358,14 @@ class GameTop():
         self.wave_button["text"] = "wave {0}\n...".format(self.wave)
         self.wave_button["state"] = "disabled"
 
-        if len(waves) >= self.wave:                 # Generate waves automatically after predefined waves are exhausted
-            self.enemies = waves[self.wave - 1]
-        else:
-            self.enemies = get_wave(self.wave)
+        # if len(waves) >= self.wave:                 # Generate waves automatically after predefined waves are exhausted
+        #     self.enemies = waves[self.wave - 1]
+        # else:
+        #     self.enemies = get_wave(self.wave)
+
+        current_wave = get_wave(self.wave)
+        enemy_spawn_timestamp = time.time()
+        spawn_counter = 0
 
         wave_active = True
         clock = pg.time.Clock()
@@ -399,6 +403,19 @@ class GameTop():
             for t in self.towers:
                 t.health = min(t.health + t.regen / 100.0, t.max_health)
 
+            # Spawn Enemies
+            if spawn_counter < len(current_wave):
+                if time.time() - enemy_spawn_timestamp > 0.1:      # 0.1 represents time between enemy spawns in seconds
+                    enemy_spawn_timestamp = time.time()
+                    key = current_wave[spawn_counter]
+                    spawn_counter += 1
+                    print(key)
+                    if key == " ":
+                        pass
+                    else:
+                        tower_type = {"o": Orc, "t": Tank}[key]
+                        self.enemies.append(tower_type(self.map[0] - V2(tower_type.center_pos), (0, 0)))
+
             # Tower - Enemy interaction
             for t in self.towers:
                 if time.time() - t.last_attack_time > t.cooldown:
@@ -411,14 +428,14 @@ class GameTop():
                     target = None
 
                     if len(in_range) != 0:
-                        if t.aim_mode == "closest":
-                            target = sorted(in_range, key=lambda x: x[1])[0][0]         # pick closest enemy
-                        elif t.aim_mode == "fastest":
-                            target = sorted(in_range, key=lambda x: x[0].speed)[0][0]
+                        if t.aim_mode == "first":
+                            target = max(in_range, key=lambda x: x[0].distance_traveled)[0]
+                        elif t.aim_mode == "last":
+                            target = min(in_range, key=lambda x: x[0].distance_traveled)[0]
+                        elif t.aim_mode == "closest":
+                            target = min(in_range, key=lambda x: x[1])[0]
                         elif t.aim_mode == "strongest":
-                            target = sorted(in_range, key=lambda x: x[0].health)[-1][0]
-                        elif t.aim_mode == "weakest":
-                            target = sorted(in_range, key=lambda x: x[0].health)[0][0]
+                            target = max(in_range, key=lambda x: x[0].health)[0]
 
                         t.last_attack_time = time.time()
                         # Aim Projectile at Enemy
@@ -441,51 +458,57 @@ class GameTop():
                             self.update_labels()
                         break
 
-            # Enemy movement
+            # Enemy movement - OLD
+            # for e in self.enemies:
+            #     e.pos += e.vel
+            #     # TEMPORARY wall collision
+            #     if (e.vel.x > 0) == (e.pos.x - 700 > 0):                                    # Allow enemies to enter
+            #         if e.pos.x < 0 or e.pos.x > 1400 - e.get_rect().width: e.vel.x *= -1
+            #     if (e.vel.y > 0) == (e.pos.y - 450 > 0):                                    # Allow enemies to enter
+            #         if e.pos.y < 0 or e.pos.y > 900 - e.get_rect().height: e.vel.y *= -1
+            #
+            #     # Enemy - Tower collision
+            #     e_rect = e.get_rect()
+            #     for t in self.towers:
+            #         if e_rect.colliderect(t.rect):
+            #             e.vel = V2((0, 0))
+            #             if time.time() - e.last_attack_time > e.cooldown:
+            #                 e.last_attack_time = time.time()
+            #                 t.health -= e.damage
+            #                 if t.health <= 0:
+            #                     self.towers.remove(t)
+            #                     self.money += t.get_loot_value()
+            #                     self.update_labels()
+            #                     for e_ in self.enemies:
+            #                         if e_.get_rect().colliderect(t.rect):
+            #                             e_.vel = e.starting_vel
+            #
+            #     # Enemy - Base interaction
+            #     if e_rect.colliderect(self.base.rect):
+            #         e.vel = V2((0, 0))
+            #         if time.time() - e.last_attack_time > e.cooldown:
+            #             self.base.health -= e.damage
+            #             if self.base.health <= 0:
+            #                 wave_active = False
+            #                 # TODO: Add death screen
+
+            # Enemy Movement - NEW
             for e in self.enemies:
                 e.pos += e.vel
-                # TEMPORARY wall collision
-                if (e.vel.x > 0) == (e.pos.x - 700 > 0):                                    # Allow enemies to enter
-                    if e.pos.x < 0 or e.pos.x > 1400 - e.get_rect().width: e.vel.x *= -1
-                if (e.vel.y > 0) == (e.pos.y - 450 > 0):                                    # Allow enemies to enter
-                    if e.pos.y < 0 or e.pos.y > 900 - e.get_rect().height: e.vel.y *= -1
-
-                # Enemy - Tower collision
-                e_rect = e.get_rect()
-                for t in self.towers:
-                    # if e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y, 1, t.dims[1])):                     # Left
-                    #     e.vel.x *= -1
-                    #     e.pos.x -= 1
-                    # elif e_rect.colliderect(pg.Rect(t.pos.x + t.dims[0], t.pos.y, 1, t.dims[1])):       # Right
-                    #     e.vel.x *= -1
-                    #     e.pos.x += 1
-                    # if e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y, t.dims[0], 1)):                   # Top
-                    #     e.vel.y *= -1
-                    #     e.pos.y -= 1
-                    # elif e_rect.colliderect(pg.Rect(t.pos.x, t.pos.y + t.dims[1], t.dims[0], 1)):       # Bottom
-                    #     e.vel.y *= -1
-                    #     e.pos.y += 1
-                    if e_rect.colliderect(t.rect):
-                        e.vel = V2((0, 0))
-                        if time.time() - e.last_attack_time > e.cooldown:
-                            e.last_attack_time = time.time()
-                            t.health -= e.damage
-                            if t.health <= 0:
-                                self.towers.remove(t)
-                                self.money += t.get_loot_value()
-                                self.update_labels()
-                                for e_ in self.enemies:
-                                    if e_.get_rect().colliderect(t.rect):
-                                        e_.vel = e.starting_vel
+                e.distance_traveled += e.speed
+                # Turn at map corner
+                for i in range(len(self.map) - 1):
+                    if e.get_center().distance_to(V2(self.map[i])) < e.speed + 1:
+                        e.vel = V2(self.map[i + 1]) - V2(self.map[i])
+                        e.vel = e.vel / e.vel.length() * e.speed  # scale unit vector
 
                 # Enemy - Base interaction
-                if e_rect.colliderect(self.base.rect):
+                if e.get_rect().colliderect(self.base.rect):
                     e.vel = V2((0, 0))
                     if time.time() - e.last_attack_time > e.cooldown:
                         self.base.health -= e.damage
                         if self.base.health <= 0:
                             wave_active = False
-                            # TODO: Add death screen
 
             self.enemies.sort(key=lambda e: e.pos.y)        # Sort enemies for proper rendering order
 
@@ -498,7 +521,7 @@ class GameTop():
                     self.projectiles.remove(p)
 
             # Check for enemy depletion
-            if len(self.enemies) == 0:
+            if len(self.enemies) == 0 and len(current_wave) == spawn_counter:
                 wave_active = False
 
             try:

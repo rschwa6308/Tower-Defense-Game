@@ -18,7 +18,7 @@ class Tower:
     hover = False
     selected = False
 
-    aim_mode = "closest"
+    aim_mode = "first"
 
     def get_upgrade_cost(self, attribute):
         if attribute == "health":
