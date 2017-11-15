@@ -284,9 +284,14 @@ class GameTop():
                             new.selected = True
                             self.select_tower(new)
 
+                            self.money -= TowerType.cost  # Pay for tower
+                            if self.money < TowerType.cost:
+                                placed = True
+
                             self.update_screen()
-                            placed = True
-                            self.money -= TowerType.cost        # Pay for tower
+                            pg.display.update()
+                            self.update_labels()
+                            # placed = True
 
                     if event.button == 3:
                         placed = True
