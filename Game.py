@@ -415,15 +415,16 @@ class GameTop():
                                 in_range.append((e, distance))
                     target = None
 
+                    # TODO: consider adding "random" option
                     if len(in_range) != 0:
                         if t.aim_mode == "closest":
-                            target = sorted(in_range, key=lambda x: x[1])[0][0]         # pick closest enemy
+                            target = min(in_range, key=lambda x: x[1])[0]         # pick closest enemy
                         elif t.aim_mode == "fastest":
-                            target = sorted(in_range, key=lambda x: x[0].speed)[0][0]
+                            target = min(in_range, key=lambda x: x[0].speed)[0]
                         elif t.aim_mode == "strongest":
-                            target = sorted(in_range, key=lambda x: x[0].health)[-1][0]
+                            target = max(in_range, key=lambda x: x[0].health)[0]
                         elif t.aim_mode == "weakest":
-                            target = sorted(in_range, key=lambda x: x[0].health)[0][0]
+                            target = min(in_range, key=lambda x: x[0].health)[0]
 
                         t.last_attack_time = time.time()
                         # Aim Projectile at Enemy
