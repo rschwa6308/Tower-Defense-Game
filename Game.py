@@ -16,13 +16,13 @@ class GameTop():
         
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
-        self.root.geometry("%dx%d%+d%+d" % (1600, 900, 100, 50))
+        self.root.geometry("%dx%d%+d%+d" % (1366, 768, 100, 50))
         self.root.protocol('WM_DELETE_WINDOW', self.delete)
 
-        self.game_frame = tk.Frame(self.root, width=1400, height=899)  # creates embed frame for pg window
+        self.game_frame = tk.Frame(self.root, width=1200, height=650)  # creates embed frame for pg window
         self.game_frame.grid(row=0, column=0, rowspan=3)
 
-        self.menu_frame = tk.Frame(self.root, width=200, height=900)
+        self.menu_frame = tk.Frame(self.root, width=200, height=600)
         self.menu_frame.grid(row=0, column=1)
 
         info_frame = tk.Frame(self.menu_frame)
