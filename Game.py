@@ -142,7 +142,7 @@ class GameTop():
         self.update_labels()
         
         # Pass the map pixels to the figure out the brown pixels method
-        wrongPixels(self.screen, path_color)
+        wrongPixels(self.screen, path_color, self.base)
 
     def mainloop(self):
         clock = pg.time.Clock()
@@ -310,16 +310,22 @@ class GameTop():
             #        valid_location = False
             #if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:  # TODO: fix this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             #    valid_location = False
-            # Pass the map pixels to the figure out the brown pixels method
-            wrongPixels(self.screen, path_color)
-            for i in badPixels :
-                if TowerType.base_center_pos in badPixels:
-                    valid_location = False
-                    break
             
-            # map_rect_left = min(self.map, key=lambda x: x[0])[0]
-            # map_rect_top = min(self.map, key=lambda x: x[1])[1]
-            # # print(map_rect_left, map_rect_top)
+            # Pass the map pixels to the figure out the brown pixels method
+                # wrongPixels(self.screen, path_color)
+            
+            # for i in badPixels :
+                # pos = pg.mouse.get_pos()
+            """for pixel in badPixels:
+                map_rect_left = min(self.map, key=lambda x: x[0])[0]
+                map_rect_top = min(self.map, key=lambda x: x[1])[1]
+                p1 = pixel[0]
+                p2 = pixel[1]"""
+            if pos in  badPixels:
+                valid_location = False
+            # print(pos)
+            
+            # print(map_rect_left, map_rect_top)
             # offset = (test_rec.left - map_rect_left, test_rec.top - map_rect_top)
             # print(offset)
             # if self.map_mask.overlap(test_mask, offset) is not None:

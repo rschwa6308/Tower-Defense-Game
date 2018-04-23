@@ -5,6 +5,8 @@ from Images import base_image
 from Maps import *
 from ScreenConvert import *
 
+rect = None
+
 
 class Base:
     name = "Base"

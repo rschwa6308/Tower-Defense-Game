@@ -7,9 +7,12 @@ for i, (a, b) in enumerate(test_map):
 badPixels = [] 
 
 
-def wrongPixels(mapTk, path_color):
+def wrongPixels(mapTk, path_color, _base):
+    print("Bad Pixels")
+    for i in range(int(screenWidth * widthMultiplier)):
+        for j in range(int(screenHeight * heightMultiplier)) : 
+            if (mapTk.get_at((i, j)) == path_color or _base.rect.contains(i, j, 0 , 0)):
+                badPixels.append((i, j))
+            # print(i, j)
     
-    for i, j in zip(range(int(screenWidth * widthMultiplier - 1)), range(int(screenHeight * heightMultiplier - 1))) : 
-        if (mapTk.get_at((j, i)) == path_color):
-            badPixels.append((j, i))
-            
+    print("End bad Pixels")
