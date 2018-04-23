@@ -7,21 +7,23 @@ from Towers import *
 from Colors import *
 from Waves import *
 from Maps import *
+from ScreenConvert import *
 
 
 class GameTop():
+
     def __init__(self):
         self.alive = True
 
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
-        self.root.geometry("%dx%d%+d%+d" % (1600, 900, 100, 50))
+        self.root.geometry("%dx%d%+d%+d" % (screenWidth, screenHeight, 100, 50))
         self.root.protocol('WM_DELETE_WINDOW', self.delete)
 
-        self.game_frame = tk.Frame(self.root, width=1400, height=900)  # creates embed frame for pg window
+        self.game_frame = tk.Frame(self.root, width=(screenWidth * widthMultiplier), height=(screenHeight * .9))  # creates embed frame for pg window
         self.game_frame.grid(row=0, column=0, rowspan=3)
 
-        self.menu_frame = tk.Frame(self.root, width=200, height=900)
+        self.menu_frame = tk.Frame(self.root, width=screenWidth * (1 - widthMultiplier), height=(screenHeight * heightMultiplier))
         self.menu_frame.grid(row=0, column=1)
 
         info_frame = tk.Frame(self.menu_frame)
@@ -114,7 +116,7 @@ class GameTop():
 
         # Instantiate game variables
         self.map = test_map
-        self.base = Base((1400/2, 900/2))
+        self.base = Base((screenWidth * widthMultiplier / 2, screenHeight * heightMultiplier / 2))
         self.towers = []
         self.enemies = []
         self.projectiles = []
@@ -133,11 +135,14 @@ class GameTop():
         os.environ['SDL_VIDEODRIVER'] = 'windib'
 
         # Instantiate pygame screen
-        self.screen = pg.display.set_mode((1400, 900))
+        self.screen = pg.display.set_mode((int(screenWidth * widthMultiplier), int(screenHeight * heightMultiplier)))
         self.update_screen()
 
         # Update the labels
         self.update_labels()
+        
+        # Pass the map pixels to the figure out the brown pixels method
+        wrongPixels(self.screen, path_color)
 
     def mainloop(self):
         clock = pg.time.Clock()
@@ -263,7 +268,7 @@ class GameTop():
             return
         preview.fill((255, 255, 255, 180), None, pg.BLEND_RGBA_MULT)
 
-        pg.mouse.set_pos(self.screen.get_width() - 10, self.screen.get_height() / 2)        # Initialize mouse at edge
+        pg.mouse.set_pos(self.screen.get_width() - 10, self.screen.get_height() / 2)  # Initialize mouse at edge
         clock = pg.time.Clock()
         placed = False
         valid_location = True
@@ -280,13 +285,13 @@ class GameTop():
                             pos = pg.mouse.get_pos()
                             new = TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
                             self.towers.append(new)
-                            self.towers.sort(key=lambda t: t.pos.y)    # Sort towers based on y position (for rendering)
+                            self.towers.sort(key=lambda t: t.pos.y)  # Sort towers based on y position (for rendering)
                             new.selected = True
                             self.select_tower(new)
 
                             self.update_screen()
                             placed = True
-                            self.money -= TowerType.cost        # Pay for tower
+                            self.money -= TowerType.cost  # Pay for tower
 
                     if event.button == 3:
                         placed = True
@@ -300,18 +305,25 @@ class GameTop():
                                pos[1] - TowerType.base_center_pos[1],
                                TowerType.dims[0], TowerType.dims[1])
             test_mask = pg.mask.from_surface(TowerType.image)
-            for t in self.towers:
-                if test_rec.colliderect(t.rect):
+            # for t in self.towers:
+            #    if test_rec.colliderect(t.rect):
+            #        valid_location = False
+            #if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:  # TODO: fix this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            #    valid_location = False
+            # Pass the map pixels to the figure out the brown pixels method
+            wrongPixels(self.screen, path_color)
+            for i in badPixels :
+                if TowerType.base_center_pos in badPixels:
                     valid_location = False
-            if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:           # TODO: fix this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                valid_location = False
-            map_rect_left = min(self.map, key=lambda x: x[0])[0]
-            map_rect_top = min(self.map, key=lambda x: x[1])[1]
-            # print(map_rect_left, map_rect_top)
-            offset = (test_rec.left - map_rect_left, test_rec.top - map_rect_top)
-            print(offset)
-            if self.map_mask.overlap(test_mask, offset) is not None:
-                valid_location = False
+                    break
+            
+            # map_rect_left = min(self.map, key=lambda x: x[0])[0]
+            # map_rect_top = min(self.map, key=lambda x: x[1])[1]
+            # # print(map_rect_left, map_rect_top)
+            # offset = (test_rec.left - map_rect_left, test_rec.top - map_rect_top)
+            # print(offset)
+            # if self.map_mask.overlap(test_mask, offset) is not None:
+            #    valid_location = False
 
             self.screen.blit(preview, (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
             if valid_location:
@@ -354,7 +366,7 @@ class GameTop():
         self.root.update()
 
         for i in range(len(self.aim_mode_buttons)):
-            self.aim_mode_buttons[i].grid(row=int(5+i/2), column=2*int(i%2))
+            self.aim_mode_buttons[i].grid(row=int(5 + i / 2), column=2 * int(i % 2))
 
         self.kills_label.grid(row=7, column=1)
 
@@ -410,7 +422,7 @@ class GameTop():
 
             # Spawn Enemies
             if spawn_counter < len(current_wave):
-                if time.time() - enemy_spawn_timestamp > 0.1:      # 0.1 represents time between enemy spawns in seconds
+                if time.time() - enemy_spawn_timestamp > 0.1:  # 0.1 represents time between enemy spawns in seconds
                     enemy_spawn_timestamp = time.time()
                     key = current_wave[spawn_counter]
                     spawn_counter += 1
@@ -426,7 +438,7 @@ class GameTop():
                 if time.time() - t.last_attack_time > t.cooldown:
                     in_range = []
                     for e in self.enemies:
-                        if not (min(e.pos) < 0 or e.pos.x > 1400 or e.pos.y > 900):         # Check if enemy is in room
+                        if not (min(e.pos) < 0 or e.pos.x > 1400 or e.pos.y > 900):  # Check if enemy is in room
                             distance = t.base_center.distance_to(e.get_center())
                             if distance < t.range:
                                 in_range.append((e, distance))
@@ -445,8 +457,8 @@ class GameTop():
                         t.last_attack_time = time.time()
                         # Aim Projectile at Enemy
                         displacement = target.get_center() - t.base_center
-                        displacement += displacement.length() / t.projectile.speed * target.vel     # account for target motion
-                        vel = (displacement / displacement.length()) * t.projectile.speed           # scale unit vector
+                        displacement += displacement.length() / t.projectile.speed * target.vel  # account for target motion
+                        vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
                         proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
                         proj.associate(t)
                         self.projectiles.append(proj)
@@ -459,8 +471,8 @@ class GameTop():
                         e.health -= p.damage
                         if e.health <= 0:
                             self.enemies.remove(e)
-                            self.money += e.value       # Collect value of enemy
-                            p.tower.kills += 1          # Iterate tower kill counter
+                            self.money += e.value  # Collect value of enemy
+                            p.tower.kills += 1  # Iterate tower kill counter
                             self.update_labels()
                         break
 
@@ -516,7 +528,7 @@ class GameTop():
                         if self.base.health <= 0:
                             wave_active = False
 
-            self.enemies.sort(key=lambda e: e.pos.y)        # Sort enemies for proper rendering order
+            self.enemies.sort(key=lambda e: e.pos.y)  # Sort enemies for proper rendering order
 
             # Projectile movement
             for p in self.projectiles:

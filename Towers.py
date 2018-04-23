@@ -3,6 +3,7 @@ import pygame as pg
 
 from Images import *
 from Projectiles import *
+from ScreenConvert import *
 
 
 class Tower:
@@ -22,7 +23,7 @@ class Tower:
 
     def get_upgrade_cost(self, attribute):
         if attribute == "health":
-            return int(round(30 * self.health_level + 1.3 ** (self.health_level - 1), -1)) # 30x + 1.3^(x - 1)
+            return int(round(30 * self.health_level + 1.3 ** (self.health_level - 1), -1))  # 30x + 1.3^(x - 1)
         elif attribute == "damage":
             return int(round(30 * self.damage_level + 1.3 ** (self.damage_level - 1), -1))  # 30x + 1.3^(x - 1)
         elif attribute == "speed":
@@ -36,8 +37,8 @@ class Tower:
 class Archer(Tower):
     name = "Archer"
     image = archer_image
-    dims = (70, 120)
-    base_center_pos = (35, 104)
+    dims = (70 * widthRatio, 120 * heightRatio)
+    base_center_pos = (35 * widthRatio, 104 * heightRatio)
 
     max_health = 20
     health = 20
@@ -211,6 +212,7 @@ class Sniper(Tower):
                10 * (self.health_level + self.damage_level + self.speed_level + self.range_level - 4) + \
                100 * (self.regen_level - 1)
 
+
 # TODO: make Walls a seperate abstract class
 class Wall(Tower):
     name = "Wall"
@@ -236,7 +238,6 @@ class Wall(Tower):
 
     def get_loot_value(self):
         return 2
-
 
 
 tower_types = [Archer, Mage, Artillery, Sniper, Wall]
