@@ -83,8 +83,8 @@ class Archer(Tower):
 class Mage(Tower):
     name = "Mage"
     image = mage_image
-    dims = (70, 120)
-    base_center_pos = (35, 100)
+    dims = (70 * widthRatio, 120 * heightRatio)
+    base_center_pos = (35 * widthRatio, 100 * heightRatio)
 
     max_health = 15
     health = 15
@@ -128,20 +128,25 @@ class Mage(Tower):
 
 class Artillery(Tower):
     name = "Artillery"
-    image = None
+    image = splash_image
+    dims = (119, 35)
+    base_center_pos = (int(119 / 2), int (35 / 2)) 
 
     max_health = 50
     health = 50
     damage = 200
     cooldown = 2
-    range = 150
+    range = 275
     regen = 0
     damage_types = ['splash']
+    projectile = Beam
 
     cost = 100
 
     def __init__(self, pos):
         self.pos = V2(pos)
+        self.base_center = self.pos + self.base_center_pos
+        self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])
 
     def upgrade(self, attribute):
         if attribute == "health":
