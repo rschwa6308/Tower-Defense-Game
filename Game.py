@@ -17,6 +17,7 @@ class GameTop():
 
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
+        sendSizes(self.root)
         self.root.geometry("%dx%d%+d%+d" % (screenWidth, screenHeight, 100, 50))
         self.root.protocol('WM_DELETE_WINDOW', self.delete)
 
