@@ -17,7 +17,6 @@ class GameTop():
 
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
-        sendSizes(self.root)
         self.root.geometry("%dx%d%+d%+d" % (screenWidth, screenHeight, 100, 50))
         self.root.protocol('WM_DELETE_WINDOW', self.delete)
 
@@ -123,7 +122,13 @@ class GameTop():
         self.projectiles = []
 
         # Draw map
+        
+        #for i in range(len(self.map)-1):
+        #    for j in range(self.map.width()-1):
+        #        pg.surface.set_at(j,i, (255**(1 / i), (255**(1 / i), (255**(1 / i) ) )))
+        
         for i in range(len(self.map) - 1):
+            
             start, end = self.map[i], self.map[i + 1]
             pg.draw.line(background_image, path_color, start, end, 60)
             if i < len(self.map) - 1:
@@ -144,6 +149,7 @@ class GameTop():
         
         # Pass the map pixels to the figure out the brown pixels method
         wrongPixels(self.screen, path_color, self.base)
+        #sendSizes(self.root)
 
     def mainloop(self):
         clock = pg.time.Clock()
@@ -289,6 +295,7 @@ class GameTop():
                             self.towers.sort(key=lambda t: t.pos.y)  # Sort towers based on y position (for rendering)
                             new.selected = True
                             self.select_tower(new)
+                            new.setPosition(pos)
 
                             self.update_screen()
                             placed = True
@@ -445,7 +452,7 @@ class GameTop():
                 if time.time() - t.last_attack_time > t.cooldown:
                     in_range = []
                     for e in self.enemies:
-                        if not (min(e.pos) < 0 or e.pos.x > 1400 or e.pos.y > 900):  # Check if enemy is in room
+                        if not (min(e.pos) < 0 or e.pos.x > 1400*widthRatio or e.pos.y > 900* heightRatio):  # Check if enemy is in room
                             distance = t.base_center.distance_to(e.get_center())
                             if distance < t.range:
                                 in_range.append((e, distance))

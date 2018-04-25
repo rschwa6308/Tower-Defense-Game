@@ -12,6 +12,8 @@ class Tower:
     speed_level = 1
     range_level = 1
     regen_level = 1
+    x= None
+    y= None
 
     last_attack_time = 0
     kills = 0
@@ -32,7 +34,13 @@ class Tower:
             return int(round(30 * self.range_level + 1.3 ** (self.range_level - 1), -1))  # 30x + 1.3^(x - 1)
         elif attribute == "regen":
             return int(round(100 * self.regen_level + 1.3 ** (self.regen_level - 1), -1))  # 100x + 1.3^(x - 1)
-
+        
+    def setPosition(self, pos):
+        x = pos[0]
+        y = pos[1]
+        print("x is: " + str(x) + " y is: " + str(y))
+    def getPosition(self):
+        return [x,y]
 
 class Archer(Tower):
     name = "Archer"
@@ -217,8 +225,6 @@ class Sniper(Tower):
                10 * (self.health_level + self.damage_level + self.speed_level + self.range_level - 4) + \
                100 * (self.regen_level - 1)
 
-
-# TODO: make Walls a seperate abstract class
 class Wall(Tower):
     name = "Wall"
     image = wall_image

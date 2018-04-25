@@ -3,3 +3,6 @@ These are things that could be done--
 	making the base scale with resolution size
 	making switching modes possible <-- Big step
 	make better graphics
+	make the enemy's difficulty scale more exponentially rather than in a logistic growth curve
+	make background either larger or a function of pixel position.
+	make Walls a separate abstract class

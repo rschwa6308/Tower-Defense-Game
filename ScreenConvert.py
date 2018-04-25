@@ -1,14 +1,8 @@
 import tkinter 
+from win32api import GetSystemMetrics
 
-screenWidth = 1366
-screenHeight = 768
-
-
-def sendSizes(root):
-    screenWidth = root.winfo_screenwidth()
-    screenHeight = root.winfo_screenheight()
-
-    
+screenWidth = GetSystemMetrics(0)
+screenHeight = GetSystemMetrics(1)
 widthMultiplier = .8
 heightMultiplier = .9
 heightRatio = screenHeight / 900 * heightMultiplier

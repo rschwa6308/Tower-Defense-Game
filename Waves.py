@@ -18,9 +18,23 @@ from Enemies import *
 
 
 waves = [
+    "o     " * 1,
+    "o     " * 2,
+    "o     " * 3,
+    "o     " * 4,
     "o     " * 5,
-    "o o o     " * 3,
+    "ooo          " * 3,
+    "o     " * 6,
+    "o     " * 7,
+    "o     " * 8,
+    "ooo          " * 4,
+    "o o o     " * 4,
+    "o o o     " * 5,
+    "ooo          " * 4,
+    "o o o     " * 6,
     "o o o t " * 3,
+    "o o o t " * 4,
+    "o o o t " * 5,
     "ooo          " * 5,
     "otototototototototot",
     "tttttttttttttttttttt"
