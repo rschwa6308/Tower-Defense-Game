@@ -2,7 +2,6 @@ from random import *
 
 from Enemies import *
 
-
 # test_wave = [Orc(pos="edge", vel="center") for _ in range(50)]
 #
 #
@@ -15,7 +14,6 @@ from Enemies import *
 # def get_wave(number):
 #     return [Orc(pos="edge", vel="center") for _ in range(6 * number)] + \
 #            [Tank(pos="edge", vel="center") for _ in range(1 * number)]
-
 
 waves = [
     "o     " * 1,

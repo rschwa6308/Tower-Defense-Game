@@ -67,22 +67,37 @@ class Archer(Tower):
         self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])
 
     def upgrade(self, attribute):
+        if self.getLevel(attribute) < 15:
+            if attribute == "health":
+                self.health_level += 1
+                self.health *= 1.1
+                self.max_health *= 1.1
+            elif attribute == "damage":
+                self.damage_level += 1
+                self.damage *= 1.1
+            elif attribute == "speed":
+                self.speed_level += 1
+                self.cooldown *= 0.9
+            elif attribute == "range":
+                self.range_level += 1
+                self.range = int(self.range * 1.1)
+            elif attribute == "regen":
+                self.regen_level += 1
+                self.regen += 1
+        else:
+            print("Cannot upgrade " + attribute + " anymore")        
+
+    def getLevel(self, attribute):
         if attribute == "health":
-            self.health_level += 1
-            self.health *= 1.1
-            self.max_health *= 1.1
+            return self.health_level
         elif attribute == "damage":
-            self.damage_level += 1
-            self.damage *= 1.1
+            return self.damage_level
         elif attribute == "speed":
-            self.speed_level += 1
-            self.cooldown *= 0.9
+            return self.speed_level
         elif attribute == "range":
-            self.range_level += 1
-            self.range = int(self.range * 1.1)
+            return self.range_level
         elif attribute == "regen":
-            self.regen_level += 1
-            self.regen += 1
+            return self.regen_level
 
     def get_loot_value(self):
         return self.cost + \
@@ -113,22 +128,37 @@ class Mage(Tower):
         self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])
 
     def upgrade(self, attribute):
+        if self.getLevel(attribute) < 15:
+            if attribute == "health":
+                self.health_level += 1
+                self.health *= 1.1
+                self.max_health *= 1.1
+            elif attribute == "damage":
+                self.damage_level += 1
+                self.damage *= 1.1
+            elif attribute == "speed":
+                self.speed_level += 1
+                self.cooldown *= 0.9
+            elif attribute == "range":
+                self.range_level += 1
+                self.range = int(self.range * 1.1)
+            elif attribute == "regen":
+                self.regen_level += 1
+                self.regen += 1
+        else:
+            print("Cannot upgrade " + attribute + " anymore")        
+
+    def getLevel(self, attribute):
         if attribute == "health":
-            self.health_level += 1
-            self.health *= 1.1
-            self.max_health *= 1.1
+            return self.health_level
         elif attribute == "damage":
-            self.damage_level += 1
-            self.damage *= 1.1
+            return self.damage_level
         elif attribute == "speed":
-            self.speed_level += 1
-            self.cooldown *= 0.9
+            return self.speed_level
         elif attribute == "range":
-            self.range_level += 1
-            self.range = int(self.range * 1.1)
+            return self.range_level
         elif attribute == "regen":
-            self.regen_level += 1
-            self.regen += 1
+            return self.regen_level
 
     def get_loot_value(self):
         return self.cost + \
@@ -139,7 +169,7 @@ class Mage(Tower):
 class Artillery(Tower):
     name = "Artillery"
     image = splash_image
-    dims = (119, 35)
+    dims = (150 * widthRatio, 40 * heightRatio)
     base_center_pos = (int(119 / 2), int (35 / 2)) 
 
     max_health = 50
@@ -159,23 +189,38 @@ class Artillery(Tower):
         self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])
 
     def upgrade(self, attribute):
+        if self.getLevel(attribute) < 15:
+            if attribute == "health":
+                self.health_level += 1
+                self.health *= 1.1
+                self.max_health *= 1.1
+            elif attribute == "damage":
+                self.damage_level += 1
+                self.damage *= 1.1
+            elif attribute == "speed":
+                self.speed_level += 1
+                self.cooldown *= 0.9
+            elif attribute == "range":
+                self.range_level += 1
+                self.range = int(self.range * 1.1)
+            elif attribute == "regen":
+                self.regen_level += 1
+                self.regen += 1
+        else:
+            print("Cannot upgrade " + attribute + " anymore")        
+            
+    def getLevel(self, attribute):
         if attribute == "health":
-            self.health_level += 1
-            self.health *= 1.1
-            self.max_health *= 1.1
+            return self.health_level
         elif attribute == "damage":
-            self.damage_level += 1
-            self.damage *= 1.1
+            return self.damage_level
         elif attribute == "speed":
-            self.speed_level += 1
-            self.cooldown *= 0.9
+            return self.speed_level
         elif attribute == "range":
-            self.range_level += 1
-            self.range = int(self.range * 1.1)
+            return self.range_level
         elif attribute == "regen":
-            self.regen_level += 1
-            self.regen += 1
-
+            return self.regen_level
+        
     def get_loot_value(self):
         return self.cost + \
                10 * (self.health_level + self.damage_level + self.speed_level + self.range_level - 4) + \
@@ -185,7 +230,7 @@ class Artillery(Tower):
 class Sniper(Tower):
     name = "Sniper"
     image = sniper_image
-    dims = [180, 96]
+    dims = [180 * widthRatio, 96 * heightRatio]
     base_center_pos = (0, 15)
 
     max_health = 50
@@ -205,22 +250,37 @@ class Sniper(Tower):
         self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])
 
     def upgrade(self, attribute):
+        if self.getLevel(attribute) < 15:
+            if attribute == "health":
+                self.health_level += 1
+                self.health *= 1.1
+                self.max_health *= 1.1
+            elif attribute == "damage":
+                self.damage_level += 1
+                self.damage *= 1.1
+            elif attribute == "speed":
+                self.speed_level += 1
+                self.cooldown *= 0.9
+            elif attribute == "range":
+                self.range_level += 1
+                self.range = int(self.range * 1.1)
+            elif attribute == "regen":
+                self.regen_level += 1
+                self.regen += 1
+        else:
+            print("Cannot upgrade " + attribute + " anymore")        
+
+    def getLevel(self, attribute):
         if attribute == "health":
-            self.health_level += 1
-            self.health *= 1.1
-            self.max_health *= 1.1
+            return self.health_level
         elif attribute == "damage":
-            self.damage_level += 1
-            self.damage *= 1.1
+            return self.damage_level
         elif attribute == "speed":
-            self.speed_level += 1
-            self.cooldown *= 0.9
+            return self.speed_level
         elif attribute == "range":
-            self.range_level += 1
-            self.range = int(self.range * 1.1)
+            return self.range_level
         elif attribute == "regen":
-            self.regen_level += 1
-            self.regen += 1
+            return self.regen_level
 
     def get_loot_value(self):
         return self.cost + \
@@ -231,7 +291,7 @@ class Sniper(Tower):
 class Wall(Tower):
     name = "Wall"
     image = wall_image
-    dims = [20, 20]
+    dims = [20 * widthRatio, 20 * heightRatio]
     base_center_pos = (10, 10)
 
     max_health = 20

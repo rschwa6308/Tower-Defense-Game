@@ -1,11 +1,13 @@
 These are things that could be done--
-	making all of the towers scale with resolution size
-	making the base scale with resolution size
 	making switching modes possible <-- Big step
 	make better graphics
+	make towers rotate towards enemy they are firing at
 	make the enemy's difficulty scale more exponentially rather than in a logistic growth curve
 	make background either larger or a function of pixel position.
-	make Walls a separate abstract class
-	make enemies split into weaker enemies on death
-	max tower upgrades
-	
+	don't need to do this too soon == make Walls a separate abstract class
+		
+		
+		make enemies split into weaker enemies on death - done for tanks
+		max tower upgrades- done for now
+		making all of the towers scale with resolution size - done
+		making the base scale with resolution size - done

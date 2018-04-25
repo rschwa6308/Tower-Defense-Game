@@ -30,7 +30,7 @@ class GameTop():
         info_frame.place(anchor="n", relx=0.5, rely=0)
 
         # Money and Health variables
-        self.money = 300
+        self.money = 500
         self.health = 100
 
         # Money and Health labels
@@ -123,7 +123,7 @@ class GameTop():
 
         # Draw map
         
-        #for i in range(len(self.map)-1):
+        # for i in range(len(self.map)-1):
         #    for j in range(self.map.width()-1):
         #        pg.surface.set_at(j,i, (255**(1 / i), (255**(1 / i), (255**(1 / i) ) )))
         
@@ -149,7 +149,7 @@ class GameTop():
         
         # Pass the map pixels to the figure out the brown pixels method
         wrongPixels(self.screen, path_color, self.base)
-        #sendSizes(self.root)
+        # sendSizes(self.root)
 
     def mainloop(self):
         clock = pg.time.Clock()
@@ -222,7 +222,8 @@ class GameTop():
             self.upgrade_buttons[4]["text"] = "$" + str(tower.get_upgrade_cost("regen"))
 
             for i in range(len(self.upgrade_buttons)):
-                if self.money < tower.get_upgrade_cost(["health", "damage", "speed", "range", "regen"][i]):
+                if self.money < tower.get_upgrade_cost(["health", "damage", "speed", "range", "regen"][i]) \
+                or tower.getLevel(["health", "damage", "speed", "range", "regen"][i]) == 15:
                     self.upgrade_buttons[i]["state"] = "disabled"
                 else:
                     self.upgrade_buttons[i]["state"] = "normal"
@@ -387,7 +388,7 @@ class GameTop():
     # Called when 'play' is pressed; Runs the next wave
     def play_wave(self):
         self.wave_button["text"] = "wave {0}\n...".format(self.wave)
-        self.wave_button["state"] = "disabled"
+        # self.wave_button["state"] = "disabled"
 
         # if len(waves) >= self.wave:                 # Generate waves automatically after predefined waves are exhausted
         #     self.enemies = waves[self.wave - 1]
@@ -405,9 +406,9 @@ class GameTop():
 
             # Listen for user input
             for event in pg.event.get():
-                if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_SPACE:
-                        wave_active = False
+                # if event.type == pg.KEYDOWN:
+                    # if event.key == pg.K_SPACE:
+                    #    wave_active = true
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         for t in self.towers:
@@ -452,7 +453,7 @@ class GameTop():
                 if time.time() - t.last_attack_time > t.cooldown:
                     in_range = []
                     for e in self.enemies:
-                        if not (min(e.pos) < 0 or e.pos.x > 1400*widthRatio or e.pos.y > 900* heightRatio):  # Check if enemy is in room
+                        if not (min(e.pos) < 0 or e.pos.x > 1400 * widthRatio or e.pos.y > 900 * heightRatio):  # Check if enemy is in room
                             distance = t.base_center.distance_to(e.get_center())
                             if distance < t.range:
                                 in_range.append((e, distance))
@@ -484,6 +485,9 @@ class GameTop():
                         self.projectiles.remove(p)
                         e.health -= p.damage
                         if e.health <= 0:
+                            if isinstance(e, Tank):
+                                self.enemies.append(Orc(e.pos, e.vel))
+                                self.enemies.append(Orc(e.pos - V2(1, 1), e.vel))                                
                             self.enemies.remove(e)
                             self.money += e.value  # Collect value of enemy
                             p.tower.kills += 1  # Iterate tower kill counter
