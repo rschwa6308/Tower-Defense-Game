@@ -433,7 +433,7 @@ class GameTop():
                     enemy_spawn_timestamp = time.time()
                     key = current_wave[spawn_counter]
                     spawn_counter += 1
-                    print(key)
+                    # print(key)
                     if key == " ":
                         pass
                     else:
