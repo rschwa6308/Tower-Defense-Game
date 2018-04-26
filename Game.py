@@ -30,7 +30,7 @@ class GameTop():
         info_frame.place(anchor="n", relx=0.5, rely=0)
 
         # Money and Health variables
-        self.money = 500
+        self.money = 500000
         self.health = 100
 
         # Money and Health labels
@@ -447,16 +447,17 @@ class GameTop():
                     else:
                         tower_type = {"o": Orc, "t": Tank}[key]
                         self.enemies.append(tower_type(self.map[0] - V2(tower_type.center_pos), (0, 0)))
-
+            in_range = []
             # Tower - Enemy interaction
             for t in self.towers:
                 if time.time() - t.last_attack_time > t.cooldown:
-                    in_range = []
+                    
                     for e in self.enemies:
                         if not (min(e.pos) < 0 or e.pos.x > 1400 * widthRatio or e.pos.y > 900 * heightRatio):  # Check if enemy is in room
                             distance = t.base_center.distance_to(e.get_center())
                             if distance < t.range:
                                 in_range.append((e, distance))
+                                
                     target = None
 
                     if len(in_range) != 0:
@@ -484,10 +485,17 @@ class GameTop():
                     if p.get_rect().colliderect(e.get_rect()):
                         self.projectiles.remove(p)
                         e.health -= p.damage
+                        # ind2 = in_range.index(e)
                         if e.health <= 0:
                             if isinstance(e, Tank):
-                                self.enemies.append(Orc(e.pos, e.vel))
-                                self.enemies.append(Orc(e.pos - V2(1, 1), e.vel))                                
+                                indx = self.enemies.index(e)
+                                self.enemies.insert(indx + 1, Orc(e.pos, e.vel))
+                                self.enemies.insert(indx + 2, Orc(e.pos - V2(1, 1), e.vel))
+                            # for t in self.towers:
+                            #        distance = t.base_center.distance_to(e.get_center())
+                            #        distance1 = t.base_center.distance_to(e.get_center())  
+                            #        in_range.insert(ind2, (self.enemies[indx + 1], distance))
+                            #        in_range.insert(ind2, (self.enemies[indx + 2], distance1))                              
                             self.enemies.remove(e)
                             self.money += e.value  # Collect value of enemy
                             p.tower.kills += 1  # Iterate tower kill counter

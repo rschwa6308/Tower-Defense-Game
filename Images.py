@@ -1,7 +1,8 @@
 import pygame as pg
 import os
+from ScreenConvert import *
 
-background_image = pg.Surface((1400, 900))
+background_image = pg.Surface((1400 * widthRatio * 1.2, 900 * heightRatio))
 # Circular gradient
 # for radius in reversed(range(1, int((700**2 + 450**2)**0.5))):
 #     n = radius / 900.0
@@ -28,6 +29,7 @@ wall_image = load("wall")
 splash_image = load("splash")
 
 orc_image = load("orc")
+# orc_image = load("orc2")
 tank_image = load("tank")
 
 arrow_image = load("arrow")

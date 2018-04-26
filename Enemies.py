@@ -8,6 +8,7 @@ from Images import *
 class Enemy:
     last_attack_time = 0.0
     distance_traveled = 0.0
+    indexRange = 0
 
     def __init__(self, pos, vel):
         if pos == "edge":
@@ -23,7 +24,7 @@ class Enemy:
             self.vel = a / a.length() * self.speed  # Scale unit vector
         elif vel == "center":
             rel_pos = V2(self.pos.x - 700, self.pos.y - 450)
-            rel_pos += V2(uniform(-150, 150), uniform(-150, 150))           # Introduce slight random variance
+            rel_pos += V2(uniform(-150, 150), uniform(-150, 150))  # Introduce slight random variance
             self.vel = rel_pos / rel_pos.length() * self.speed * -1
         else:
             self.vel = V2(vel)
@@ -34,6 +35,12 @@ class Enemy:
 
     def get_rect(self):
         return pg.Rect(self.pos.x, self.pos.y, 50, 50)
+
+    def setIndexRange(self, num):
+        indexRange = num
+
+    def getIndexRange(self):
+        return indexRange
 
 
 class Orc(Enemy):
