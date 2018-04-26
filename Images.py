@@ -1,8 +1,8 @@
 import pygame as pg
 import os
+from ScreenConvert import *
 
-
-background_image = pg.Surface((1400, 900))
+background_image = pg.Surface((1400 * widthRatio * 1.2, 900 * heightRatio))
 # Circular gradient
 # for radius in reversed(range(1, int((700**2 + 450**2)**0.5))):
 #     n = radius / 900.0
@@ -12,12 +12,13 @@ background_image = pg.Surface((1400, 900))
 # Linear gradient
 for y in range(900):
     n = y / 900.0
-    color = (int((1 - n) * 200), int((1 - n) * 200), 255)             # White -> Blue
+    color = (int((1 - n) * 200), int((1 - n) * 200), 255)  # White -> Blue
     pg.draw.line(background_image, color, (0, y), (1400, y), 1)
 
 
 def load(name):
     return pg.image.load(os.path.join("Assets", name + ".png"))
+
 
 base_image = load("base")
 
@@ -25,8 +26,10 @@ archer_image = load("archer_tower")
 mage_image = load("fire_mage_tower")
 sniper_image = load("sniper_tower")
 wall_image = load("wall")
+splash_image = load("splash")
 
 orc_image = load("orc")
+# orc_image = load("orc2")
 tank_image = load("tank")
 
 arrow_image = load("arrow")

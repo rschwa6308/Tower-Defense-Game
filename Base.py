@@ -2,12 +2,16 @@ from pygame.math import Vector2 as V2
 import pygame as pg
 
 from Images import base_image
+from Maps import *
+from ScreenConvert import *
+
+rect = None
 
 
 class Base:
     name = "Base"
     image = base_image
-    dims = (150, 100)
+    dims = (150 * widthRatio, 100 * heightRatio)
 
     max_health = 10000
     health = 10000
