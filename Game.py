@@ -42,8 +42,8 @@ class GameTop:
         self.health = 100
 
         # Money and Health labels
-        self.money_label = tk.Label(info_frame, text="$: " + str(self.money), font=("Candara", 20))
-        self.health_label = tk.Label(info_frame, text="<3: " + str(self.health), font=("Candara", 20))
+        self.money_label = tk.Label(info_frame, text="" + str(self.money), font=("Candara", 20))
+        self.health_label = tk.Label(info_frame, text="", font=("Candara", 20))
         self.money_label.grid(row=0)
         self.health_label.grid(row=1)
 
@@ -196,7 +196,7 @@ class GameTop:
 
     def update_labels(self):
         self.money_label["text"] = "$: " + str(self.money)
-        self.health_label["text"] = "<3: " + str(self.health)
+        self.health_label["text"] = u"\u2665" + ": " + str(self.health)
 
         for i in range(len(tower_types)):
             if self.money < tower_types[i].cost:
