@@ -475,6 +475,10 @@ class GameTop:
                         t.last_attack_time = time.time()
                         # Aim Projectile at Enemy
                         displacement = target.get_center() - t.base_center
+                        # First order aim correction (euler's method)
+                        # TODO: Make 'smart aim' a global upgrade
+                        displacement_correction = target.vel * (displacement.length() / t.projectile.speed)
+                        displacement += displacement_correction
                         vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
                         proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
                         proj.associate(t)
