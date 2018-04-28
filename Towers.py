@@ -34,12 +34,13 @@ class Tower:
             return int(round(30 * self.range_level + 1.3 ** (self.range_level - 1), -1))  # 30x + 1.3^(x - 1)
         elif attribute == "regen":
             return int(round(100 * self.regen_level + 1.3 ** (self.regen_level - 1), -1))  # 100x + 1.3^(x - 1)
-        
+
     def setPosition(self, pos):
         x = pos[0]
         y = pos[1]
 
         # print("x is: " + str(x) + " y is: " + str(y))
+
     def getPosition(self):
         return [x, y]
 
@@ -85,7 +86,7 @@ class Archer(Tower):
                 self.regen_level += 1
                 self.regen += 1
         else:
-            print("Cannot upgrade " + attribute + " anymore")        
+            print("Cannot upgrade " + attribute + " anymore")
 
     def getLevel(self, attribute):
         if attribute == "health":
@@ -146,7 +147,7 @@ class Mage(Tower):
                 self.regen_level += 1
                 self.regen += 1
         else:
-            print("Cannot upgrade " + attribute + " anymore")        
+            print("Cannot upgrade " + attribute + " anymore")
 
     def getLevel(self, attribute):
         if attribute == "health":
@@ -170,7 +171,7 @@ class Artillery(Tower):
     name = "Artillery"
     image = splash_image
     dims = (150 * widthRatio, 40 * heightRatio)
-    base_center_pos = (int(119 / 2), int (35 / 2)) 
+    base_center_pos = (int(119 / 2), int(35 / 2))
 
     max_health = 50
     health = 50
@@ -207,8 +208,8 @@ class Artillery(Tower):
                 self.regen_level += 1
                 self.regen += 1
         else:
-            print("Cannot upgrade " + attribute + " anymore")        
-            
+            print("Cannot upgrade " + attribute + " anymore")
+
     def getLevel(self, attribute):
         if attribute == "health":
             return self.health_level
@@ -220,7 +221,7 @@ class Artillery(Tower):
             return self.range_level
         elif attribute == "regen":
             return self.regen_level
-        
+
     def get_loot_value(self):
         return self.cost + \
                10 * (self.health_level + self.damage_level + self.speed_level + self.range_level - 4) + \
@@ -268,7 +269,7 @@ class Sniper(Tower):
                 self.regen_level += 1
                 self.regen += 1
         else:
-            print("Cannot upgrade " + attribute + " anymore")        
+            print("Cannot upgrade " + attribute + " anymore")
 
     def getLevel(self, attribute):
         if attribute == "health":

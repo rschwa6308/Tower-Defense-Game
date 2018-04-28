@@ -11,7 +11,6 @@ from ScreenConvert import *
 
 
 class GameTop():
-
     def __init__(self):
         self.alive = True
 
@@ -20,10 +19,12 @@ class GameTop():
         self.root.geometry("%dx%d%+d%+d" % (screenWidth, screenHeight, 100, 50))
         self.root.protocol('WM_DELETE_WINDOW', self.delete)
 
-        self.game_frame = tk.Frame(self.root, width=(screenWidth * widthMultiplier), height=(screenHeight * .9))  # creates embed frame for pg window
+        self.game_frame = tk.Frame(self.root, width=(screenWidth * widthMultiplier),
+                                   height=(screenHeight * .9))  # creates embed frame for pg window
         self.game_frame.grid(row=0, column=0, rowspan=3)
 
-        self.menu_frame = tk.Frame(self.root, width=screenWidth * (1 - widthMultiplier), height=(screenHeight * heightMultiplier))
+        self.menu_frame = tk.Frame(self.root, width=screenWidth * (1 - widthMultiplier),
+                                   height=(screenHeight * heightMultiplier))
         self.menu_frame.grid(row=0, column=1)
 
         info_frame = tk.Frame(self.menu_frame)
@@ -111,7 +112,8 @@ class GameTop():
         modes = ["first", "last", "closest", "strongest"]
         self.aim_mode = tk.StringVar()
         self.aim_mode_buttons = [tk.Radiobutton(self.upgrade_frame, text=mode, variable=self.aim_mode, value=mode,
-                                 command=self.update_mode_selected, font=("Candara", 10)) for mode in modes]
+                                                command=self.update_mode_selected, font=("Candara", 10)) for mode in
+                                 modes]
         self.kills_label = tk.Label(self.upgrade_frame, text="", font=("Candara", 10))
 
         # Instantiate game variables
@@ -122,13 +124,13 @@ class GameTop():
         self.projectiles = []
 
         # Draw map
-        
+
         # for i in range(len(self.map)-1):
         #    for j in range(self.map.width()-1):
         #        pg.surface.set_at(j,i, (255**(1 / i), (255**(1 / i), (255**(1 / i) ) )))
-        
+
         for i in range(len(self.map) - 1):
-            
+
             start, end = self.map[i], self.map[i + 1]
             pg.draw.line(background_image, path_color, start, end, 60)
             if i < len(self.map) - 1:
@@ -146,7 +148,7 @@ class GameTop():
 
         # Update the labels
         self.update_labels()
-        
+
         # Pass the map pixels to the figure out the brown pixels method
         wrongPixels(self.screen, path_color, self.base)
         # sendSizes(self.root)
@@ -223,7 +225,7 @@ class GameTop():
 
             for i in range(len(self.upgrade_buttons)):
                 if self.money < tower.get_upgrade_cost(["health", "damage", "speed", "range", "regen"][i]) \
-                or tower.getLevel(["health", "damage", "speed", "range", "regen"][i]) == 15:
+                        or tower.getLevel(["health", "damage", "speed", "range", "regen"][i]) == 15:
                     self.upgrade_buttons[i]["state"] = "disabled"
                 else:
                     self.upgrade_buttons[i]["state"] = "normal"
@@ -244,22 +246,27 @@ class GameTop():
 
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
-            pg.draw.rect(self.screen, red, pg.Rect(t.pos.x + 4, t.pos.y - 15, int((t.dims[0] - 6) * (float(t.health) / t.max_health)), 10), 0)
+            pg.draw.rect(self.screen, red,
+                         pg.Rect(t.pos.x + 4, t.pos.y - 15, int((t.dims[0] - 6) * (float(t.health) / t.max_health)),
+                                 10), 0)
             pg.draw.rect(self.screen, black, pg.Rect(t.pos.x + 2, t.pos.y - 15, t.dims[0] - 4, 10), 2)
             if t.hover or t.selected:
                 pg.draw.circle(self.screen, range_color, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
 
         for e in self.enemies:
             self.screen.blit(e.image, e.pos)
-            pg.draw.rect(self.screen, red, pg.Rect(e.pos.x + 2, e.pos.y - 15, int(48 * (float(e.health) / e.max_health)), 10), 0)
+            pg.draw.rect(self.screen, red,
+                         pg.Rect(e.pos.x + 2, e.pos.y - 15, int(48 * (float(e.health) / e.max_health)), 10), 0)
             pg.draw.rect(self.screen, black, pg.Rect(e.pos.x, e.pos.y - 15, 50, 10), 2)
 
         for p in self.projectiles:
             self.screen.blit(p.image, p.pos)
 
         self.screen.blit(self.base.image, self.base.pos)
-        pg.draw.rect(self.screen, red, pg.Rect(self.base.pos.x + 4, self.base.pos.y - 15, int((self.base.dims[0] - 6) * (float(self.base.health) / self.base.max_health)), 10), 0)
-        pg.draw.rect(self.screen, black, pg.Rect(self.base.pos.x + 2, self.base.pos.y - 15, self.base.dims[0] - 4, 10), 2)
+        pg.draw.rect(self.screen, red, pg.Rect(self.base.pos.x + 4, self.base.pos.y - 15, int(
+            (self.base.dims[0] - 6) * (float(self.base.health) / self.base.max_health)), 10), 0)
+        pg.draw.rect(self.screen, black, pg.Rect(self.base.pos.x + 2, self.base.pos.y - 15, self.base.dims[0] - 4, 10),
+                     2)
 
     def place_tower(self, tower_index):
         for b in self.tower_buttons:
@@ -291,7 +298,8 @@ class GameTop():
                             if old is not None:
                                 old.selected = False
                             pos = pg.mouse.get_pos()
-                            new = TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
+                            new = TowerType(
+                                (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
                             self.towers.append(new)
                             self.towers.sort(key=lambda t: t.pos.y)  # Sort towers based on y position (for rendering)
                             new.selected = True
@@ -317,23 +325,23 @@ class GameTop():
             # for t in self.towers:
             #    if test_rec.colliderect(t.rect):
             #        valid_location = False
-            #if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:  # TODO: fix this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            # if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:  # TODO: fix this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             #    valid_location = False
-            
+
             # Pass the map pixels to the figure out the brown pixels method
-                # wrongPixels(self.screen, path_color)
-            
+            # wrongPixels(self.screen, path_color)
+
             # for i in badPixels :
-                # pos = pg.mouse.get_pos()
+            # pos = pg.mouse.get_pos()
             """for pixel in badPixels:
                 map_rect_left = min(self.map, key=lambda x: x[0])[0]
                 map_rect_top = min(self.map, key=lambda x: x[1])[1]
                 p1 = pixel[0]
                 p2 = pixel[1]"""
-            if pos in  badPixels:
+            if pos in badPixels:
                 valid_location = False
             # print(pos)
-            
+
             # print(map_rect_left, map_rect_top)
             # offset = (test_rec.left - map_rect_left, test_rec.top - map_rect_top)
             # print(offset)
@@ -407,8 +415,8 @@ class GameTop():
             # Listen for user input
             for event in pg.event.get():
                 # if event.type == pg.KEYDOWN:
-                    # if event.key == pg.K_SPACE:
-                    #    wave_active = true
+                # if event.key == pg.K_SPACE:
+                #    wave_active = true
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         for t in self.towers:
@@ -451,13 +459,14 @@ class GameTop():
             # Tower - Enemy interaction
             for t in self.towers:
                 if time.time() - t.last_attack_time > t.cooldown:
-                    
+
                     for e in self.enemies:
-                        if not (min(e.pos) < 0 or e.pos.x > 1400 * widthRatio or e.pos.y > 900 * heightRatio):  # Check if enemy is in room
+                        if not (min(
+                                e.pos) < 0 or e.pos.x > 1400 * widthRatio or e.pos.y > 900 * heightRatio):  # Check if enemy is in room
                             distance = t.base_center.distance_to(e.get_center())
                             if distance < t.range:
                                 in_range.append((e, distance))
-                                
+
                     target = None
 
                     if len(in_range) != 0:
