@@ -22,7 +22,7 @@ class Enemy:
             self.vel = a / a.length() * self.speed  # Scale unit vector
         elif vel == "center":
             rel_pos = V2(self.pos.x - 700, self.pos.y - 450)
-            rel_pos += V2(uniform(-150, 150), uniform(-150, 150))           # Introduce slight random variance
+            rel_pos += V2(uniform(-150, 150), uniform(-150, 150))  # Introduce slight random variance
             self.vel = rel_pos / rel_pos.length() * self.speed * -1
         else:
             self.vel = V2(vel)

@@ -9,19 +9,29 @@ from Waves import *
 from Maps import *
 
 
-class GameTop():
-    def __init__(self):
+class GameTop:
+    def __init__(self, game_width, game_height):
         self.alive = True
 
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
-        self.root.geometry("%dx%d%+d%+d" % (1600, 900, 100, 50))
         self.root.protocol('WM_DELETE_WINDOW', self.delete)
 
-        self.game_frame = tk.Frame(self.root, width=1400, height=900)  # creates embed frame for pg window
+        # get dimensions of screen
+        sw = self.root.winfo_screenwidth()
+        sh = self.root.winfo_screenheight()
+
+        # calculate x and y coordinates for the Tk root window
+        x = (sw / 2) - (game_width / 2)
+        y = (sh / 2) - (game_height / 2)
+
+        # set root size and position within screen
+        self.root.geometry("%dx%d%+d%+d" % (game_width, game_height, x, y))
+
+        self.game_frame = tk.Frame(self.root, width=game_width-200, height=game_height)  # creates embed frame for pg window
         self.game_frame.grid(row=0, column=0, rowspan=3)
 
-        self.menu_frame = tk.Frame(self.root, width=200, height=900)
+        self.menu_frame = tk.Frame(self.root, width=200, height=game_height)
         self.menu_frame.grid(row=0, column=1)
 
         info_frame = tk.Frame(self.menu_frame)
@@ -112,10 +122,11 @@ class GameTop():
                                                 command=self.update_mode_selected, font=("Candara", 10)) for mode in
                                  modes]
         self.kills_label = tk.Label(self.upgrade_frame, text="", font=("Candara", 10))
+        self.sell_tower_button = tk.Button(self.upgrade_frame, text="", font=("Candara", 10), command=self.sell_tower)
 
         # Instantiate game variables
         self.map = test_map
-        self.base = Base((1400 / 2, 900 / 2))
+        self.base = Base((self.game_frame["width"] // 2, self.game_frame["height"] // 2))
         self.towers = []
         self.enemies = []
         self.projectiles = []
@@ -134,7 +145,8 @@ class GameTop():
         os.environ['SDL_VIDEODRIVER'] = 'windib'
 
         # Instantiate pygame screen
-        self.screen = pg.display.set_mode((1400, 900))
+        self.screen = pg.display.set_mode((self.game_frame["width"], self.game_frame["height"]))
+        self.generate_background_image()
         self.update_screen()
 
         # Update the labels
@@ -223,12 +235,13 @@ class GameTop():
                     button.deselect()
 
             self.kills_label["text"] = "kills: " + str(tower.kills)
+            self.sell_tower_button["text"] = "sell ${0}".format(tower.get_loot_value())
 
         self.root.update()
 
     def update_screen(self):
         # self.screen.fill(bg_color)
-        self.screen.blit(background_image, (0, 0))
+        self.screen.blit(self.background_image, (0, 0))
 
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
@@ -306,7 +319,7 @@ class GameTop():
             self.update_screen()
             pos = pg.mouse.get_pos()
 
-            # Determine if potential tower location is colliding with existing towers or with walls or with enemies
+            # Determine if potential tower location is colliding with existing towers, walls, enemies, or the base
             valid_location = True
             test_rec = pg.Rect(pos[0] - TowerType.base_center_pos[0],
                                pos[1] - TowerType.base_center_pos[1],
@@ -318,6 +331,8 @@ class GameTop():
                 if test_rec.colliderect(e.get_rect()):
                     valid_location = False
             if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:
+                valid_location = False
+            if test_rec.colliderect(self.base.rect):
                 valid_location = False
 
             self.screen.blit(preview, (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
@@ -363,7 +378,31 @@ class GameTop():
         for i in range(len(self.aim_mode_buttons)):
             self.aim_mode_buttons[i].grid(row=int(5 + i / 2), column=2 * int(i % 2))
 
-        self.kills_label.grid(row=7, column=1)
+        self.kills_label.grid(row=7, column=0)
+        self.sell_tower_button.grid(row=7, column=2)
+
+    def sell_tower(self):
+        selected = self.get_selected()
+        self.money += selected.get_loot_value()
+        self.towers.remove(selected)
+        self.update_labels()
+        # self.update_screen()
+
+    def generate_background_image(self):
+        w = self.game_frame["width"]
+        h = self.game_frame["height"]
+        self.background_image = pg.Surface((w, h))
+        # Circular gradient
+        # for radius in reversed(range(1, int((700**2 + 450**2)**0.5))):
+        #     n = radius / 900.0
+        #     print(n)
+        #     color = (int((1 - n) * 200), int((1 - n) * 200), 255)             # White -> Blue
+        #     pg.draw.circle(self.background_image, color, (700, 450), radius, 0)
+        # Linear gradient
+        for y in range(h):
+            n = y / h
+            color = (int((1 - n) * 200), int((1 - n) * 200), 255)  # White -> Blue
+            pg.draw.line(self.background_image, color, (0, y), (w, y), 1)
 
     # Called when 'play' is pressed; Runs the next wave
     def play_wave(self):
@@ -458,7 +497,6 @@ class GameTop():
             for e in self.enemies:
                 e.pos += e.vel
                 # TEMPORARY wall collision
-                if (e.vel.x > 0) == (e.pos.x - 700 > 0):                                    # Allow enemies to enter
                 if (e.vel.x > 0) == (e.pos.x - 700 > 0):  # Allow enemies to enter
                     if e.pos.x < 0 or e.pos.x > 1400 - e.get_rect().width: e.vel.x *= -1
                 if (e.vel.y > 0) == (e.pos.y - 450 > 0):  # Allow enemies to enter
@@ -535,10 +573,10 @@ class GameTop():
         self.wave_button["state"] = "normal"
 
 
-def main():
-    game = GameTop()
+def launch(game_width, game_height):
+    game = GameTop(game_width, game_height)
     game.mainloop()
 
 
 if __name__ == "__main__":
-    main()
+    launch()
