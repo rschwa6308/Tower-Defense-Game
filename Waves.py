@@ -11,6 +11,9 @@ waves = [
 ]
 
 
+# TODO: make enemy spawn location aware of screen size!!!
 def get_wave(number):
-    return [Orc(pos="edge", vel="center") for _ in range(6 * number)] + \
+    wave = [Orc(pos="edge", vel="center") for _ in range(6 * number)] + \
            [Tank(pos="edge", vel="center") for _ in range(1 * number)]
+
+    return wave

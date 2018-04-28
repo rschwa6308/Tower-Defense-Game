@@ -28,7 +28,8 @@ class GameTop:
         # set root size and position within screen
         self.root.geometry("%dx%d%+d%+d" % (game_width, game_height, x, y))
 
-        self.game_frame = tk.Frame(self.root, width=game_width-200, height=game_height)  # creates embed frame for pg window
+        self.game_frame = tk.Frame(self.root, width=game_width - 200,
+                                   height=game_height)  # creates embed frame for pg window
         self.game_frame.grid(row=0, column=0, rowspan=3)
 
         self.menu_frame = tk.Frame(self.root, width=200, height=game_height)
@@ -38,7 +39,7 @@ class GameTop:
         info_frame.place(anchor="n", relx=0.5, rely=0)
 
         # Money and Health variables
-        self.money = 300
+        self.money = 30000000
         self.health = 100
 
         # Money and Health labels
@@ -49,7 +50,7 @@ class GameTop:
 
         # Wave count and play button
         self.wave = 1
-        self.wave_button = tk.Button(info_frame, text="wave 1\nstart", font=("Candara", 15), width=6, height=2,
+        self.wave_button = tk.Button(info_frame, text="wave 1\n" + u"\u25B6", font=("Candara", 15), width=6, height=2,
                                      command=self.play_wave)
         self.wave_button.grid(row=2, column=0)
 
@@ -330,7 +331,7 @@ class GameTop:
             for e in self.enemies:
                 if test_rec.colliderect(e.get_rect()):
                     valid_location = False
-            if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:
+            if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > self.game_frame["height"] or test_rec.x + test_rec.width > self.game_frame["width"]:
                 valid_location = False
             if test_rec.colliderect(self.base.rect):
                 valid_location = False
@@ -414,6 +415,9 @@ class GameTop:
         else:
             self.enemies = get_wave(self.wave)
 
+        for e in self.enemies:
+            e.aim_at(self.base)
+
         wave_active = True
         clock = pg.time.Clock()
         while wave_active:
@@ -455,7 +459,8 @@ class GameTop:
                 if time.time() - t.last_attack_time > t.cooldown:
                     in_range = []
                     for e in self.enemies:
-                        if not (min(e.pos) < 0 or e.pos.x > 1400 or e.pos.y > 900):  # Check if enemy is in room
+                        # Check if enemy is in room
+                        if not (min(e.pos) < 0 or e.pos.x > self.game_frame["width"] or e.pos.y > self.game_frame["height"]):
                             distance = t.base_center.distance_to(e.get_center())
                             if distance < t.range:
                                 in_range.append((e, distance))
@@ -573,7 +578,7 @@ class GameTop:
         pg.display.update()
 
         self.wave += 1
-        self.wave_button["text"] = "wave {0}\nstart".format(self.wave)
+        self.wave_button["text"] = "wave {0}\n".format(self.wave) + u"\u25B6"
         self.wave_button["state"] = "normal"
 
 
@@ -583,4 +588,4 @@ def launch(game_width, game_height):
 
 
 if __name__ == "__main__":
-    launch()
+    launch(1400, 900)
