@@ -109,12 +109,13 @@ class GameTop():
         modes = ["closest", "fastest", "strongest", "weakest"]
         self.aim_mode = tk.StringVar()
         self.aim_mode_buttons = [tk.Radiobutton(self.upgrade_frame, text=mode, variable=self.aim_mode, value=mode,
-                                 command=self.update_mode_selected, font=("Candara", 10)) for mode in modes]
+                                                command=self.update_mode_selected, font=("Candara", 10)) for mode in
+                                 modes]
         self.kills_label = tk.Label(self.upgrade_frame, text="", font=("Candara", 10))
 
         # Instantiate game variables
         self.map = test_map
-        self.base = Base((1400/2, 900/2))
+        self.base = Base((1400 / 2, 900 / 2))
         self.towers = []
         self.enemies = []
         self.projectiles = []
@@ -231,22 +232,27 @@ class GameTop():
 
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
-            pg.draw.rect(self.screen, red, pg.Rect(t.pos.x + 4, t.pos.y - 15, int((t.dims[0] - 6) * (float(t.health) / t.max_health)), 10), 0)
+            pg.draw.rect(self.screen, red,
+                         pg.Rect(t.pos.x + 4, t.pos.y - 15, int((t.dims[0] - 6) * (float(t.health) / t.max_health)),
+                                 10), 0)
             pg.draw.rect(self.screen, black, pg.Rect(t.pos.x + 2, t.pos.y - 15, t.dims[0] - 4, 10), 2)
             if t.hover or t.selected:
                 pg.draw.circle(self.screen, range_color, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
 
         for e in self.enemies:
             self.screen.blit(e.image, e.pos)
-            pg.draw.rect(self.screen, red, pg.Rect(e.pos.x + 2, e.pos.y - 15, int(48 * (float(e.health) / e.max_health)), 10), 0)
+            pg.draw.rect(self.screen, red,
+                         pg.Rect(e.pos.x + 2, e.pos.y - 15, int(48 * (float(e.health) / e.max_health)), 10), 0)
             pg.draw.rect(self.screen, black, pg.Rect(e.pos.x, e.pos.y - 15, 50, 10), 2)
 
         for p in self.projectiles:
             self.screen.blit(p.image, p.pos)
 
         self.screen.blit(self.base.image, self.base.pos)
-        pg.draw.rect(self.screen, red, pg.Rect(self.base.pos.x + 4, self.base.pos.y - 15, int((self.base.dims[0] - 6) * (float(self.base.health) / self.base.max_health)), 10), 0)
-        pg.draw.rect(self.screen, black, pg.Rect(self.base.pos.x + 2, self.base.pos.y - 15, self.base.dims[0] - 4, 10), 2)
+        pg.draw.rect(self.screen, red, pg.Rect(self.base.pos.x + 4, self.base.pos.y - 15, int(
+            (self.base.dims[0] - 6) * (float(self.base.health) / self.base.max_health)), 10), 0)
+        pg.draw.rect(self.screen, black, pg.Rect(self.base.pos.x + 2, self.base.pos.y - 15, self.base.dims[0] - 4, 10),
+                     2)
 
     def place_tower(self, tower_index):
         for b in self.tower_buttons:
@@ -263,7 +269,7 @@ class GameTop():
             return
         preview.fill((255, 255, 255, 180), None, pg.BLEND_RGBA_MULT)
 
-        pg.mouse.set_pos(self.screen.get_width() - 10, self.screen.get_height() / 2)        # Initialize mouse at edge
+        pg.mouse.set_pos(self.screen.get_width() - 10, self.screen.get_height() / 2)  # Initialize mouse at edge
         clock = pg.time.Clock()
         placed = False
         valid_location = True
@@ -278,9 +284,10 @@ class GameTop():
                             if old is not None:
                                 old.selected = False
                             pos = pg.mouse.get_pos()
-                            new = TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
+                            new = TowerType(
+                                (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
                             self.towers.append(new)
-                            self.towers.sort(key=lambda t: t.pos.y)    # Sort towers based on y position (for rendering)
+                            self.towers.sort(key=lambda t: t.pos.y)  # Sort towers based on y position (for rendering)
                             new.selected = True
                             self.select_tower(new)
 
@@ -354,7 +361,7 @@ class GameTop():
         self.root.update()
 
         for i in range(len(self.aim_mode_buttons)):
-            self.aim_mode_buttons[i].grid(row=int(5+i/2), column=2*int(i%2))
+            self.aim_mode_buttons[i].grid(row=int(5 + i / 2), column=2 * int(i % 2))
 
         self.kills_label.grid(row=7, column=1)
 
@@ -363,7 +370,7 @@ class GameTop():
         self.wave_button["text"] = "wave {0}\n...".format(self.wave)
         self.wave_button["state"] = "disabled"
 
-        if len(waves) >= self.wave:                 # Generate waves automatically after predefined waves are exhausted
+        if len(waves) >= self.wave:  # Generate waves automatically after predefined waves are exhausted
             self.enemies = waves[self.wave - 1]
         else:
             self.enemies = get_wave(self.wave)
@@ -409,7 +416,7 @@ class GameTop():
                 if time.time() - t.last_attack_time > t.cooldown:
                     in_range = []
                     for e in self.enemies:
-                        if not (min(e.pos) < 0 or e.pos.x > 1400 or e.pos.y > 900):         # Check if enemy is in room
+                        if not (min(e.pos) < 0 or e.pos.x > 1400 or e.pos.y > 900):  # Check if enemy is in room
                             distance = t.base_center.distance_to(e.get_center())
                             if distance < t.range:
                                 in_range.append((e, distance))
@@ -418,7 +425,7 @@ class GameTop():
                     # TODO: consider adding "random" option
                     if len(in_range) != 0:
                         if t.aim_mode == "closest":
-                            target = min(in_range, key=lambda x: x[1])[0]         # pick closest enemy
+                            target = min(in_range, key=lambda x: x[1])[0]  # pick closest enemy
                         elif t.aim_mode == "fastest":
                             target = min(in_range, key=lambda x: x[0].speed)[0]
                         elif t.aim_mode == "strongest":
@@ -429,7 +436,7 @@ class GameTop():
                         t.last_attack_time = time.time()
                         # Aim Projectile at Enemy
                         displacement = target.get_center() - t.base_center
-                        vel = (displacement / displacement.length()) * t.projectile.speed           # scale unit vector
+                        vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
                         proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
                         proj.associate(t)
                         self.projectiles.append(proj)
@@ -442,8 +449,8 @@ class GameTop():
                         e.health -= p.damage
                         if e.health <= 0:
                             self.enemies.remove(e)
-                            self.money += e.value       # Collect value of enemy
-                            p.tower.kills += 1          # Iterate tower kill counter
+                            self.money += e.value  # Collect value of enemy
+                            p.tower.kills += 1  # Iterate tower kill counter
                             self.update_labels()
                         break
 
@@ -452,8 +459,9 @@ class GameTop():
                 e.pos += e.vel
                 # TEMPORARY wall collision
                 if (e.vel.x > 0) == (e.pos.x - 700 > 0):                                    # Allow enemies to enter
+                if (e.vel.x > 0) == (e.pos.x - 700 > 0):  # Allow enemies to enter
                     if e.pos.x < 0 or e.pos.x > 1400 - e.get_rect().width: e.vel.x *= -1
-                if (e.vel.y > 0) == (e.pos.y - 450 > 0):                                    # Allow enemies to enter
+                if (e.vel.y > 0) == (e.pos.y - 450 > 0):  # Allow enemies to enter
                     if e.pos.y < 0 or e.pos.y > 900 - e.get_rect().height: e.vel.y *= -1
 
                 # Enemy - Tower collision
@@ -493,7 +501,7 @@ class GameTop():
                             wave_active = False
                             # TODO: Add death screen
 
-            self.enemies.sort(key=lambda e: e.pos.y)        # Sort enemies for proper rendering order
+            self.enemies.sort(key=lambda e: e.pos.y)  # Sort enemies for proper rendering order
 
             # Projectile movement
             for p in self.projectiles:
