@@ -39,7 +39,7 @@ class GameTop:
         info_frame.place(anchor="n", relx=0.5, rely=0)
 
         # Money and Health variables
-        self.money = 30000000
+        self.money = 300
         self.health = 100
 
         # Money and Health labels
@@ -410,10 +410,7 @@ class GameTop:
         self.wave_button["text"] = "wave {0}\n...".format(self.wave)
         self.wave_button["state"] = "disabled"
 
-        if len(waves) >= self.wave:  # Generate waves automatically after predefined waves are exhausted
-            self.enemies = waves[self.wave - 1]
-        else:
-            self.enemies = get_wave(self.wave)
+        self.enemies = get_wave(self.wave, self.base, int(self.game_frame["width"] * 0.8))
 
         for e in self.enemies:
             e.aim_at(self.base)
