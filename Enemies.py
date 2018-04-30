@@ -45,7 +45,7 @@ class Orc(Enemy):
     speed = 2
 
     max_health = 120
-    health = 120
+    health = max_health
     damage = 2
     cooldown = 2
     range = 50
@@ -61,9 +61,25 @@ class Tank(Enemy):
     speed = 1
 
     max_health = 500
-    health = 500
+    health = max_health
     damage = 5
     cooldown = 3
     range = 50
 
     value = 30
+
+
+class Runner(Enemy):
+    name = "Runner"
+    image = runner_image
+    center_pos = (25, 25)
+
+    speed = 3
+
+    max_health = 80
+    health = max_health
+    damage = 1
+    cooldown = 1
+    range = 50
+
+    value = 15

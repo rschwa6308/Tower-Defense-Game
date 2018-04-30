@@ -40,7 +40,7 @@ class Archer(Tower):
     base_center_pos = (35, 104)
 
     max_health = 20
-    health = 20
+    health = max_health
     damage = 100
     cooldown = 1
     range = 250
@@ -86,7 +86,7 @@ class Mage(Tower):
     base_center_pos = (35, 100)
 
     max_health = 15
-    health = 15
+    health = max_health
     damage = 200
     cooldown = 1
     range = 150
@@ -130,7 +130,7 @@ class Artillery(Tower):
     image = None
 
     max_health = 50
-    health = 50
+    health = max_health
     damage = 200
     cooldown = 2
     range = 150
@@ -173,7 +173,7 @@ class Sniper(Tower):
     base_center_pos = (0, 15)
 
     max_health = 50
-    health = 50
+    health = max_health
     damage = 200
     cooldown = 2
     range = 1000
@@ -220,7 +220,7 @@ class Wall(Tower):
     base_center_pos = (10, 10)
 
     max_health = 20
-    health = 20
+    health = max_health
     damage = 0
     cooldown = 10000000000000000000
     range = 17

@@ -14,8 +14,8 @@ def get_wave(number, base, spawn_radius):
     if number <= len(defined_waves):
         wave = defined_waves[number - 1]
     else:
-        wave = [Orc() for _ in range(6 * number)] + \
-               [Tank() for _ in range(1 * number)]
+        wave = [Orc() for _ in range(6 * number)] + [Tank() for _ in range(1 * number)] + \
+            [Runner() for _ in range(1 * number)]
 
     for e in wave:
         angle = uniform(0, 2 * math.pi)

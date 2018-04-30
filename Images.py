@@ -15,6 +15,7 @@ wall_image = load("wall")
 
 orc_image = load("orc")
 tank_image = load("tank")
+runner_image = load("runner")
 
 arrow_image = load("arrow")
 beam_image = load("beam")
