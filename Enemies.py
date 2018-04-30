@@ -8,24 +8,17 @@ from Images import *
 class Enemy:
     last_attack_time = 0
 
-    def __init__(self, pos, vel):
-        if pos == "edge":
-            angle = uniform(0, 2 * math.pi)
-            self.pos = V2(700 + 1200 * math.cos(angle), 450 + 1000 * math.sin(angle))
-            self.pos += V2(uniform(-200, 200), uniform(-200, 200))
-        else:
+    def __init__(self, pos=None, vel=None):
+        if pos:
             self.pos = V2(pos)
-
-        if vel == "random":
-            angle = uniform(0, 2 * math.pi)
-            a = V2((math.cos(angle), math.sin(angle)))
-            self.vel = a / a.length() * self.speed  # Scale unit vector
-        elif vel == "center":
-            rel_pos = V2(self.pos.x - 700, self.pos.y - 450)
-            rel_pos += V2(uniform(-150, 150), uniform(-150, 150))           # Introduce slight random variance
-            self.vel = rel_pos / rel_pos.length() * self.speed * -1
         else:
+            self.pos = V2(0, 0)
+
+        if vel:
             self.vel = V2(vel)
+        else:
+            self.vel = V2(0, 0)
+
         self.starting_vel = V2(self.vel)
 
     def get_center(self):
@@ -33,6 +26,15 @@ class Enemy:
 
     def get_rect(self):
         return pg.Rect(self.pos.x, self.pos.y, 50, 50)
+
+    def aim_at(self, target):
+        displacement = target.base_center - self.pos
+        self.vel = displacement.normalize() * self.speed
+
+    def refresh_target(self, towers, base):
+        non_walls = [t for t in towers if t.name != "Wall"]
+        new_target = min(non_walls + [base], key=lambda x: (x.pos - self.pos).length_squared())  # length_squared faster
+        self.aim_at(new_target)
 
 
 class Orc(Enemy):
@@ -43,7 +45,7 @@ class Orc(Enemy):
     speed = 2
 
     max_health = 120
-    health = 120
+    health = max_health
     damage = 2
     cooldown = 2
     range = 50
@@ -59,9 +61,25 @@ class Tank(Enemy):
     speed = 1
 
     max_health = 500
-    health = 500
+    health = max_health
     damage = 5
     cooldown = 3
     range = 50
 
     value = 30
+
+
+class Runner(Enemy):
+    name = "Runner"
+    image = runner_image
+    center_pos = (25, 25)
+
+    speed = 3
+
+    max_health = 80
+    health = max_health
+    damage = 1
+    cooldown = 1
+    range = 50
+
+    value = 15

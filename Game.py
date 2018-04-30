@@ -1,6 +1,5 @@
 import tkinter as tk
 import time
-import math
 
 from Base import *
 from Towers import *
@@ -9,13 +8,18 @@ from Waves import *
 from Maps import *
 
 
+
 class GameTop():
 
     def __init__(self):
+class GameTop:
+    def __init__(self, game_width, game_height):
+
         self.alive = True
         
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
+
         self.root.geometry("%dx%d%+d%+d" % (1366, 768, 100, 50))
         self.root.protocol('WM_DELETE_WINDOW', self.delete)
 
@@ -23,6 +27,26 @@ class GameTop():
         self.game_frame.grid(row=0, column=0, rowspan=3)
 
         self.menu_frame = tk.Frame(self.root, width=200, height=600)
+
+        self.root.protocol('WM_DELETE_WINDOW', self.delete)
+
+        # get dimensions of screen
+        sw = self.root.winfo_screenwidth()
+        sh = self.root.winfo_screenheight()
+
+        # calculate x and y coordinates for the Tk root window
+        x = (sw / 2) - (game_width / 2)
+        y = (sh / 2) - (game_height / 2)
+
+        # set root size and position within screen
+        self.root.geometry("%dx%d%+d%+d" % (game_width, game_height, x, y))
+
+        self.game_frame = tk.Frame(self.root, width=game_width - 200,
+                                   height=game_height)  # creates embed frame for pg window
+        self.game_frame.grid(row=0, column=0, rowspan=3)
+
+        self.menu_frame = tk.Frame(self.root, width=200, height=game_height)
+
         self.menu_frame.grid(row=0, column=1)
 
         info_frame = tk.Frame(self.menu_frame)
@@ -33,14 +57,14 @@ class GameTop():
         self.health = 100
 
         # Money and Health labels
-        self.money_label = tk.Label(info_frame, text="$: " + str(self.money), font=("Candara", 20))
-        self.health_label = tk.Label(info_frame, text="<3: " + str(self.health), font=("Candara", 20))
+        self.money_label = tk.Label(info_frame, text="" + str(self.money), font=("Candara", 20))
+        self.health_label = tk.Label(info_frame, text="", font=("Candara", 20))
         self.money_label.grid(row=0)
         self.health_label.grid(row=1)
 
         # Wave count and play button
         self.wave = 1
-        self.wave_button = tk.Button(info_frame, text="wave 1\nstart", font=("Candara", 15), width=6, height=2,
+        self.wave_button = tk.Button(info_frame, text="wave 1\n" + u"\u25B6", font=("Candara", 15), width=6, height=2,
                                      command=self.play_wave)
         self.wave_button.grid(row=2, column=0)
 
@@ -110,12 +134,18 @@ class GameTop():
         modes = ["closest", "fastest", "strongest", "weakest"]
         self.aim_mode = tk.StringVar()
         self.aim_mode_buttons = [tk.Radiobutton(self.upgrade_frame, text=mode, variable=self.aim_mode, value=mode,
-                                 command=self.update_mode_selected, font=("Candara", 10)) for mode in modes]
+                                                command=self.update_mode_selected, font=("Candara", 10)) for mode in
+                                 modes]
         self.kills_label = tk.Label(self.upgrade_frame, text="", font=("Candara", 10))
+        self.sell_tower_button = tk.Button(self.upgrade_frame, text="", font=("Candara", 10), command=self.sell_tower)
 
         # Instantiate game variables
         self.map = test_map
+
         self.base = Base((1400 / 2, 900 / 2))
+
+        self.base = Base((self.game_frame["width"] // 2, self.game_frame["height"] // 2))
+
         self.towers = []
         self.enemies = []
         self.projectiles = []
@@ -134,7 +164,8 @@ class GameTop():
         os.environ['SDL_VIDEODRIVER'] = 'windib'
 
         # Instantiate pygame screen
-        self.screen = pg.display.set_mode((1400, 900))
+        self.screen = pg.display.set_mode((self.game_frame["width"], self.game_frame["height"]))
+        self.generate_background_image()
         self.update_screen()
 
         # Update the labels
@@ -173,8 +204,9 @@ class GameTop():
             self.root.update()
 
     def delete(self):
+        self.wave_active = False
         self.alive = False
-        self.root.destroy()
+        quit()
 
     def get_selected(self):
         for t in self.towers:
@@ -184,7 +216,7 @@ class GameTop():
 
     def update_labels(self):
         self.money_label["text"] = "$: " + str(self.money)
-        self.health_label["text"] = "<3: " + str(self.health)
+        self.health_label["text"] = u"\u2665" + ": " + str(self.health)
 
         for i in range(len(tower_types)):
             if self.money < tower_types[i].cost:
@@ -223,31 +255,37 @@ class GameTop():
                     button.deselect()
 
             self.kills_label["text"] = "kills: " + str(tower.kills)
+            self.sell_tower_button["text"] = "sell ${0}".format(tower.get_loot_value())
 
         self.root.update()
 
     def update_screen(self):
         # self.screen.fill(bg_color)
-        self.screen.blit(background_image, (0, 0))
+        self.screen.blit(self.background_image, (0, 0))
 
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
-            pg.draw.rect(self.screen, red, pg.Rect(t.pos.x + 4, t.pos.y - 15, int((t.dims[0] - 6) * (float(t.health) / t.max_health)), 10), 0)
+            pg.draw.rect(self.screen, red,
+                         pg.Rect(t.pos.x + 4, t.pos.y - 15, int((t.dims[0] - 6) * (float(t.health) / t.max_health)),
+                                 10), 0)
             pg.draw.rect(self.screen, black, pg.Rect(t.pos.x + 2, t.pos.y - 15, t.dims[0] - 4, 10), 2)
             if t.hover or t.selected:
                 pg.draw.circle(self.screen, range_color, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
 
         for e in self.enemies:
             self.screen.blit(e.image, e.pos)
-            pg.draw.rect(self.screen, red, pg.Rect(e.pos.x + 2, e.pos.y - 15, int(48 * (float(e.health) / e.max_health)), 10), 0)
+            pg.draw.rect(self.screen, red,
+                         pg.Rect(e.pos.x + 2, e.pos.y - 15, int(48 * (float(e.health) / e.max_health)), 10), 0)
             pg.draw.rect(self.screen, black, pg.Rect(e.pos.x, e.pos.y - 15, 50, 10), 2)
 
         for p in self.projectiles:
             self.screen.blit(p.image, p.pos)
 
         self.screen.blit(self.base.image, self.base.pos)
-        pg.draw.rect(self.screen, red, pg.Rect(self.base.pos.x + 4, self.base.pos.y - 15, int((self.base.dims[0] - 6) * (float(self.base.health) / self.base.max_health)), 10), 0)
-        pg.draw.rect(self.screen, black, pg.Rect(self.base.pos.x + 2, self.base.pos.y - 15, self.base.dims[0] - 4, 10), 2)
+        pg.draw.rect(self.screen, red, pg.Rect(self.base.pos.x + 4, self.base.pos.y - 15, int(
+            (self.base.dims[0] - 6) * (float(self.base.health) / self.base.max_health)), 10), 0)
+        pg.draw.rect(self.screen, black, pg.Rect(self.base.pos.x + 2, self.base.pos.y - 15, self.base.dims[0] - 4, 10),
+                     2)
 
     def place_tower(self, tower_index):
         for b in self.tower_buttons:
@@ -268,7 +306,7 @@ class GameTop():
         clock = pg.time.Clock()
         placed = False
         valid_location = True
-        while not placed:
+        while not placed and self.alive:
             clock.tick(60)
 
             for event in pg.event.get():
@@ -279,11 +317,14 @@ class GameTop():
                             if old is not None:
                                 old.selected = False
                             pos = pg.mouse.get_pos()
-                            new = TowerType((pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
+                            new = TowerType(
+                                (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
                             self.towers.append(new)
                             self.towers.sort(key=lambda t: t.pos.y)  # Sort towers based on y position (for rendering)
                             new.selected = True
                             self.select_tower(new)
+                            for e in self.enemies: e.refresh_target(self.towers,
+                                                                    self.base)  # Allow enemies to find new tower
 
                             self.money -= TowerType.cost  # Pay for tower
                             if self.money < TowerType.cost:
@@ -300,7 +341,7 @@ class GameTop():
             self.update_screen()
             pos = pg.mouse.get_pos()
 
-            # Determine if potential tower location is colliding with existing towers or with walls or with enemies
+            # Determine if potential tower location is colliding with existing towers, walls, enemies, or the base
             valid_location = True
             test_rec = pg.Rect(pos[0] - TowerType.base_center_pos[0],
                                pos[1] - TowerType.base_center_pos[1],
@@ -311,7 +352,10 @@ class GameTop():
             for e in self.enemies:
                 if test_rec.colliderect(e.get_rect()):
                     valid_location = False
-            if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > 900 or test_rec.x + test_rec.width > 1400:
+            if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > self.game_frame[
+                "height"] or test_rec.x + test_rec.width > self.game_frame["width"]:
+                valid_location = False
+            if test_rec.colliderect(self.base.rect):
                 valid_location = False
 
             self.screen.blit(preview, (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
@@ -357,7 +401,31 @@ class GameTop():
         for i in range(len(self.aim_mode_buttons)):
             self.aim_mode_buttons[i].grid(row=int(5 + i / 2), column=2 * int(i % 2))
 
-        self.kills_label.grid(row=7, column=1)
+        self.kills_label.grid(row=7, column=0)
+        self.sell_tower_button.grid(row=7, column=2)
+
+    def sell_tower(self):
+        selected = self.get_selected()
+        self.money += selected.get_loot_value()
+        self.towers.remove(selected)
+        self.update_labels()
+        # self.update_screen()
+
+    def generate_background_image(self):
+        w = self.game_frame["width"]
+        h = self.game_frame["height"]
+        self.background_image = pg.Surface((w, h))
+        # Circular gradient
+        # for radius in reversed(range(1, int((700**2 + 450**2)**0.5))):
+        #     n = radius / 900.0
+        #     print(n)
+        #     color = (int((1 - n) * 200), int((1 - n) * 200), 255)             # White -> Blue
+        #     pg.draw.circle(self.background_image, color, (700, 450), radius, 0)
+        # Linear gradient
+        for y in range(h):
+            n = y / h
+            color = (int((1 - n) * 200), int((1 - n) * 200), 255)  # White -> Blue
+            pg.draw.line(self.background_image, color, (0, y), (w, y), 1)
 
     # Called when 'play' is pressed; Runs the next wave
     def play_wave(self):
@@ -368,10 +436,13 @@ class GameTop():
             self.enemies = waves[self.wave - 1]
         else:
             self.enemies = get_wave(self.wave)
+        self.enemies = get_wave(self.wave, self.base, int(self.game_frame["width"] * 0.8))
+
+        for e in self.enemies: e.refresh_target(self.towers, self.base)
 
         wave_active = True
         clock = pg.time.Clock()
-        while wave_active:
+        while wave_active and self.alive:
             clock.tick(60)
 
             # Listen for user input
@@ -411,6 +482,9 @@ class GameTop():
                     in_range = []
                     for e in self.enemies:
                         if not (min(e.pos) < 0 or e.pos.x > 1400 or e.pos.y > 900):  # Check if enemy is in room
+                        # Check if enemy is in room
+                        if not (min(e.pos) < 0 or e.pos.x > self.game_frame["width"] or e.pos.y > self.game_frame[
+                            "height"]):
                             distance = t.base_center.distance_to(e.get_center())
                             if distance < t.range:
                                 in_range.append((e, distance))
@@ -430,6 +504,10 @@ class GameTop():
                         t.last_attack_time = time.time()
                         # Aim Projectile at Enemy
                         displacement = target.get_center() - t.base_center
+                        # First order aim correction (euler's method)
+                        # TODO: Make 'smart aim' a global upgrade
+                        displacement_correction = target.vel * (displacement.length() / t.projectile.speed)
+                        displacement += displacement_correction
                         vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
                         proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
                         proj.associate(t)
@@ -481,9 +559,9 @@ class GameTop():
                                 self.towers.remove(t)
                                 self.money += t.get_loot_value()
                                 self.update_labels()
+                                # TODO: only refresh targeting of relevant enemies
                                 for e_ in self.enemies:
-                                    if e_.get_rect().colliderect(t.rect):
-                                        e_.vel = e.starting_vel
+                                    e_.refresh_target(self.towers, self.base)
 
                 # Enemy - Base interaction
                 if e_rect.colliderect(self.base.rect):
@@ -508,10 +586,7 @@ class GameTop():
             if len(self.enemies) == 0:
                 wave_active = False
 
-            try:
-                self.root.update()
-            except:
-                return
+            self.root.update()
             self.update_screen()
             pg.display.update()
 
@@ -524,14 +599,14 @@ class GameTop():
         pg.display.update()
 
         self.wave += 1
-        self.wave_button["text"] = "wave {0}\nstart".format(self.wave)
+        self.wave_button["text"] = "wave {0}\n".format(self.wave) + u"\u25B6"
         self.wave_button["state"] = "normal"
 
 
-def main():
-    game = GameTop()
+def launch(game_width, game_height):
+    game = GameTop(game_width, game_height)
     game.mainloop()
 
 
 if __name__ == "__main__":
-    main()
+    launch(1400, 900)

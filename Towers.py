@@ -22,7 +22,7 @@ class Tower:
 
     def get_upgrade_cost(self, attribute):
         if attribute == "health":
-            return int(round(30 * self.health_level + 1.3 ** (self.health_level - 1), -1)) # 30x + 1.3^(x - 1)
+            return int(round(30 * self.health_level + 1.3 ** (self.health_level - 1), -1))  # 30x + 1.3^(x - 1)
         elif attribute == "damage":
             return int(round(30 * self.damage_level + 1.3 ** (self.damage_level - 1), -1))  # 30x + 1.3^(x - 1)
         elif attribute == "speed":
@@ -40,7 +40,7 @@ class Archer(Tower):
     base_center_pos = (35, 104)
 
     max_health = 20
-    health = 20
+    health = max_health
     damage = 100
     cooldown = 1
     range = 250
@@ -86,7 +86,7 @@ class Mage(Tower):
     base_center_pos = (35, 100)
 
     max_health = 15
-    health = 15
+    health = max_health
     damage = 200
     cooldown = 1
     range = 150
@@ -130,7 +130,7 @@ class Artillery(Tower):
     image = None
 
     max_health = 50
-    health = 50
+    health = max_health
     damage = 200
     cooldown = 2
     range = 150
@@ -173,7 +173,7 @@ class Sniper(Tower):
     base_center_pos = (0, 15)
 
     max_health = 50
-    health = 50
+    health = max_health
     damage = 200
     cooldown = 2
     range = 1000
@@ -211,6 +211,7 @@ class Sniper(Tower):
                10 * (self.health_level + self.damage_level + self.speed_level + self.range_level - 4) + \
                100 * (self.regen_level - 1)
 
+
 # TODO: make Walls a seperate abstract class
 class Wall(Tower):
     name = "Wall"
@@ -219,7 +220,7 @@ class Wall(Tower):
     base_center_pos = (10, 10)
 
     max_health = 20
-    health = 20
+    health = max_health
     damage = 0
     cooldown = 10000000000000000000
     range = 17
@@ -227,7 +228,7 @@ class Wall(Tower):
     damage_types = ['single']
     projectile = None
 
-    cost = 2
+    cost = 5
 
     def __init__(self, pos):
         self.pos = V2(pos)
@@ -236,7 +237,6 @@ class Wall(Tower):
 
     def get_loot_value(self):
         return 2
-
 
 
 tower_types = [Archer, Mage, Artillery, Sniper, Wall]
