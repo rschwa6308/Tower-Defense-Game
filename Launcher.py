@@ -27,7 +27,8 @@ class Launcher:
         self.width_entry.insert(0, "1400")  # default width 1600px
         self.height_entry.insert(0, "900")  # default height 900px
 
-        tk.Label(self.root, text="Tower Defense Game", font=("Candara", 20)).grid(row=0, column=0, columnspan=4, pady=10)
+        tk.Label(self.root, text="Tower Defense Game", font=("Candara", 20)).grid(row=0, column=0, columnspan=4,
+                                                                                  pady=10)
 
         tk.Label(self.root, text="Game Width (px):").grid(row=1, column=0)
         tk.Label(self.root, text="Game Height (px):").grid(row=2, column=0)
@@ -45,7 +46,6 @@ class Launcher:
 
     def run(self):
         self.root.mainloop()
-
 
 
 if __name__ == "__main__":

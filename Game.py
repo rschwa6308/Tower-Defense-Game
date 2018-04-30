@@ -1,6 +1,5 @@
 import tkinter as tk
 import time
-import math
 
 from Base import *
 from Towers import *
@@ -563,10 +562,7 @@ class GameTop:
             if len(self.enemies) == 0:
                 wave_active = False
 
-            try:
-                self.root.update()
-            except:
-                return
+            self.root.update()
             self.update_screen()
             pg.display.update()
 
