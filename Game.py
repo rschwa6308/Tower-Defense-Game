@@ -186,8 +186,9 @@ class GameTop:
             self.root.update()
 
     def delete(self):
+        self.wave_active = False
         self.alive = False
-        self.root.destroy()
+        quit()
 
     def get_selected(self):
         for t in self.towers:
@@ -287,7 +288,7 @@ class GameTop:
         clock = pg.time.Clock()
         placed = False
         valid_location = True
-        while not placed:
+        while not placed and self.alive:
             clock.tick(60)
 
             for event in pg.event.get():
@@ -304,6 +305,8 @@ class GameTop:
                             self.towers.sort(key=lambda t: t.pos.y)  # Sort towers based on y position (for rendering)
                             new.selected = True
                             self.select_tower(new)
+                            for e in self.enemies: e.refresh_target(self.towers,
+                                                                    self.base)  # Allow enemies to find new tower
 
                             self.money -= TowerType.cost  # Pay for tower
                             if self.money < TowerType.cost:
@@ -331,7 +334,8 @@ class GameTop:
             for e in self.enemies:
                 if test_rec.colliderect(e.get_rect()):
                     valid_location = False
-            if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > self.game_frame["height"] or test_rec.x + test_rec.width > self.game_frame["width"]:
+            if min(test_rec.topleft) < 0 or test_rec.y + test_rec.height > self.game_frame[
+                "height"] or test_rec.x + test_rec.width > self.game_frame["width"]:
                 valid_location = False
             if test_rec.colliderect(self.base.rect):
                 valid_location = False
@@ -412,12 +416,11 @@ class GameTop:
 
         self.enemies = get_wave(self.wave, self.base, int(self.game_frame["width"] * 0.8))
 
-        for e in self.enemies:
-            e.aim_at(self.base)
+        for e in self.enemies: e.refresh_target(self.towers, self.base)
 
         wave_active = True
         clock = pg.time.Clock()
-        while wave_active:
+        while wave_active and self.alive:
             clock.tick(60)
 
             # Listen for user input
@@ -457,7 +460,8 @@ class GameTop:
                     in_range = []
                     for e in self.enemies:
                         # Check if enemy is in room
-                        if not (min(e.pos) < 0 or e.pos.x > self.game_frame["width"] or e.pos.y > self.game_frame["height"]):
+                        if not (min(e.pos) < 0 or e.pos.x > self.game_frame["width"] or e.pos.y > self.game_frame[
+                            "height"]):
                             distance = t.base_center.distance_to(e.get_center())
                             if distance < t.range:
                                 in_range.append((e, distance))
@@ -532,9 +536,9 @@ class GameTop:
                                 self.towers.remove(t)
                                 self.money += t.get_loot_value()
                                 self.update_labels()
+                                # TODO: only refresh targeting of relevant enemies
                                 for e_ in self.enemies:
-                                    if e_.get_rect().colliderect(t.rect):
-                                        e_.vel = e.starting_vel
+                                    e_.refresh_target(self.towers, self.base)
 
                 # Enemy - Base interaction
                 if e_rect.colliderect(self.base.rect):

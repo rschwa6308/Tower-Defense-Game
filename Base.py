@@ -14,4 +14,5 @@ class Base:
 
     def __init__(self, center_pos):
         self.pos = V2(center_pos[0] - self.dims[0] / 2, center_pos[1] - self.dims[1] / 2)
+        self.base_center = self.pos + V2(self.dims[0]//2, self.dims[1]//2)
         self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])

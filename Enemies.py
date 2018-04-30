@@ -28,8 +28,13 @@ class Enemy:
         return pg.Rect(self.pos.x, self.pos.y, 50, 50)
 
     def aim_at(self, target):
-        displacement = target.pos - self.pos
+        displacement = target.base_center - self.pos
         self.vel = displacement.normalize() * self.speed
+
+    def refresh_target(self, towers, base):
+        non_walls = [t for t in towers if t.name != "Wall"]
+        new_target = min(non_walls + [base], key=lambda x: (x.pos - self.pos).length_squared())  # length_squared faster
+        self.aim_at(new_target)
 
 
 class Orc(Enemy):

@@ -228,7 +228,7 @@ class Wall(Tower):
     damage_types = ['single']
     projectile = None
 
-    cost = 2
+    cost = 5
 
     def __init__(self, pos):
         self.pos = V2(pos)
