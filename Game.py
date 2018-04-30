@@ -8,12 +8,26 @@ from Waves import *
 from Maps import *
 
 
+
+class GameTop():
+
+    def __init__(self):
 class GameTop:
     def __init__(self, game_width, game_height):
-        self.alive = True
 
+        self.alive = True
+        
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
+
+        self.root.geometry("%dx%d%+d%+d" % (1366, 768, 100, 50))
+        self.root.protocol('WM_DELETE_WINDOW', self.delete)
+
+        self.game_frame = tk.Frame(self.root, width=1200, height=650)  # creates embed frame for pg window
+        self.game_frame.grid(row=0, column=0, rowspan=3)
+
+        self.menu_frame = tk.Frame(self.root, width=200, height=600)
+
         self.root.protocol('WM_DELETE_WINDOW', self.delete)
 
         # get dimensions of screen
@@ -32,6 +46,7 @@ class GameTop:
         self.game_frame.grid(row=0, column=0, rowspan=3)
 
         self.menu_frame = tk.Frame(self.root, width=200, height=game_height)
+
         self.menu_frame.grid(row=0, column=1)
 
         info_frame = tk.Frame(self.menu_frame)
@@ -126,7 +141,11 @@ class GameTop:
 
         # Instantiate game variables
         self.map = test_map
+
+        self.base = Base((1400 / 2, 900 / 2))
+
         self.base = Base((self.game_frame["width"] // 2, self.game_frame["height"] // 2))
+
         self.towers = []
         self.enemies = []
         self.projectiles = []
@@ -413,6 +432,10 @@ class GameTop:
         self.wave_button["text"] = "wave {0}\n...".format(self.wave)
         self.wave_button["state"] = "disabled"
 
+        if len(waves) >= self.wave:  # Generate waves automatically after predefined waves are exhausted
+            self.enemies = waves[self.wave - 1]
+        else:
+            self.enemies = get_wave(self.wave)
         self.enemies = get_wave(self.wave, self.base, int(self.game_frame["width"] * 0.8))
 
         for e in self.enemies: e.refresh_target(self.towers, self.base)
@@ -458,6 +481,7 @@ class GameTop:
                 if time.time() - t.last_attack_time > t.cooldown:
                     in_range = []
                     for e in self.enemies:
+                        if not (min(e.pos) < 0 or e.pos.x > 1400 or e.pos.y > 900):  # Check if enemy is in room
                         # Check if enemy is in room
                         if not (min(e.pos) < 0 or e.pos.x > self.game_frame["width"] or e.pos.y > self.game_frame[
                             "height"]):
