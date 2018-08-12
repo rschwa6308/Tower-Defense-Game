@@ -55,13 +55,13 @@ class GameTop:
 
         # Tower Buttons
         button_frame = tk.Frame(self.menu_frame)
-        button_frame.place(anchor="n", relx=0.5, rely=0.2)
+        button_frame.place(anchor="n", relx=0.5, rely=0.23)
 
         # Tower buttons scroll bar and canvas
         vscrollbar = tk.Scrollbar(button_frame)
         vscrollbar.grid(row=0, column=1, sticky="ns")
 
-        button_canvas = tk.Canvas(button_frame, yscrollcommand=vscrollbar.set, width=160, height=360)
+        button_canvas = tk.Canvas(button_frame, yscrollcommand=vscrollbar.set, width=160, height=200)
         button_canvas.grid(row=0, column=0)
 
         vscrollbar.config(command=button_canvas.yview)
@@ -70,19 +70,19 @@ class GameTop:
         inner_button_frame = tk.Frame(button_canvas)
 
         self.tower_buttons = [
-            tk.Button(inner_button_frame, text=Archer.name + "\n$" + str(Archer.cost), font=("Candara", 20),
-                      width=10, height=2, command=lambda: self.place_tower(0)),
-            tk.Button(inner_button_frame, text=Mage.name + "\n$" + str(Mage.cost), font=("Candara", 20),
-                      width=10, height=2, command=lambda: self.place_tower(1)),
-            tk.Button(inner_button_frame, text=Artillery.name + "\n$" + str(Artillery.cost), font=("Candara", 20),
-                      width=10, height=2, command=lambda: self.place_tower(2)),
-            tk.Button(inner_button_frame, text=Sniper.name + "\n$" + str(Sniper.cost), font=("Candara", 20),
-                      width=10, height=2, command=lambda: self.place_tower(3)),
-            tk.Button(inner_button_frame, text=Wall.name + "\n$" + str(Wall.cost), font=("Candara", 20),
-                      width=10, height=2, command=lambda: self.place_tower(4))
+            tk.Button(inner_button_frame, text=Archer.name + "\n$" + str(Archer.cost), font=("Candara", 15),
+                      width=6, height=2, command=lambda: self.place_tower(0)),
+            tk.Button(inner_button_frame, text=Mage.name + "\n$" + str(Mage.cost), font=("Candara", 15),
+                      width=6, height=2, command=lambda: self.place_tower(1)),
+            tk.Button(inner_button_frame, text=Artillery.name + "\n$" + str(Artillery.cost), font=("Candara", 15),
+                      width=6, height=2, command=lambda: self.place_tower(2)),
+            tk.Button(inner_button_frame, text=Sniper.name + "\n$" + str(Sniper.cost), font=("Candara", 15),
+                      width=6, height=2, command=lambda: self.place_tower(3)),
+            tk.Button(inner_button_frame, text=Wall.name + "\n$" + str(Wall.cost), font=("Candara", 15),
+                      width=6, height=2, command=lambda: self.place_tower(4))
         ]
         for i in range(len(self.tower_buttons)):
-            self.tower_buttons[i].grid(row=i, column=0)
+            self.tower_buttons[i].grid(row=i // 2, column=i % 2)
 
         button_canvas.create_window(0, 0, anchor="nw", window=inner_button_frame)
         inner_button_frame.update_idletasks()
@@ -367,7 +367,7 @@ class GameTop:
             tower.aim_mode = self.aim_mode.get()
 
     def select_tower(self, tower):
-        self.upgrade_frame.place(anchor="n", relx=0.5, rely=0.65)
+        self.upgrade_frame.place(anchor="n", relx=0.5, rely=0.55)
         self.update_labels()
         for y in range(len(self.upgrade_labels)):
             self.upgrade_labels[y].grid(row=y, column=0)
