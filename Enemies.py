@@ -41,7 +41,9 @@ class Enemy:
 
     def getIndexRange(self):
         return indexRange
-
+    
+    '''def kill(self, array):
+        self.health =0''' #thought needed don't but using something like this would be better
 
 class Orc(Enemy):
     name = "Orc"

@@ -2,18 +2,25 @@ import pygame as pg
 import os
 from ScreenConvert import *
 
-background_image = pg.Surface((1400 * widthRatio * 1.2, 900 * heightRatio))
+width = 1400 * widthRatio * 1.2
+height = 900 * heightRatio
+
+background_image = pg.Surface((width, height))
+
+tint = (255,255,255) #This allows the color of the gradient to be changed somewhat(not fully else the function has to be changed)
 # Circular gradient
 # for radius in reversed(range(1, int((700**2 + 450**2)**0.5))):
 #     n = radius / 900.0
 #     print(n)
 #     color = (int((1 - n) * 200), int((1 - n) * 200), 255)             # White -> Blue
 #     pg.draw.circle(background_image, color, (700, 450), radius, 0)
+
+
 # Linear gradient
-for y in range(900):
-    n = y / 900.0
-    color = (int((1 - n) * 200), int((1 - n) * 200), 255)  # White -> Blue
-    pg.draw.line(background_image, color, (0, y), (1400, y), 1)
+for y in range(int(height)):
+    n = y / height
+    color = (int((1 - n) * tint[0]), int((1 - n) * tint[1]), tint[2])  # White -> Blue
+    pg.draw.line(background_image, color, (0, y), (width, y), 1)
 
 
 def load(name):

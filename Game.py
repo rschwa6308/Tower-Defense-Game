@@ -10,6 +10,7 @@ from Maps import *
 from ScreenConvert import *
 
 
+
 class GameTop():
 
     def __init__(self):
@@ -178,7 +179,7 @@ class GameTop():
                                 t.selected = False
                                 self.upgrade_frame.place_forget()
                                 self.root.update()
-
+                                
             self.update_screen()
             pg.display.update()
             self.root.update()
@@ -548,12 +549,17 @@ class GameTop():
 
                 # Enemy - Base interaction
                 if e.get_rect().colliderect(self.base.rect):
-                    e.vel = V2((0, 0))
+                    '''''e.vel = V2((0, 0))
                     if time.time() - e.last_attack_time > e.cooldown:
                         self.base.health -= e.damage
                         if self.base.health <= 0:
-                            wave_active = False
-
+                            wave_active = False'''
+                    self.health -=1
+                    self.enemies.remove(e)
+                    self.update_labels()
+                    if self.health ==0:
+                        self.alive =False
+                    
             self.enemies.sort(key=lambda e: e.pos.y)  # Sort enemies for proper rendering order
 
             # Projectile movement
@@ -582,7 +588,8 @@ class GameTop():
         self.projectiles = []
         self.update_screen()
         pg.display.update()
-
+        
+        self.health=self.health
         self.wave += 1
         self.wave_button["text"] = "wave {0}\nstart".format(self.wave)
         self.wave_button["state"] = "normal"

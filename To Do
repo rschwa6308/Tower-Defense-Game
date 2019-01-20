@@ -1,5 +1,10 @@
+Need:
+make attacks on tower actually change the hearts num and end game settings
+make so when repeat hit the wave button it updates the wave # and goes to next wave
+
 These are things that could be done--
 	making switching modes possible <-- Big step
+	make towers use ai to figure out when to attack
 	make better graphics
 	make towers rotate towards enemy they are firing at
 	make the enemy's difficulty scale more exponentially rather than in a logistic growth curve
