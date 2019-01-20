@@ -156,6 +156,9 @@ class GameTop():
         clock = pg.time.Clock()
         while self.alive:
             clock.tick(60)
+            
+            if self.health <=0:
+                self.alive =False
 
             # Listen for cursor hover over Tower
             mouse_pos = pg.mouse.get_pos()
@@ -183,7 +186,10 @@ class GameTop():
             self.update_screen()
             pg.display.update()
             self.root.update()
-
+        
+        """Something about the screen updating, printing an you lost message and returning to 'menu' """
+        
+        
     def delete(self):
         self.alive = False
         self.root.destroy()
@@ -388,211 +394,224 @@ class GameTop():
 
     # Called when 'play' is pressed; Runs the next wave
     def play_wave(self):
-        self.wave_button["text"] = "wave {0}\n...".format(self.wave)
-        # self.wave_button["state"] = "disabled"
+        if len(self.enemies)== 0: #Disabled for testing sometimes #so a wave only happens if there are no enemies on screen
+            self.wave_button["text"] = "wave {0}\n...".format(self.wave)
+            # self.wave_button["state"] = "disabled"
 
-        # if len(waves) >= self.wave:                 # Generate waves automatically after predefined waves are exhausted
-        #     self.enemies = waves[self.wave - 1]
-        # else:
-        #     self.enemies = get_wave(self.wave)
+            # if len(waves) >= self.wave:                 # Generate waves automatically after predefined waves are exhausted
+            #     self.enemies = waves[self.wave - 1]
+            # else:
+            #     self.enemies = get_wave(self.wave)
 
-        current_wave = get_wave(self.wave)
-        enemy_spawn_timestamp = time.time()
-        spawn_counter = 0
+            current_wave = get_wave(self.wave)
+            enemy_spawn_timestamp = time.time()
+            spawn_counter = 0
 
-        wave_active = True
-        clock = pg.time.Clock()
-        while wave_active:
-            clock.tick(60)
+            wave_active = True
+            clock = pg.time.Clock()
+            while wave_active:
+                clock.tick(60)
 
-            # Listen for user input
-            for event in pg.event.get():
-                # if event.type == pg.KEYDOWN:
-                    # if event.key == pg.K_SPACE:
-                    #    wave_active = true
-                if event.type == pg.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        for t in self.towers:
-                            if t.hover:
-                                for t_ in self.towers:
-                                    t_.selected = False
-                                t.selected = True
-                                self.select_tower(t)
-                                break
-                            else:
-                                t.selected = False
-                                self.upgrade_frame.place_forget()
-                                self.root.update()
+                # Listen for user input
+                for event in pg.event.get():
+                    # if event.type == pg.KEYDOWN:
+                        # if event.key == pg.K_SPACE:
+                        #    wave_active = true
+                    if event.type == pg.MOUSEBUTTONDOWN:
+                        if event.button == 1:
+                            for t in self.towers:
+                                if t.hover:
+                                    for t_ in self.towers:
+                                        t_.selected = False
+                                    t.selected = True
+                                    self.select_tower(t)
+                                    break
+                                else:
+                                    t.selected = False
+                                    self.upgrade_frame.place_forget()
+                                    self.root.update()
 
-            # Listen for cursor hover over Tower
-            mouse_pos = pg.mouse.get_pos()
-            for t in self.towers:
-                if t.rect.collidepoint(mouse_pos):
-                    t.hover = True
-                else:
-                    t.hover = False
-
-            # Tower Regen
-            for t in self.towers:
-                t.health = min(t.health + t.regen / 100.0, t.max_health)
-
-            # Spawn Enemies
-            if spawn_counter < len(current_wave):
-                if time.time() - enemy_spawn_timestamp > 0.1:  # 0.1 represents time between enemy spawns in seconds
-                    enemy_spawn_timestamp = time.time()
-                    key = current_wave[spawn_counter]
-                    spawn_counter += 1
-                    # print(key)
-                    if key == " ":
-                        pass
+                # Listen for cursor hover over Tower
+                mouse_pos = pg.mouse.get_pos()
+                for t in self.towers:
+                    if t.rect.collidepoint(mouse_pos):
+                        t.hover = True
                     else:
-                        tower_type = {"o": Orc, "t": Tank}[key]
-                        self.enemies.append(tower_type(self.map[0] - V2(tower_type.center_pos), (0, 0)))
-            in_range = []
-            # Tower - Enemy interaction
-            for t in self.towers:
-                if time.time() - t.last_attack_time > t.cooldown:
+                        t.hover = False
+
+                # Tower Regen
+                for t in self.towers:
+                    t.health = min(t.health + t.regen / 100.0, t.max_health)
+
+                # Spawn Enemies
+                if spawn_counter < len(current_wave):
+                    if time.time() - enemy_spawn_timestamp > 0.1:  # 0.1 represents time between enemy spawns in seconds
+                        enemy_spawn_timestamp = time.time()
+                        key = current_wave[spawn_counter]
+                        spawn_counter += 1
+                        # print(key)
+                        if key == " ":
+                            pass
+                        else:
+                            tower_type = {"o": Orc, "t": Tank}[key]
+                            self.enemies.append(tower_type(self.map[0] - V2(tower_type.center_pos), (0, 0)))
+                in_range = []
+                # Tower - Enemy interaction
+                for t in self.towers:
+                    if time.time() - t.last_attack_time > t.cooldown:
                     
-                    for e in self.enemies:
-                        if not (min(e.pos) < 0 or e.pos.x > 1400 * widthRatio or e.pos.y > 900 * heightRatio):  # Check if enemy is in room
-                            distance = t.base_center.distance_to(e.get_center())
-                            if distance < t.range:
-                                in_range.append((e, distance))
+                        for e in self.enemies:
+                            if not (min(e.pos) < 0 or e.pos.x > 1400 * widthRatio or e.pos.y > 900 * heightRatio):  # Check if enemy is in room
+                                distance = t.base_center.distance_to(e.get_center())
+                                if distance < t.range:
+                                    in_range.append((e, distance))
                                 
-                    target = None
+                        target = None
 
-                    if len(in_range) != 0:
-                        if t.aim_mode == "first":
-                            target = max(in_range, key=lambda x: x[0].distance_traveled)[0]
-                        elif t.aim_mode == "last":
-                            target = min(in_range, key=lambda x: x[0].distance_traveled)[0]
-                        elif t.aim_mode == "closest":
-                            target = min(in_range, key=lambda x: x[1])[0]
-                        elif t.aim_mode == "strongest":
-                            target = max(in_range, key=lambda x: x[0].health)[0]
+                        if len(in_range) != 0:
+                            if t.aim_mode == "first":
+                                target = max(in_range, key=lambda x: x[0].distance_traveled)[0]
+                            elif t.aim_mode == "last":
+                                target = min(in_range, key=lambda x: x[0].distance_traveled)[0]
+                            elif t.aim_mode == "closest":
+                                target = min(in_range, key=lambda x: x[1])[0]
+                            elif t.aim_mode == "strongest":
+                                target = max(in_range, key=lambda x: x[0].health)[0]
 
-                        t.last_attack_time = time.time()
-                        # Aim Projectile at Enemy
-                        displacement = target.get_center() - t.base_center
-                        displacement += displacement.length() / t.projectile.speed * target.vel  # account for target motion
-                        vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
-                        proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
-                        proj.associate(t)
-                        self.projectiles.append(proj)
+                            t.last_attack_time = time.time()
+                            # Aim Projectile at Enemy
+                            displacement = target.get_center() - t.base_center
+                            displacement += displacement.length() / t.projectile.speed * target.vel  # account for target motion
+                            vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
+                            proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
+                            proj.associate(t)
+                            self.projectiles.append(proj)
 
-            # Projectile - Enemy collision
-            for p in self.projectiles:
+                # Projectile - Enemy collision
+                for p in self.projectiles:
+                    for e in self.enemies:
+                        if p.get_rect().colliderect(e.get_rect()):
+                            self.projectiles.remove(p)
+                            e.health -= p.damage
+                            # ind2 = in_range.index(e)
+                            if e.health <= 0:
+                                if isinstance(e, Tank):
+                                    indx = self.enemies.index(e)
+                                    self.enemies.insert(indx + 1, Orc(e.pos, e.vel))
+                                    self.enemies.insert(indx + 2, Orc(e.pos - V2(1, 1), e.vel))
+                                # for t in self.towers:
+                                #        distance = t.base_center.distance_to(e.get_center())
+                                #        distance1 = t.base_center.distance_to(e.get_center())  
+                                #        in_range.insert(ind2, (self.enemies[indx + 1], distance))
+                                #        in_range.insert(ind2, (self.enemies[indx + 2], distance1))                              
+                                self.enemies.remove(e)
+                                self.money += e.value  # Collect value of enemy
+                                p.tower.kills += 1  # Iterate tower kill counter
+                                self.update_labels()
+                            break
+
+                # Enemy movement - OLD
+                # for e in self.enemies:
+                #     e.pos += e.vel
+                #     # TEMPORARY wall collision
+                #     if (e.vel.x > 0) == (e.pos.x - 700 > 0):                                    # Allow enemies to enter
+                #         if e.pos.x < 0 or e.pos.x > 1400 - e.get_rect().width: e.vel.x *= -1
+                #     if (e.vel.y > 0) == (e.pos.y - 450 > 0):                                    # Allow enemies to enter
+                #         if e.pos.y < 0 or e.pos.y > 900 - e.get_rect().height: e.vel.y *= -1
+                #
+                #     # Enemy - Tower collision
+                #     e_rect = e.get_rect()
+                #     for t in self.towers:
+                #         if e_rect.colliderect(t.rect):
+                #             e.vel = V2((0, 0))
+                #             if time.time() - e.last_attack_time > e.cooldown:
+                #                 e.last_attack_time = time.time()
+                #                 t.health -= e.damage
+                #                 if t.health <= 0:
+                #                     self.towers.remove(t)
+                #                     self.money += t.get_loot_value()
+                #                     self.update_labels()
+                #                     for e_ in self.enemies:
+                #                         if e_.get_rect().colliderect(t.rect):
+                #                             e_.vel = e.starting_vel
+                #
+                #     # Enemy - Base interaction
+                #     if e_rect.colliderect(self.base.rect):
+                #         e.vel = V2((0, 0))
+                #         if time.time() - e.last_attack_time > e.cooldown:
+                #             self.base.health -= e.damage
+                #             if self.base.health <= 0:
+                #                 wave_active = False
+                #                 # TODO: Add death screen
+
+                # Enemy Movement - NEW
                 for e in self.enemies:
-                    if p.get_rect().colliderect(e.get_rect()):
-                        self.projectiles.remove(p)
-                        e.health -= p.damage
-                        # ind2 = in_range.index(e)
-                        if e.health <= 0:
-                            if isinstance(e, Tank):
-                                indx = self.enemies.index(e)
-                                self.enemies.insert(indx + 1, Orc(e.pos, e.vel))
-                                self.enemies.insert(indx + 2, Orc(e.pos - V2(1, 1), e.vel))
-                            # for t in self.towers:
-                            #        distance = t.base_center.distance_to(e.get_center())
-                            #        distance1 = t.base_center.distance_to(e.get_center())  
-                            #        in_range.insert(ind2, (self.enemies[indx + 1], distance))
-                            #        in_range.insert(ind2, (self.enemies[indx + 2], distance1))                              
-                            self.enemies.remove(e)
-                            self.money += e.value  # Collect value of enemy
-                            p.tower.kills += 1  # Iterate tower kill counter
-                            self.update_labels()
-                        break
+                    e.pos += e.vel
+                    e.distance_traveled += e.speed
+                    # Turn at map corner
+                    for i in range(len(self.map) - 1):
+                        if e.get_center().distance_to(V2(self.map[i])) < e.speed + 1:
+                            e.vel = V2(self.map[i + 1]) - V2(self.map[i])
+                            e.vel = e.vel / e.vel.length() * e.speed  # scale unit vector
 
-            # Enemy movement - OLD
-            # for e in self.enemies:
-            #     e.pos += e.vel
-            #     # TEMPORARY wall collision
-            #     if (e.vel.x > 0) == (e.pos.x - 700 > 0):                                    # Allow enemies to enter
-            #         if e.pos.x < 0 or e.pos.x > 1400 - e.get_rect().width: e.vel.x *= -1
-            #     if (e.vel.y > 0) == (e.pos.y - 450 > 0):                                    # Allow enemies to enter
-            #         if e.pos.y < 0 or e.pos.y > 900 - e.get_rect().height: e.vel.y *= -1
-            #
-            #     # Enemy - Tower collision
-            #     e_rect = e.get_rect()
-            #     for t in self.towers:
-            #         if e_rect.colliderect(t.rect):
-            #             e.vel = V2((0, 0))
-            #             if time.time() - e.last_attack_time > e.cooldown:
-            #                 e.last_attack_time = time.time()
-            #                 t.health -= e.damage
-            #                 if t.health <= 0:
-            #                     self.towers.remove(t)
-            #                     self.money += t.get_loot_value()
-            #                     self.update_labels()
-            #                     for e_ in self.enemies:
-            #                         if e_.get_rect().colliderect(t.rect):
-            #                             e_.vel = e.starting_vel
-            #
-            #     # Enemy - Base interaction
-            #     if e_rect.colliderect(self.base.rect):
-            #         e.vel = V2((0, 0))
-            #         if time.time() - e.last_attack_time > e.cooldown:
-            #             self.base.health -= e.damage
-            #             if self.base.health <= 0:
-            #                 wave_active = False
-            #                 # TODO: Add death screen
-
-            # Enemy Movement - NEW
-            for e in self.enemies:
-                e.pos += e.vel
-                e.distance_traveled += e.speed
-                # Turn at map corner
-                for i in range(len(self.map) - 1):
-                    if e.get_center().distance_to(V2(self.map[i])) < e.speed + 1:
-                        e.vel = V2(self.map[i + 1]) - V2(self.map[i])
-                        e.vel = e.vel / e.vel.length() * e.speed  # scale unit vector
-
-                # Enemy - Base interaction
-                if e.get_rect().colliderect(self.base.rect):
-                    '''''e.vel = V2((0, 0))
-                    if time.time() - e.last_attack_time > e.cooldown:
-                        self.base.health -= e.damage
-                        if self.base.health <= 0:
-                            wave_active = False'''
-                    self.health -=1
-                    self.enemies.remove(e)
-                    self.update_labels()
-                    if self.health ==0:
-                        self.alive =False
+                    # Enemy - Base interaction
+                    if e.get_rect().colliderect(self.base.rect):
+                        '''''e.vel = V2((0, 0))
+                        if time.time() - e.last_attack_time > e.cooldown:
+                            self.base.health -= e.damage
+                            if self.base.health <= 0:
+                                wave_active = False'''
+                        if isinstance(e, Tank):
+                            self.health -=3
+                        else:
+                            self.health -=1
+                        self.enemies.remove(e)
+                        self.update_labels()
                     
-            self.enemies.sort(key=lambda e: e.pos.y)  # Sort enemies for proper rendering order
+                        if self.health <=0:
+                            self.alive =False
+                            '''break
+                        else:
+                            continue
+                        break
+                    else:
+                        continue
+                    break'''
+            
+        
+                self.enemies.sort(key=lambda e: e.pos.y)  # Sort enemies for proper rendering order
 
-            # Projectile movement
-            for p in self.projectiles:
-                p.pos += p.vel
-                # if p.pos.x < 0 or p.pos.x > 1400 - p.get_rect().width: p.vel.x *= -1        # TEMPORARY wall collision
-                # if p.pos.y < 0 or p.pos.y > 900 - p.get_rect().height: p.vel.y *= -1        # TEMPORARY wall collision
-                if max(p.pos) > 2000 or min(p.pos) < -100:
-                    self.projectiles.remove(p)
+                # Projectile movement
+                for p in self.projectiles:
+                    p.pos += p.vel
+                    # if p.pos.x < 0 or p.pos.x > 1400 - p.get_rect().width: p.vel.x *= -1        # TEMPORARY wall collision
+                    # if p.pos.y < 0 or p.pos.y > 900 - p.get_rect().height: p.vel.y *= -1        # TEMPORARY wall collision
+                    if max(p.pos) > 2000 or min(p.pos) < -100:
+                        self.projectiles.remove(p)
 
-            # Check for enemy depletion
-            if len(self.enemies) == 0 and len(current_wave) == spawn_counter:
-                wave_active = False
+                # Check for enemy depletion
+                if len(self.enemies) == 0 and len(current_wave) == spawn_counter:
+                    wave_active = False
 
-            try:
-                self.root.update()
-            except:
-                return
+                try:
+                    self.root.update()
+                except:
+                    return
+                self.update_screen()
+                pg.display.update()
+
+            for t in self.towers:
+                t.health = t.max_health
+            self.base.health = self.base.max_health
+            self.enemies = []
+            self.projectiles = []
             self.update_screen()
             pg.display.update()
-
-        for t in self.towers:
-            t.health = t.max_health
-        self.base.health = self.base.max_health
-        self.enemies = []
-        self.projectiles = []
-        self.update_screen()
-        pg.display.update()
         
-        self.health=self.health
-        self.wave += 1
-        self.wave_button["text"] = "wave {0}\nstart".format(self.wave)
-        self.wave_button["state"] = "normal"
+            self.health=self.health
+            self.wave += 1
+            self.wave_button["text"] = "wave {0}\nstart".format(self.wave)
+            self.wave_button["state"] = "normal"
 
 
 def main():
