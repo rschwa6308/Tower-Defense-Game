@@ -361,6 +361,7 @@ class GameTop():
         self.update_labels()
         self.tower_buttons[tower_index]["relief"] = "raised"
 
+
     def upgrade_selected(self, attribute):
         tower = self.get_selected()
 
@@ -570,6 +571,7 @@ class GameTop():
                     
                         if self.health <=0:
                             self.alive =False
+                            self.enemies = []
                             '''break
                         else:
                             continue
