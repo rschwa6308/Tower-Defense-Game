@@ -1,6 +1,6 @@
 #use -r requirements.txt after copying this file into the main python folder
 
 numpy
-tkinter
+#tkinter
 pygame
 pypiwin32
