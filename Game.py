@@ -16,7 +16,7 @@ class GameTop():
 
     def __init__(self):
         self.alive = True
-        self.godmode = False
+        self.godmode = True
 
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
@@ -259,7 +259,7 @@ class GameTop():
             self.screen.blit(t.image, t.pos)
             pg.draw.rect(self.screen, red, pg.Rect(t.pos.x + 4, t.pos.y - 15, int((t.dims[0] - 6) * (float(t.health) / t.max_health)), 10), 0)
             pg.draw.rect(self.screen, black, pg.Rect(t.pos.x + 2, t.pos.y - 15, t.dims[0] - 4, 10), 2)
-            if t.hover or t.selected:
+            if (t.hover or t.selected )and not isinstance(t, Sniper):
                 pg.draw.circle(self.screen, range_color, (int(t.base_center.x), int(t.base_center.y)), t.range, 2)
 
         for e in self.enemies:
@@ -354,10 +354,11 @@ class GameTop():
             #    valid_location = False
 
             self.screen.blit(preview, (pos[0] - TowerType.base_center_pos[0], pos[1] - TowerType.base_center_pos[1]))
-            if valid_location:
+            if valid_location and not TowerType == Sniper:
                 pg.draw.circle(self.screen, black, pos, TowerType.range, 2)
             else:
-                pg.draw.circle(self.screen, red, pos, TowerType.range, 2)
+                if not TowerType == Sniper:
+                    pg.draw.circle(self.screen, red, pos, TowerType.range, 2)
 
             self.root.update()
             pg.display.update()
@@ -489,6 +490,15 @@ class GameTop():
                                     target = min(in_range_sniper, key=lambda x: x[1])[0]
                                 elif t.aim_mode == "strongest":
                                     target = max(in_range_sniper, key=lambda x: x[0].health)[0]
+                                t.last_attack_time = time.time()
+                                # Aim Projectile at Enemy
+                                displacement = target.get_center() - t.base_center
+                                displacement += displacement.length() / t.projectile.speed * target.vel  # account for target motion
+                                vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
+                                proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
+                                proj.associate(t)
+                                proj.enassociate(in_range_sniper[len(in_range_sniper)-1])
+                                self.projectiles.append(proj)
                         else:
                             if len(in_range) != 0:
                                 if t.aim_mode == "first":
@@ -499,17 +509,16 @@ class GameTop():
                                     target = min(in_range, key=lambda x: x[1])[0]
                                 elif t.aim_mode == "strongest":
                                     target = max(in_range, key=lambda x: x[0].health)[0]
-                        if len(in_range) != 0:
-                            t.last_attack_time = time.time()
-                            # Aim Projectile at Enemy
-                            displacement = target.get_center() - t.base_center
-                            displacement += displacement.length() / t.projectile.speed * target.vel  # account for target motion
-                            vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
-                            proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
-                            proj.associate(t)
-                            proj.enassociate(in_range[len(in_range)-1])
-                            self.projectiles.append(proj)
-                            in_range=[]
+                                t.last_attack_time = time.time()
+                                # Aim Projectile at Enemy
+                                displacement = target.get_center() - t.base_center
+                                displacement += displacement.length() / t.projectile.speed * target.vel  # account for target motion
+                                vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
+                                proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
+                                proj.associate(t)
+                                proj.enassociate(in_range[len(in_range)-1])
+                                self.projectiles.append(proj)
+                                in_range=[]
 
                 # Projectile - Enemy collision
                 for p in self.projectiles:

@@ -239,7 +239,8 @@ class Sniper(Tower):
     health = 50
     damage = 200
     cooldown = 2
-    range = 1000
+    range = 0
+    #range =5000
     regen = 0
     damage_types = ['single']
     projectile = Bullet
