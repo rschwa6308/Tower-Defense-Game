@@ -14,7 +14,9 @@ class Tower:
     regen_level = 1
     x = None
     y = None
-
+    
+    in_range=[]
+    
     last_attack_time = 0
     kills = 0
 

@@ -8,6 +8,7 @@ from Colors import *
 from Waves import *
 from Maps import *
 from ScreenConvert import *
+from _ast import If
 
 
 
@@ -15,7 +16,7 @@ class GameTop():
 
     def __init__(self):
         self.alive = True
-        self.godmode = True
+        self.godmode = False
 
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
@@ -465,6 +466,7 @@ class GameTop():
                             tower_type = {"o": Orc, "t": Tank}[key]
                             self.enemies.append(tower_type(self.map[0] - V2(tower_type.center_pos), (0, 0)))
                 in_range = []
+                in_range_sniper = []
                 # Tower - Enemy interaction
                 for t in self.towers:
                     if time.time() - t.last_attack_time > t.cooldown:
@@ -474,19 +476,30 @@ class GameTop():
                                 distance = t.base_center.distance_to(e.get_center())
                                 if distance < t.range:
                                     in_range.append((e, distance))
+                                    in_range_sniper.append((e, distance))
                                 
                         target = None
-
+                        if isinstance(t, Sniper):
+                            if len(in_range_sniper) != 0:
+                                if t.aim_mode == "first":
+                                    target = max(in_range_sniper, key=lambda x: x[0].distance_traveled)[0]
+                                elif t.aim_mode == "last":
+                                    target = min(in_range_sniper, key=lambda x: x[0].distance_traveled)[0]
+                                elif t.aim_mode == "closest":
+                                    target = min(in_range_sniper, key=lambda x: x[1])[0]
+                                elif t.aim_mode == "strongest":
+                                    target = max(in_range_sniper, key=lambda x: x[0].health)[0]
+                        else:
+                            if len(in_range) != 0:
+                                if t.aim_mode == "first":
+                                    target = max(in_range, key=lambda x: x[0].distance_traveled)[0]
+                                elif t.aim_mode == "last":
+                                    target = min(in_range, key=lambda x: x[0].distance_traveled)[0]
+                                elif t.aim_mode == "closest":
+                                    target = min(in_range, key=lambda x: x[1])[0]
+                                elif t.aim_mode == "strongest":
+                                    target = max(in_range, key=lambda x: x[0].health)[0]
                         if len(in_range) != 0:
-                            if t.aim_mode == "first":
-                                target = max(in_range, key=lambda x: x[0].distance_traveled)[0]
-                            elif t.aim_mode == "last":
-                                target = min(in_range, key=lambda x: x[0].distance_traveled)[0]
-                            elif t.aim_mode == "closest":
-                                target = min(in_range, key=lambda x: x[1])[0]
-                            elif t.aim_mode == "strongest":
-                                target = max(in_range, key=lambda x: x[0].health)[0]
-
                             t.last_attack_time = time.time()
                             # Aim Projectile at Enemy
                             displacement = target.get_center() - t.base_center
@@ -494,7 +507,9 @@ class GameTop():
                             vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
                             proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
                             proj.associate(t)
+                            proj.enassociate(in_range[len(in_range)-1])
                             self.projectiles.append(proj)
+                            in_range=[]
 
                 # Projectile - Enemy collision
                 for p in self.projectiles:

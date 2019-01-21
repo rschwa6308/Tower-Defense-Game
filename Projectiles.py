@@ -12,7 +12,9 @@ class Projectile:
 
     def associate(self, tower):
         self.tower = tower
-
+    
+    def enassociate(self, enemy):
+        self.enemy = enemy
 
 class Arrow(Projectile):
     image = arrow_image

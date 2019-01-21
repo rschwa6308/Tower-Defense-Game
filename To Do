@@ -1,12 +1,11 @@
 Need:
-
-make so when repeat hit the wave button it updates the wave # and goes to next wave
+if projectile is fired and enemy aimed at dies projectile should die
+make better graphics
 
 These are things that could be done--
 	fix the mouse always changing on screen update
 	making switching modes possible <-- Big step
 	make towers use ai to figure out when to attack
-	make better graphics
 	make towers rotate towards enemy they are firing at
 	make the enemy's difficulty scale more exponentially rather than in a logistic growth curve
 	make background either larger or a function of pixel position.
