@@ -15,6 +15,7 @@ class GameTop():
 
     def __init__(self):
         self.alive = True
+        self.godmode = True
 
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
@@ -31,8 +32,12 @@ class GameTop():
         info_frame.place(anchor="n", relx=0.5, rely=0)
 
         # Money and Health variables
-        self.money = 500000
+        self.money = 40
         self.health = 100
+        
+        if self.godmode:
+            self.money = 500000
+            self.health = 10
 
         # Money and Health labels
         self.money_label = tk.Label(info_frame, text="$: " + str(self.money), font=("Candara", 20))
@@ -395,7 +400,10 @@ class GameTop():
 
     # Called when 'play' is pressed; Runs the next wave
     def play_wave(self):
-        if len(self.enemies)== 0: #Disabled for testing sometimes #so a wave only happens if there are no enemies on screen
+        
+        if len(self.enemies)!= 0 and not self.godmode: #Disables requirement that all enemies off screen before start new wave
+            return
+        else:
             self.wave_button["text"] = "wave {0}\n...".format(self.wave)
             # self.wave_button["state"] = "disabled"
 
@@ -614,8 +622,7 @@ class GameTop():
             self.wave += 1
             self.wave_button["text"] = "wave {0}\nstart".format(self.wave)
             self.wave_button["state"] = "normal"
-
-
+        
 def main():
     game = GameTop()
     game.mainloop()
