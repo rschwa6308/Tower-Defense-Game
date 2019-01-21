@@ -1,5 +1,5 @@
 Need:
-make attacks on tower actually change the hearts num and end game settings
+
 make so when repeat hit the wave button it updates the wave # and goes to next wave
 
 These are things that could be done--
@@ -12,8 +12,12 @@ These are things that could be done--
 	make background either larger or a function of pixel position.
 	don't need to do this too soon == make Walls a separate abstract class
 		
-		
-		make enemies split into weaker enemies on death - done for tanks
-		max tower upgrades- done for now
-		making all of the towers scale with resolution size - done
-		making the base scale with resolution size - done
+"Done":
+	make a godmode - done only increases money rediculously, lowers health and allows the below error
+	make so you can't repeat hit the wave button to get the same wave multiple times - done {godmode disables}
+	make attacks on tower actually change the hearts num and end game settings - done on basic level needs end screen
+	make enemies split into weaker enemies on death - done for tanks
+	max tower upgrades- done for now
+	making all of the towers scale with resolution size - done
+	making the base scale with resolution size - done
+	

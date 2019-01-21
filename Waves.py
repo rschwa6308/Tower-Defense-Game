@@ -28,7 +28,7 @@ waves = [
      "ooo          " * 4,
      "o o o     " * 4,
      "o o o     " * 5,
-     "ooo          " * 4,
+     "ooo          " * 5,
      "o o o     " * 6,
     "o o o t " * 3,
     "o o o t " * 4,
