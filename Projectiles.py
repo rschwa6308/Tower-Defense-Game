@@ -15,6 +15,9 @@ class Projectile:
     
     def enassociate(self, enemy):
         self.enemy = enemy
+    
+    def get_en(self):
+        return self.enemy
 
 class Arrow(Projectile):
     image = arrow_image

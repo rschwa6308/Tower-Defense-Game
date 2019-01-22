@@ -1,6 +1,8 @@
 Need:
 if projectile is fired and enemy aimed at dies projectile should die
 make better graphics
+tower strength balancing 
+enemy kill order
 
 These are things that could be done--
 	fix the mouse always changing on screen update

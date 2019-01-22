@@ -497,7 +497,7 @@ class GameTop():
                                 vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
                                 proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
                                 proj.associate(t)
-                                proj.enassociate(in_range_sniper[len(in_range_sniper)-1])
+                                proj.enassociate(in_range_sniper[len(in_range_sniper)-1][0])
                                 self.projectiles.append(proj)
                         else:
                             if len(in_range) != 0:
@@ -516,7 +516,7 @@ class GameTop():
                                 vel = (displacement / displacement.length()) * t.projectile.speed  # scale unit vector
                                 proj = t.projectile(t.base_center - t.projectile.center_pos, vel, t.damage)
                                 proj.associate(t)
-                                proj.enassociate(in_range[len(in_range)-1])
+                                proj.enassociate(in_range[len(in_range)-1][0])
                                 self.projectiles.append(proj)
                                 in_range=[]
 
@@ -541,6 +541,9 @@ class GameTop():
                                 self.money += e.value  # Collect value of enemy
                                 p.tower.kills += 1  # Iterate tower kill counter
                                 self.update_labels()
+                                '''if len(self.projectiles) >0:
+                                    self.projectiles.remove(p)'''
+                                
                             break
 
                 # Enemy movement - OLD
