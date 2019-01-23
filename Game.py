@@ -491,6 +491,12 @@ class GameTop():
                                 elif t.aim_mode == "strongest":
                                     target = max(in_range_sniper, key=lambda x: x[0].health)[0]
                                 t.last_attack_time = time.time()
+                                
+                                #figure out first enemy
+                                '''for i in range(len(self.map)):
+                                    if isInRange(e, self.map[i], self.map[i+1]) and not isInRange(e, self.map[i+1], self.map[i+2]) and getIndexRange == 0:
+                                        displacement = target.get_center() - t.base_center
+                                        '''
                                 # Aim Projectile at Enemy
                                 displacement = target.get_center() - t.base_center
                                 displacement += displacement.length() / t.projectile.speed * target.vel  # account for target motion
@@ -530,8 +536,8 @@ class GameTop():
                             if e.health <= 0:
                                 if isinstance(e, Tank):
                                     indx = self.enemies.index(e)
-                                    self.enemies.insert(indx + 1, Orc(e.pos, e.vel))
-                                    self.enemies.insert(indx + 2, Orc(e.pos - V2(1, 1), e.vel))
+                                    self.enemies.insert(indx, Orc(e.pos, e.vel))
+                                    self.enemies.insert(indx, Orc(e.pos - V2(1, 1), e.vel))
                                 # for t in self.towers:
                                 #        distance = t.base_center.distance_to(e.get_center())
                                 #        distance1 = t.base_center.distance_to(e.get_center())  

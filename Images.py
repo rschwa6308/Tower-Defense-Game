@@ -19,7 +19,7 @@ tint = (255,255,255) #This allows the color of the gradient to be changed somewh
 # Linear gradient
 for y in range(int(height)):
     n = y / height
-    color = (int((1 - n) * tint[0]), int((1 - n) * tint[1]), tint[2])  # White -> Blue
+    color = (int((1 - n) * tint[0]), int((1 - n) * tint[1]), tint[2])  # White -> Blue- now color to color editatble through tint
     pg.draw.line(background_image, color, (0, y), (width, y), 1)
 
 
