@@ -69,7 +69,7 @@ class Tank(Enemy):
     image = tank_image
     center_pos = (25, 25)
 
-    speed = 1
+    speed = 1.5
 
     max_health = 500
     health = 500
@@ -78,3 +78,18 @@ class Tank(Enemy):
     range = 50
 
     value = 30
+
+class BigBad(Enemy):
+    name = "Big Bad"
+    image = bb_image
+    center_pos = (25, 25)
+
+    speed = 1.25
+
+    max_health = 1000
+    health = 1000
+    damage = 6
+    cooldown = 2
+    range = 50
+
+    value = 50

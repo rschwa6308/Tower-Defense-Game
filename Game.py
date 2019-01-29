@@ -1,6 +1,7 @@
 import tkinter as tk
 import time
 import math
+import datetime
 
 from Base import *
 from Towers import *
@@ -9,11 +10,13 @@ from Waves import *
 from Maps import *
 from ScreenConvert import *
 from _ast import If
+from _datetime import date, datetime
 
-
+logf = open("Log.log", "a+")
 
 class GameTop():
-
+    logf = open("Log.log", "a+")
+    
     def __init__(self):
         self.alive = True
         self.godmode = True
@@ -164,7 +167,10 @@ class GameTop():
             clock.tick(60)
             
             if self.health <=0:
+                logf.write("I completed the game this time" + datetime + "\n")
                 self.alive =False
+                
+
 
             # Listen for cursor hover over Tower
             mouse_pos = pg.mouse.get_pos()
@@ -194,7 +200,6 @@ class GameTop():
             self.root.update()
         
         """Something about the screen updating, printing an you lost message and returning to 'menu' """
-        
         
     def delete(self):
         self.alive = False
@@ -464,7 +469,7 @@ class GameTop():
                         if key == " ":
                             pass
                         else:
-                            tower_type = {"o": Orc, "t": Tank}[key]
+                            tower_type = {"o": Orc, "t": Tank, "b": BigBad}[key]
                             self.enemies.append(tower_type(self.map[0] - V2(tower_type.center_pos), (0, 0)))
                 in_range = []
                 in_range_sniper = []
@@ -480,6 +485,8 @@ class GameTop():
                                     in_range_sniper.append((e, distance))
                                 
                         target = None
+                        #maybe# re-order in_range for distance traveled
+                        
                         if isinstance(t, Sniper):
                             if len(in_range_sniper) != 0:
                                 if t.aim_mode == "first":
@@ -492,11 +499,7 @@ class GameTop():
                                     target = max(in_range_sniper, key=lambda x: x[0].health)[0]
                                 t.last_attack_time = time.time()
                                 
-                                #figure out first enemy
-                                '''for i in range(len(self.map)):
-                                    if isInRange(e, self.map[i], self.map[i+1]) and not isInRange(e, self.map[i+1], self.map[i+2]) and getIndexRange == 0:
-                                        displacement = target.get_center() - t.base_center
-                                        '''
+                                
                                 # Aim Projectile at Enemy
                                 displacement = target.get_center() - t.base_center
                                 displacement += displacement.length() / t.projectile.speed * target.vel  # account for target motion
@@ -537,7 +540,16 @@ class GameTop():
                                 if isinstance(e, Tank):
                                     indx = self.enemies.index(e)
                                     self.enemies.insert(indx, Orc(e.pos, e.vel))
+                                    self.enemies[indx].distance_traveled = e.distance_traveled
                                     self.enemies.insert(indx, Orc(e.pos - V2(1, 1), e.vel))
+                                    self.enemies[indx].distance_traveled = e.distance_traveled
+                                    
+                                if isinstance(e, BigBad):
+                                    indx = self.enemies.index(e)
+                                    self.enemies.insert(indx, Tank(e.pos, e.vel))
+                                    self.enemies[indx].distance_traveled = e.distance_traveled
+                                    self.enemies.insert(indx, Tank(e.pos - V2(1, 1), e.vel))
+                                    self.enemies[indx].distance_traveled = e.distance_traveled
                                 # for t in self.towers:
                                 #        distance = t.base_center.distance_to(e.get_center())
                                 #        distance1 = t.base_center.distance_to(e.get_center())  
@@ -605,6 +617,8 @@ class GameTop():
                                 wave_active = False'''
                         if isinstance(e, Tank):
                             self.health -=3
+                        elif isinstance(e, BigBad):
+                            self.health -=4
                         else:
                             self.health -=1
                         self.enemies.remove(e)
@@ -657,8 +671,14 @@ class GameTop():
             self.wave_button["state"] = "normal"
         
 def main():
+    logf = open("Log.log", "a+")
     game = GameTop()
-    game.mainloop()
+    try:
+        game.mainloop()
+        print(logf.write("I completed the game this date & time: " + str(datetime.now()) + "\n"))
+
+    except Exception as e:
+        logf.write(str(e) + " date & time: " + str(datetime.now()) + "\n")
 
 
 if __name__ == "__main__":

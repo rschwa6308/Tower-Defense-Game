@@ -55,8 +55,8 @@ class Archer(Tower):
     max_health = 20
     health = 20
     damage = 100
-    cooldown = 1
-    range = 250
+    cooldown = 45/60
+    range = 60
     regen = 0
     damage_types = ['single']
     projectile = Arrow
@@ -79,7 +79,7 @@ class Archer(Tower):
                 self.damage *= 1.1
             elif attribute == "speed":
                 self.speed_level += 1
-                self.cooldown *= 0.9
+                self.cooldown *= 0.95
             elif attribute == "range":
                 self.range_level += 1
                 self.range = int(self.range * 1.1)

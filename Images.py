@@ -38,6 +38,7 @@ splash_image = load("splash")
 orc_image = load("orc")
 # orc_image = load("orc2")
 tank_image = load("tank")
+bb_image = load("bb")
 
 arrow_image = load("arrow")
 beam_image = load("beam")

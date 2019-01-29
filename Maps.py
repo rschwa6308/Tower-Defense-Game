@@ -20,17 +20,17 @@ def wrongPixels(mapTk, path_color, _base):
 def isInRange(e, map1, map2):
     dy = map1[1] - map2[1] 
     dx = map1[0] - map2[0]
-    points =[]
+    poin =[]
     if dx!=0:
         for i in range(dx):
-            points[i] = (map[0] + i * dx, map1[1] + i * dy)
+            poin.append((map1[0] + i * dx, map1[1] + i * dy))
     else:
         for i in range(dy):
-            points[i] = (map[0] + i * dx,map1[1] + i * dy)
+            poin.append((map1[0] + i * dx,map1[1] + i * dy))
     
     
     try:
-        if points.index(list(e.get_center())) >0:   
-            return True
+        points.index(list(e.get_center())) >0   
+        return True
     except:    
         return False
