@@ -17,7 +17,6 @@ from Enemies import *
 
 waves = [
      "o     " * 1,
-     "bbbb     " *2,
      "o     " * 2,
      "o     " * 3,
      "o     " * 4,

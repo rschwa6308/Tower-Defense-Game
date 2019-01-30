@@ -317,4 +317,4 @@ class Wall(Tower):
         return 2
 
 
-tower_types = [Archer, Mage, Artillery, Sniper, Wall]
+tower_types = [Archer, Mage, Artillery, Sniper]

@@ -675,10 +675,10 @@ def main():
     game = GameTop()
     try:
         game.mainloop()
-        print(logf.write("I completed the game this date & time: " + str(datetime.now()) + "\n"))
+        logf.write("I completed the game this date & time: " + str(datetime.now()) + "\n\n")
 
     except Exception as e:
-        logf.write(str(e) + " date & time: " + str(datetime.now()) + "\n")
+        logf.write(str(e) + " date & time: " + str(datetime.now()) + "\n\n")
 
 
 if __name__ == "__main__":

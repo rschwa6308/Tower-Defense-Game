@@ -3,3 +3,14 @@ Why
 
 must be str, not type
 I completed the game this time2019-01-28 21:41:06.111530
+I completed the game this date & time: 2019-01-29 09:59:17.674048
+I completed the game this date & time: 2019-01-29 10:11:27.427390
+
+I completed the game this date & time: 2019-01-29 10:14:20.799519
+
+mainloop() takes 1 positional argument but 2 were given date & time: 2019-01-29 10:16:54.729489
+
+I completed the game this date & time: 2019-01-29 10:17:46.735556
+
+I completed the game this date & time: 2019-01-29 10:18:21.568485
+
