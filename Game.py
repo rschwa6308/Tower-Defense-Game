@@ -19,7 +19,7 @@ class GameTop():
     
     def __init__(self):
         self.alive = True
-        self.godmode = True
+        self.godmode = False
 
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
@@ -125,7 +125,7 @@ class GameTop():
         self.kills_label = tk.Label(self.upgrade_frame, text="", font=("Candara", 10))
 
         # Instantiate game variables
-        self.map = test_map
+        self.map = TestMap()
         self.base = Base((screenWidth * widthMultiplier / 2, screenHeight * heightMultiplier / 2))
         self.towers = []
         self.enemies = []
@@ -136,12 +136,12 @@ class GameTop():
         # for i in range(len(self.map)-1):
         #    for j in range(self.map.width()-1):
         #        pg.surface.set_at(j,i, (255**(1 / i), (255**(1 / i), (255**(1 / i) ) )))
-        
-        for i in range(len(self.map) - 1):
+        points = self.map.map_pixels
+        for i in range(len(points) - 1):
             
-            start, end = self.map[i], self.map[i + 1]
+            start, end = points[i], points[i + 1]
             pg.draw.line(background_image, path_color, start, end, 60)
-            if i < len(self.map) - 1:
+            if i < len(points) - 1:
                 pg.draw.circle(background_image, path_color, (end[0] + 1, end[1] + 1), 30, 0)
 
         self.map_mask = pg.mask.from_threshold(background_image, path_color, (1, 1, 1, 255))
@@ -158,7 +158,7 @@ class GameTop():
         self.update_labels()
         
         # Pass the map pixels to the figure out the brown pixels method
-        wrongPixels(self.screen, path_color, self.base)
+        self.map.wrongPixels(self.screen, path_color, self.base)
         # sendSizes(self.root)
 
     def mainloop(self):
@@ -470,7 +470,7 @@ class GameTop():
                             pass
                         else:
                             tower_type = {"o": Orc, "t": Tank, "b": BigBad}[key]
-                            self.enemies.append(tower_type(self.map[0] - V2(tower_type.center_pos), (0, 0)))
+                            self.enemies.append(tower_type(V2(self.map.map_pixels[0]) - V2(tower_type.center_pos), (0,0)))
                 in_range = []
                 in_range_sniper = []
                 # Tower - Enemy interaction
@@ -600,12 +600,15 @@ class GameTop():
 
                 # Enemy Movement - NEW
                 for e in self.enemies:
+                    '''if e.vel == V2((0,0)):
+                        e.vel = V2(self.map.map_pixels[1]) - V2(self.map.map_pixels[0])
+                        e.vel = e.vel / e.vel.length() * e.speed'''
                     e.pos += e.vel
                     e.distance_traveled += e.speed
                     # Turn at map corner
-                    for i in range(len(self.map) - 1):
-                        if e.get_center().distance_to(V2(self.map[i])) < e.speed + 1:
-                            e.vel = V2(self.map[i + 1]) - V2(self.map[i])
+                    for i in range(len(self.map.map_pixels) - 1):
+                        if e.get_center().distance_to(V2(self.map.map_pixels[i])) < e.speed + 1:
+                            e.vel = V2(self.map.map_pixels[i + 1]) - V2(self.map.map_pixels[i])
                             e.vel = e.vel / e.vel.length() * e.speed  # scale unit vector
 
                     # Enemy - Base interaction
@@ -636,7 +639,7 @@ class GameTop():
                     break'''
             
         
-                self.enemies.sort(key=lambda e: e.pos.y)  # Sort enemies for proper rendering order
+                self.enemies.sort(key=lambda e: e.distance_traveled)  # Sort enemies for proper rendering order
 
                 # Projectile movement
                 for p in self.projectiles:

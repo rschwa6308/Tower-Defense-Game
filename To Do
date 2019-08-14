@@ -12,6 +12,8 @@ These are things that could be done--
 	make the enemy's difficulty scale more exponentially rather than in a logistic growth curve
 	make background either larger or a function of pixel position.
 	don't need to do this too soon == make Walls a separate abstract class
+	make base health bar decrease as hp decreases
+	make end of game screen
 		
 "Done":
 	make a godmode - done only increases money rediculously, lowers health and allows the below error
@@ -21,4 +23,5 @@ These are things that could be done--
 	max tower upgrades- done for now
 	making all of the towers scale with resolution size - done
 	making the base scale with resolution size - done
+	sorta updating the map so it is a class and everything that used self.map as an array now uses self.map.map_points
 	

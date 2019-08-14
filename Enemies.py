@@ -9,6 +9,7 @@ class Enemy:
     last_attack_time = 0.0
     distance_traveled = 0.0
     indexRange = 0
+    vel = V2(0,0)
 
     def __init__(self, pos, vel):
         if pos == "edge":
@@ -29,6 +30,7 @@ class Enemy:
         else:
             self.vel = V2(vel)
         self.starting_vel = V2(self.vel)
+        
 
     def get_center(self):
         return self.pos + self.center_pos
