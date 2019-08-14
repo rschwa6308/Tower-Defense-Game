@@ -21,7 +21,7 @@ class GameTop():
     
     def __init__(self):
         self.alive = True
-        self.godmode = True
+        self.godmode = False
         
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
@@ -277,7 +277,7 @@ class GameTop():
 
         for p in self.projectiles:
             self.screen.blit(p.image, p.pos)
-
+            
         self.screen.blit(self.base.image, self.base.pos)
         pg.draw.rect(self.screen, red, pg.Rect(self.base.pos.x + 4, self.base.pos.y - 15, int((self.base.dims[0] - 6) * (float(self.base.health) / self.base.max_health)), 10), 0)
         pg.draw.rect(self.screen, black, pg.Rect(self.base.pos.x + 2, self.base.pos.y - 15, self.base.dims[0] - 4, 10), 2)

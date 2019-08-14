@@ -60,9 +60,9 @@ class Archer(Tower):
 
     max_health = 20
     health = 20
-    damage = 100
+    damage = 120
     cooldown = 45/60
-    range = int(80*(widthRatio + heightRatio)/2)
+    range = int(100*(widthRatio + heightRatio)/2)
     regen = 0
     damage_types = ['single']
     projectile = Arrow
