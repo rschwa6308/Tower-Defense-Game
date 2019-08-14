@@ -1,19 +1,17 @@
 from ScreenConvert import *
 from builtins import len
-
+'''# I don't need this stuff any more. Use of wrapper class depracates it.
 test_map = [(0, 50), (1200, 200), (1200, 700), (200, 700), (200, 400), (700, 450)]
 for i, (a, b) in enumerate(test_map):
      test_map[i] = (int(a * screenWidth / 1600 * widthMultiplier), int(b * screenHeight / 900 * heightMultiplier))
-
-badPixels = [] 
-
+'''
+# These next ones have to be here, global variables are declared before whole class
 map_pixels =[]
-
+badPixels = [] 
+base_position = (0,0)
+    
 class map:
     
-    map_pixels =[]
-    badPixels = [] 
-
     def wrongPixels(map,mapTk, path_color, _base):
         # print("Bad Pixels")
         for i in range(int(screenWidth * widthMultiplier)):
@@ -36,6 +34,7 @@ class map:
 
 class TestMap(map):
     map_pixels = [(0, 50), (1200, 200), (1200, 700), (200, 700), (200, 400), (700, 450)]
+    base_position = (screenWidth * widthMultiplier / 2, screenHeight * heightMultiplier / 2)
     map.convert(map,map_pixels)
     
 class LoopyMap(map):

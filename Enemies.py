@@ -59,7 +59,7 @@ class Orc(Enemy):
 
     max_health = 120
     health = 120
-    damage = 2
+    damage = 1
     cooldown = 2
     range = 50
 
@@ -75,7 +75,7 @@ class Tank(Enemy):
 
     max_health = 500
     health = 500
-    damage = 5
+    damage = 3
     cooldown = 3
     range = 50
 
@@ -90,7 +90,7 @@ class BigBad(Enemy):
 
     max_health = 1000
     health = 1000
-    damage = 6
+    damage = 4
     cooldown = 2
     range = 50
 

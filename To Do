@@ -14,7 +14,8 @@ These are things that could be done--
 	don't need to do this too soon == make Walls a separate abstract class
 	make base health bar decrease as hp decreases
 	make end of game screen
-		
+	make amount of money per enemy drop as time goes on
+	
 "Done":
 	make a godmode - done only increases money rediculously, lowers health and allows the below error
 	make so you can't repeat hit the wave button to get the same wave multiple times - done {godmode disables}

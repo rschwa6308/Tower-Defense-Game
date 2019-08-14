@@ -16,11 +16,13 @@ logf = open("Log.log", "a+")
 
 class GameTop():
     logf = open("Log.log", "a+")
+    background = background_Image("linear")
+    background_image = background.background_image
     
     def __init__(self):
         self.alive = True
-        self.godmode = False
-
+        self.godmode = True
+        
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
         self.root.geometry("%dx%d%+d%+d" % (screenWidth, screenHeight, 100, 50))
@@ -107,15 +109,15 @@ class GameTop():
             tk.Label(self.upgrade_frame, text="", font=("Candara", 13))
         ]
         self.upgrade_buttons = [
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13),
+            tk.Button(self.upgrade_frame, text="$0", font=("Candara", 13),
                       command=lambda: self.upgrade_selected("health")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13),
+            tk.Button(self.upgrade_frame, text="$0", font=("Candara", 13),
                       command=lambda: self.upgrade_selected("damage")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13),
+            tk.Button(self.upgrade_frame, text="$0", font=("Candara", 13),
                       command=lambda: self.upgrade_selected("speed")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13),
+            tk.Button(self.upgrade_frame, text="$0", font=("Candara", 13),
                       command=lambda: self.upgrade_selected("range")),
-            tk.Button(self.upgrade_frame, text="$10", font=("Candara", 13),
+            tk.Button(self.upgrade_frame, text="$0", font=("Candara", 13),
                       command=lambda: self.upgrade_selected("regen"))
         ]
         modes = ["first", "last", "closest", "strongest"]
@@ -126,7 +128,7 @@ class GameTop():
 
         # Instantiate game variables
         self.map = TestMap()
-        self.base = Base((screenWidth * widthMultiplier / 2, screenHeight * heightMultiplier / 2))
+        self.base = Base(self.map.base_position, self.health)
         self.towers = []
         self.enemies = []
         self.projectiles = []
@@ -140,11 +142,11 @@ class GameTop():
         for i in range(len(points) - 1):
             
             start, end = points[i], points[i + 1]
-            pg.draw.line(background_image, path_color, start, end, 60)
+            pg.draw.line(self.background_image, path_color, start, end, 60)
             if i < len(points) - 1:
-                pg.draw.circle(background_image, path_color, (end[0] + 1, end[1] + 1), 30, 0)
+                pg.draw.circle(self.background_image, path_color, (end[0] + 1, end[1] + 1), 30, 0)
 
-        self.map_mask = pg.mask.from_threshold(background_image, path_color, (1, 1, 1, 255))
+        self.map_mask = pg.mask.from_threshold(self.background_image, path_color, (1, 1, 1, 255))
 
         # Modify pygame's video output (embeds all new pg windows inside a Tk.Frame object)
         os.environ['SDL_WINDOWID'] = str(self.game_frame.winfo_id())
@@ -258,7 +260,7 @@ class GameTop():
 
     def update_screen(self):
         # self.screen.fill(bg_color)
-        self.screen.blit(background_image, (0, 0))
+        self.screen.blit(self.background_image, (0, 0))
 
         for t in self.towers:
             self.screen.blit(t.image, t.pos)
@@ -543,13 +545,14 @@ class GameTop():
                                     self.enemies[indx].distance_traveled = e.distance_traveled
                                     self.enemies.insert(indx, Orc(e.pos - V2(1, 1), e.vel))
                                     self.enemies[indx].distance_traveled = e.distance_traveled
-                                    
+                                    self.enemies.sort(key=lambda e: e.distance_traveled)
                                 if isinstance(e, BigBad):
                                     indx = self.enemies.index(e)
                                     self.enemies.insert(indx, Tank(e.pos, e.vel))
                                     self.enemies[indx].distance_traveled = e.distance_traveled
                                     self.enemies.insert(indx, Tank(e.pos - V2(1, 1), e.vel))
                                     self.enemies[indx].distance_traveled = e.distance_traveled
+                                    self.enemies.sort(key=lambda e: e.distance_traveled)
                                 # for t in self.towers:
                                 #        distance = t.base_center.distance_to(e.get_center())
                                 #        distance1 = t.base_center.distance_to(e.get_center())  
@@ -618,12 +621,8 @@ class GameTop():
                             self.base.health -= e.damage
                             if self.base.health <= 0:
                                 wave_active = False'''
-                        if isinstance(e, Tank):
-                            self.health -=3
-                        elif isinstance(e, BigBad):
-                            self.health -=4
-                        else:
-                            self.health -=1
+                        self.base.health -= e.damage #made it so the health bar on top of the tower decreases as your health decreases.
+                        self.health -= e.damage
                         self.enemies.remove(e)
                         self.update_labels()
                     

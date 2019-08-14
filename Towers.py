@@ -5,6 +5,12 @@ from Images import *
 from Projectiles import *
 from ScreenConvert import *
 
+# Default base cost of upgrades, must be 1 less than what u want because of the upgrade cost function
+base_cost_health = 29
+base_cost_damage = 29
+base_cost_speed = 29
+base_cost_range = 29
+base_cost_regen = 99
 
 class Tower:
     health_level = 1
@@ -27,15 +33,15 @@ class Tower:
 
     def get_upgrade_cost(self, attribute):
         if attribute == "health":
-            return int(round(30 * self.health_level + 1.3 ** (self.health_level - 1), -1))  # 30x + 1.3^(x - 1)
+            return int(round(self.base_cost_health * self.health_level + 1.3 ** (self.health_level - 1)))  # 30x + 1.3^(x - 1)
         elif attribute == "damage":
-            return int(round(30 * self.damage_level + 1.3 ** (self.damage_level - 1), -1))  # 30x + 1.3^(x - 1)
+            return int(round(self.base_cost_damage * self.damage_level + 1.3 ** (self.damage_level - 1)))  # 30x + 1.3^(x - 1)
         elif attribute == "speed":
-            return int(round(30 * self.speed_level + 1.3 ** (self.speed_level - 1), -1))  # 30x + 1.3^(x - 1)
+            return int(round(self.base_cost_speed * self.speed_level + 1.3 ** (self.speed_level - 1)))  # 30x + 1.3^(x - 1)
         elif attribute == "range":
-            return int(round(30 * self.range_level + 1.3 ** (self.range_level - 1), -1))  # 30x + 1.3^(x - 1)
+            return int(round(self.base_cost_range * self.range_level + 1.3 ** (self.range_level - 1)))  # 30x + 1.3^(x - 1)
         elif attribute == "regen":
-            return int(round(100 * self.regen_level + 1.3 ** (self.regen_level - 1), -1))  # 100x + 1.3^(x - 1)
+            return int(round(self.base_cost_regen * self.regen_level + 1.3 ** (self.regen_level - 1)))  # 100x + 1.3^(x - 1)
         
     def setPosition(self, pos):
         x = pos[0]
@@ -56,18 +62,24 @@ class Archer(Tower):
     health = 20
     damage = 100
     cooldown = 45/60
-    range = 60
+    range = int(80*(widthRatio + heightRatio)/2)
     regen = 0
     damage_types = ['single']
     projectile = Arrow
-
+    
     cost = 40
+    
+    base_cost_health = 29
+    base_cost_damage = 24
+    base_cost_speed = 24
+    base_cost_range = 24
+    base_cost_regen = 99
 
     def __init__(self, pos):
         self.pos = V2(pos)
         self.base_center = self.pos + self.base_center_pos
         self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])
-
+        
     def upgrade(self, attribute):
         if self.getLevel(attribute) < 15:
             if attribute == "health":
@@ -117,18 +129,24 @@ class Mage(Tower):
     health = 15
     damage = 200
     cooldown = 1
-    range = 150
+    range = int(170*(widthRatio + heightRatio)/2)
     regen = 0
     damage_types = ['splash']
     projectile = Beam
 
     cost = 60
-
+    
+    base_cost_health = 29
+    base_cost_damage = 24
+    base_cost_speed = 24
+    base_cost_range = 24
+    base_cost_regen = 99
+    
     def __init__(self, pos):
         self.pos = V2(pos)
         self.base_center = self.pos + self.base_center_pos
         self.rect = pg.Rect(self.pos.x, self.pos.y, self.dims[0], self.dims[1])
-
+        
     def upgrade(self, attribute):
         if self.getLevel(attribute) < 15:
             if attribute == "health":
@@ -178,12 +196,19 @@ class Artillery(Tower):
     health = 50
     damage = 200
     cooldown = 2
-    range = 275
+    range = int(295*(widthRatio + heightRatio)/2)
     regen = 0
     damage_types = ['splash']
     projectile = Beam
 
     cost = 100
+    
+    
+    base_cost_health = 29
+    base_cost_damage = 39
+    base_cost_speed = 39
+    base_cost_range = 39
+    base_cost_regen = 99
 
     def __init__(self, pos):
         self.pos = V2(pos)
@@ -240,13 +265,19 @@ class Sniper(Tower):
     damage = 200
     cooldown = 2
     range = 0
-    #range =5000
+    #range = int(5000*(widthRatio + heightRatio)/2)
     regen = 0
     damage_types = ['single']
     projectile = Bullet
 
     cost = 500
-
+    
+    base_cost_health = 29
+    base_cost_damage = 59
+    base_cost_speed = 54
+    base_cost_range = 49
+    base_cost_regen = 99
+    
     def __init__(self, pos):
         self.pos = V2(pos)
         self.base_center = self.pos + self.base_center_pos
