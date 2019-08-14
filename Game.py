@@ -16,8 +16,8 @@ logf = open("Log.log", "a+")
 
 class GameTop():
     logf = open("Log.log", "a+")
-    background = background_Image("linear")
-    background_image = background.background_image
+    background = ()
+    background_image = ()
     
     def __init__(self):
         self.alive = True
@@ -132,7 +132,8 @@ class GameTop():
         self.towers = []
         self.enemies = []
         self.projectiles = []
-
+        self.background = background_Image("linearb", (255,255,255), self.map.base_position)
+        self.background_image = self.background.getImage()
         # Draw map
         
         # for i in range(len(self.map)-1):
@@ -259,7 +260,7 @@ class GameTop():
         self.root.update()
 
     def update_screen(self):
-        # self.screen.fill(bg_color)
+        # self.screen.fill(bg_color)        
         self.screen.blit(self.background_image, (0, 0))
 
         for t in self.towers:

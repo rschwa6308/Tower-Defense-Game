@@ -34,7 +34,7 @@ class map:
 
 class TestMap(map):
     map_pixels = [(0, 50), (1200, 200), (1200, 700), (200, 700), (200, 400), (700, 450)]
-    base_position = (screenWidth * widthMultiplier / 2, screenHeight * heightMultiplier / 2)
+    base_position = (int(screenWidth * widthMultiplier / 2), int(screenHeight * heightMultiplier / 2))
     map.convert(map,map_pixels)
     
 class LoopyMap(map):

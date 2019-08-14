@@ -33,15 +33,15 @@ class Tower:
 
     def get_upgrade_cost(self, attribute):
         if attribute == "health":
-            return int(round(self.base_cost_health * self.health_level + 1.3 ** (self.health_level - 1)))  # 30x + 1.3^(x - 1)
+            return int(round(self.base_cost_health * self.health_level + 1.5 ** (self.health_level - 1)))  # 30x + 1.5^(x - 1)
         elif attribute == "damage":
-            return int(round(self.base_cost_damage * self.damage_level + 1.3 ** (self.damage_level - 1)))  # 30x + 1.3^(x - 1)
+            return int(round(self.base_cost_damage * self.damage_level + 1.5 ** (self.damage_level - 1)))  # 30x + 1.5^(x - 1)
         elif attribute == "speed":
-            return int(round(self.base_cost_speed * self.speed_level + 1.3 ** (self.speed_level - 1)))  # 30x + 1.3^(x - 1)
+            return int(round(self.base_cost_speed * self.speed_level + 1.5 ** (self.speed_level - 1)))  # 30x + 1.5^(x - 1)
         elif attribute == "range":
-            return int(round(self.base_cost_range * self.range_level + 1.3 ** (self.range_level - 1)))  # 30x + 1.3^(x - 1)
+            return int(round(self.base_cost_range * self.range_level + 1.5 ** (self.range_level - 1)))  # 30x + 1.5^(x - 1)
         elif attribute == "regen":
-            return int(round(self.base_cost_regen * self.regen_level + 1.3 ** (self.regen_level - 1)))  # 100x + 1.3^(x - 1)
+            return int(round(self.base_cost_regen * self.regen_level + 1.5 ** (self.regen_level - 1)))  # 100x + 1.5^(x - 1)
         
     def setPosition(self, pos):
         x = pos[0]
