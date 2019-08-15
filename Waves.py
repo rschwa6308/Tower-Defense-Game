@@ -39,7 +39,7 @@ waves = [
     "tttttttttttttttttttt",
     "btbtbtbtb" *2,
     "btbtbtbtbbtbtbtbtbbt",
-    "bbbbbbbbbbbbbbbbbbbb",
+    "bbbbbbbbbbbbbbbbbbbb"
 ]
 
 

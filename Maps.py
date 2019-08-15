@@ -43,7 +43,7 @@ class TestMap(map):
     map.convert(map,map_pixels)
     
 class LoopyMap(map):
-    map_pixels = [] #[(0,0),(100,50),(250,250),(250,500),(200,600),(100,350),(300,150),(500,100),(550,200),\
+    '''map_pixels = [] #[(0,0),(100,50),(250,250),(250,500),(200,600),(100,350),(300,150),(500,100),(550,200),\
                   #(560,400),(550,500)]
     base_position = (1550, 850)
     r = []
@@ -52,5 +52,5 @@ class LoopyMap(map):
         
     for v in r:
         map_pixels.append((v.xcor(),v.ycor()))
-    map.convert(map, map_pixels)
+    map.convert(map, map_pixels)'''
     
