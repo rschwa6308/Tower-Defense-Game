@@ -36,7 +36,10 @@ waves = [
     "ooo          " * 5,
     "bbbb  " *2,
     "otototototototototot",
-    "tttttttttttttttttttt"
+    "tttttttttttttttttttt",
+    "btbtbtbtb" *2,
+    "btbtbtbtbbtbtbtbtbbt",
+    "bbbbbbbbbbbbbbbbbbbb",
 ]
 
 
