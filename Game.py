@@ -21,7 +21,7 @@ class GameTop():
     
     def __init__(self):
         self.alive = True
-        self.godmode = False
+        self.godmode = True
         
         # Instantiate tk window and set up frames
         self.root = tk.Tk()
@@ -534,39 +534,42 @@ class GameTop():
 
                 # Projectile - Enemy collision
                 for p in self.projectiles:
-                    for e in self.enemies:
-                        if p.get_rect().colliderect(e.get_rect()):
-                            self.projectiles.remove(p)
-                            e.health -= p.damage
-                            # ind2 = in_range.index(e)
-                            if e.health <= 0:
-                                if isinstance(e, Tank):
-                                    indx = self.enemies.index(e)
-                                    self.enemies.insert(indx, Orc(e.pos, e.vel))
-                                    self.enemies[indx].distance_traveled = e.distance_traveled
-                                    self.enemies.insert(indx, Orc(e.pos - V2(1, 1), e.vel))
-                                    self.enemies[indx].distance_traveled = e.distance_traveled
-                                    self.enemies.sort(key=lambda e: e.distance_traveled)
-                                if isinstance(e, BigBad):
-                                    indx = self.enemies.index(e)
-                                    self.enemies.insert(indx, Tank(e.pos, e.vel))
-                                    self.enemies[indx].distance_traveled = e.distance_traveled
-                                    self.enemies.insert(indx, Tank(e.pos - V2(1, 1), e.vel))
-                                    self.enemies[indx].distance_traveled = e.distance_traveled
-                                    self.enemies.sort(key=lambda e: e.distance_traveled)
-                                # for t in self.towers:
-                                #        distance = t.base_center.distance_to(e.get_center())
-                                #        distance1 = t.base_center.distance_to(e.get_center())  
-                                #        in_range.insert(ind2, (self.enemies[indx + 1], distance))
-                                #        in_range.insert(ind2, (self.enemies[indx + 2], distance1))                              
-                                self.enemies.remove(e)
-                                self.money += e.value  # Collect value of enemy
-                                p.tower.kills += 1  # Iterate tower kill counter
-                                self.update_labels()
-                                '''if len(self.projectiles) >0:
-                                    self.projectiles.remove(p)'''
+                    if p.get_en().health <=0:
+                        self.projectiles.remove(p)
+                    else:    
+                        for e in self.enemies:
+                            if p.get_rect().colliderect(e.get_rect()):
+                                self.projectiles.remove(p)
+                                e.health -= p.damage
+                                # ind2 = in_range.index(e)
+                                if e.health <= 0:
+                                    if isinstance(e, Tank):
+                                        indx = self.enemies.index(e)
+                                        self.enemies.insert(indx, Orc(e.pos, e.vel))
+                                        self.enemies[indx].distance_traveled = e.distance_traveled
+                                        self.enemies.insert(indx, Orc(e.pos - V2(1, 1), e.vel))
+                                        self.enemies[indx].distance_traveled = e.distance_traveled
+                                        self.enemies.sort(key=lambda e: e.distance_traveled)
+                                    if isinstance(e, BigBad):
+                                        indx = self.enemies.index(e)
+                                        self.enemies.insert(indx, Tank(e.pos, e.vel))
+                                        self.enemies[indx].distance_traveled = e.distance_traveled
+                                        self.enemies.insert(indx, Tank(e.pos - V2(1, 1), e.vel))
+                                        self.enemies[indx].distance_traveled = e.distance_traveled
+                                        self.enemies.sort(key=lambda e: e.distance_traveled)
+                                    # for t in self.towers:
+                                    #        distance = t.base_center.distance_to(e.get_center())
+                                    #        distance1 = t.base_center.distance_to(e.get_center())  
+                                    #        in_range.insert(ind2, (self.enemies[indx + 1], distance))
+                                    #        in_range.insert(ind2, (self.enemies[indx + 2], distance1))                              
+                                    self.enemies.remove(e)
+                                    self.money += e.value  # Collect value of enemy
+                                    p.tower.kills += 1  # Iterate tower kill counter
+                                    self.update_labels()
+                                    '''if len(self.projectiles) >0:
+                                        self.projectiles.remove(p)'''
                                 
-                            break
+                                break
 
                 # Enemy movement - OLD
                 # for e in self.enemies:
