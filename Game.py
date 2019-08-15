@@ -279,7 +279,7 @@ class GameTop():
             self.screen.blit(p.image, p.pos)
             
         self.screen.blit(self.base.image, self.base.pos)
-        pg.draw.rect(self.screen, red, pg.Rect(self.base.pos.x + 4, self.base.pos.y - 15, int((self.base.dims[0] - 6) * (float(self.base.health) / self.base.max_health)), 10), 0)
+        pg.draw.rect(self.screen, red, pg.Rect(self.base.pos.x + 4, self.base.pos.y - 15, int((self.base.dims[0] - 3) * (float(self.base.health) / self.base.max_health)), 10), 0)
         pg.draw.rect(self.screen, black, pg.Rect(self.base.pos.x + 2, self.base.pos.y - 15, self.base.dims[0] - 4, 10), 2)
 
     def place_tower(self, tower_index):
@@ -535,6 +535,8 @@ class GameTop():
                 # Projectile - Enemy collision
                 for p in self.projectiles:
                     for e in self.enemies:
+                        if e.health <= 0:
+                            self.projectiles.remove(p)
                         if p.get_rect().colliderect(e.get_rect()):
                             self.projectiles.remove(p)
                             e.health -= p.damage
@@ -662,7 +664,7 @@ class GameTop():
 
             for t in self.towers:
                 t.health = t.max_health
-            self.base.health = self.base.max_health
+            #self.base.health = self.base.max_health
             self.enemies = []
             self.projectiles = []
             self.update_screen()
