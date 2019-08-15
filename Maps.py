@@ -1,5 +1,10 @@
 from ScreenConvert import *
 from builtins import len
+import math
+import numpy as np
+from math import pi
+import pygame as pg
+from pygame.math import Vector2 as V2
 '''# I don't need this stuff any more. Use of wrapper class depracates it.
 test_map = [(0, 50), (1200, 200), (1200, 700), (200, 700), (200, 400), (700, 450)]
 for i, (a, b) in enumerate(test_map):
@@ -38,5 +43,14 @@ class TestMap(map):
     map.convert(map,map_pixels)
     
 class LoopyMap(map):
-    map_pixels = [(0,0),(),(),(),(),(),(),(),(),(),()]
+    map_pixels = [] #[(0,0),(100,50),(250,250),(250,500),(200,600),(100,350),(300,150),(500,100),(550,200),\
+                  #(560,400),(550,500)]
+    base_position = (1550, 850)
+    r = []
+    for theta in np.linspace(pi/7, 2, 1e4):
+        r.append(V2(abs(1600*math.sin(7*theta))).rotate(theta))
+        
+    for v in r:
+        map_pixels.append((v.xcor(),v.ycor()))
+    map.convert(map, map_pixels)
     

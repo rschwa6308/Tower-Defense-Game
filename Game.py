@@ -9,7 +9,6 @@ from Colors import *
 from Waves import *
 from Maps import *
 from ScreenConvert import *
-from _ast import If
 from _datetime import date, datetime
 
 logf = open("Log.log", "a+")
@@ -127,7 +126,7 @@ class GameTop():
         self.kills_label = tk.Label(self.upgrade_frame, text="", font=("Candara", 10))
 
         # Instantiate game variables
-        self.map = TestMap()
+        self.map = LoopyMap()
         self.base = Base(self.map.base_position, self.health)
         self.towers = []
         self.enemies = []
